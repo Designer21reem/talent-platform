@@ -35,7 +35,7 @@ function simulateUpload(onProgress, onComplete) {
   }, 120);
 }
 
-export function FileUploader() {
+export function FileUploader({ onFile }) {
   const inputRef = useRef(null);
   const [dragging, setDragging] = useState(false);
   const [state, setState] = useState({
@@ -66,6 +66,7 @@ export function FileUploader() {
       () => {
         console.log('[FileUploader] Upload complete:', file.name);
         setState((prev) => ({ ...prev, status: 'success', progress: 100 }));
+        if (onFile) onFile(file);
       }
     );
   }
