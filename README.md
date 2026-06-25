@@ -54,6 +54,20 @@ A modern, fully responsive web platform that allows candidates to upload their C
 
 ---
 
+## Assumptions Made
+
+- **No backend / no auth** — The brief did not specify a server or user accounts, so all data is persisted in `localStorage`. A real product would use a database and authentication layer.
+- **CV parsing is best-effort** — PDF and DOCX text extraction relies on pattern matching (regex) for name, email, and phone. It works well on standard CV formats but may miss fields in heavily styled or scanned documents. The user is always shown the parsed result and can edit before saving.
+- **Assessment questions are static** — The 6 skill questions are hardcoded. The assumption is that a fixed question set is sufficient for a candidate-facing demo; a production system would pull questions from an API.
+- **Phone number is the identity key** — The assessment gate uses the phone number as the sole identifier. This was the simplest unique-enough value available without requiring sign-up.
+- **Dashboard score is calculated client-side** — Scores are derived from the stored assessment answers using a local formula. No server-side validation or scoring engine is assumed.
+- **Mock dashboard for unanswered assessment** — If a user visits the dashboard without completing the assessment, sample data is shown rather than an empty or broken state, to demonstrate the UI.
+- **Single-user, single-session** — `localStorage` holds one CV and one assessment result at a time. No multi-profile support is assumed.
+- **Static export only** — The app is deployed as a fully static site (`output: 'export'`) which rules out server-side rendering and API routes. This matches the no-backend assumption.
+- **File size limit is 10 MB** — Chosen as a reasonable upper bound for CV files; no server upload means the entire file is processed in the browser.
+
+---
+
 ## Getting Started
 
 ```bash
