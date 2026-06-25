@@ -41,7 +41,21 @@ function validateStep(step, cv) {
     const { fullName, email, phone } = cv.personalInfo;
     if (!fullName.trim()) return 'Full name is required.';
     if (!email.trim()) return 'Email address is required.';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return 'Please enter a valid email address.';
     if (!phone.trim()) return 'Phone number is required.';
+    if (!/^\+?[\d\s\-().]{7,}$/.test(phone.trim())) return 'Please enter a valid phone number.';
+  }
+  if (step === 2) {
+    for (const entry of cv.education) {
+      if (!entry.institution.trim()) return 'Institution name is required for each education entry.';
+      if (!entry.degree.trim()) return 'Degree is required for each education entry.';
+    }
+  }
+  if (step === 3) {
+    for (const entry of cv.workExperience) {
+      if (!entry.company.trim()) return 'Company name is required for each experience entry.';
+      if (!entry.position.trim()) return 'Position / Title is required for each experience entry.';
+    }
   }
   return null;
 }
