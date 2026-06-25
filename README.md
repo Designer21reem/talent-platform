@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TalentHub — Candidate Talent Platform
+
+A modern, fully responsive web platform that allows candidates to upload their CV, build a professional CV from scratch, take a skill assessment, and view a personalized skills dashboard.
+
+## Live Demo
+
+[talent-platform-xi.vercel.app](https://talent-platform-xi.vercel.app)
+
+---
+
+## Pages
+
+| Page | Description |
+|------|-------------|
+| **Landing** | Hero section, features overview, stats, and call-to-action |
+| **Upload CV** | Drag-and-drop file uploader with progress simulation |
+| **Build CV** | 7-step wizard (Personal Info → Education → Experience → Skills → Languages → Certifications → Projects) with live preview and PDF download |
+| **Assessment** | Phone-gated skill assessment with 6 questions across multiple categories |
+| **Dashboard** | Personalized skills report with scores, strengths, and areas for improvement |
+
+---
+
+## Tech Stack
+
+| Tool | Purpose |
+|------|---------|
+| **Next.js 16** (App Router) | Framework — routing, static export, layouts |
+| **React 19** | UI component model, hooks, state management |
+| **Tailwind CSS v4** | Utility-first styling, responsive design |
+| **Framer Motion** | Page animations, hover effects, transitions |
+| **Lucide React** | Icon library |
+| **clsx + tailwind-merge** | Conditional class merging utility |
+| **localStorage** | Client-side data persistence (CV data, assessment answers) |
+| **JavaScript (ES Modules)** | No TypeScript — pure JS with JSX |
+
+---
+
+## Features
+
+- Fully responsive — works on all screen sizes
+- No backend required — all data stored in `localStorage`
+- PDF export — download your built CV directly from the browser
+- Reusable component library (`Button`, `Input`, `Card`, `Badge`, `ProgressBar`, `Select`, `Textarea`)
+- Phone number gate for assessment access
+- Mock dashboard fallback when no assessment data exists
+- `console.log` at every key step for easy debugging
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/                  # Next.js App Router pages
+│   ├── page.jsx          # Landing page
+│   ├── upload-cv/        # Upload CV page
+│   ├── build-cv/         # CV Builder wizard
+│   ├── assessment/       # Skill assessment
+│   └── dashboard/        # Skills dashboard
+├── components/
+│   ├── ui/               # Reusable UI components
+│   ├── layout/           # Header, Footer, Container
+│   ├── cv-builder/       # CV wizard step components
+│   ├── assessment/       # Question card component
+│   ├── dashboard/        # Skill progress card
+│   └── landing/          # Feature card component
+├── hooks/
+│   └── useLocalStorage.js
+└── lib/
+    ├── storage.js         # localStorage utilities
+    ├── assessmentQuestions.js
+    ├── mockDashboard.js   # Dashboard data builder
+    └── utils.js           # cn() helper
+```
