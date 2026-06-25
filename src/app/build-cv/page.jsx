@@ -87,27 +87,28 @@ export default function BuildCVPage() {
     setDownloading(true);
 
     try {
-      const html2canvas = (await import('html2canvas')).default;
+      const { toPng } = await import('html-to-image');
       const jsPDF = (await import('jspdf')).default;
 
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
+      const dataUrl = await toPng(element, {
+        pixelRatio: 2,
         backgroundColor: '#ffffff',
       });
 
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const img = new Image();
+      img.src = dataUrl;
+      await new Promise((resolve) => { img.onload = resolve; });
 
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const imgHeight = (canvas.height * pageWidth) / canvas.width;
+      const imgHeightMm = (img.naturalHeight / img.naturalWidth) * pageWidth;
 
-      let y = 0;
-      while (y < imgHeight) {
-        pdf.addImage(imgData, 'PNG', 0, -y, pageWidth, imgHeight);
-        if (y + pageHeight < imgHeight) pdf.addPage();
-        y += pageHeight;
+      let yOffset = 0;
+      while (yOffset < imgHeightMm) {
+        pdf.addImage(dataUrl, 'PNG', 0, -yOffset, pageWidth, imgHeightMm);
+        yOffset += pageHeight;
+        if (yOffset < imgHeightMm) pdf.addPage();
       }
 
       const fileName = cv.personalInfo.fullName

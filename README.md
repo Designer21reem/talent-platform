@@ -30,6 +30,9 @@ A modern, fully responsive web platform that allows candidates to upload their C
 | **Framer Motion** | Page animations, hover effects, transitions |
 | **Lucide React** | Icon library |
 | **pdfjs-dist** | Client-side PDF text extraction (no backend needed) |
+| **mammoth** | Client-side DOCX text extraction |
+| **html-to-image** | Captures DOM element as image via SVG foreignObject (supports modern CSS colors like oklch) |
+| **jsPDF** | Generates a real PDF file from canvas and triggers browser download |
 | **clsx + tailwind-merge** | Conditional class merging utility |
 | **localStorage** | Client-side data persistence (CV data, assessment answers) |
 | **JavaScript (ES Modules)** | No TypeScript — pure JS with JSX |
