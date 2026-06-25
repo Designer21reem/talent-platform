@@ -96,8 +96,6 @@ src/
 │   ├── assessment/       # Question card component
 │   ├── dashboard/        # Skill progress card
 │   └── landing/          # Feature card component
-├── hooks/
-│   └── useLocalStorage.js
 └── lib/
     ├── storage.js         # localStorage utilities
     ├── cvParser.js        # Client-side PDF text extraction and field parsing
