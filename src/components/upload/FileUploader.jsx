@@ -141,7 +141,7 @@ export function FileUploader({ onFile }) {
                   Drop your CV here or{' '}
                   <span className="text-blue-600 underline underline-offset-2">browse</span>
                 </p>
-                <p className="text-slate-400 text-sm mt-1">Supports PDF and DOCX · Max 10 MB</p>
+                <p className="text-slate-400 text-sm mt-1">PDF and DOCX supported · Max 10 MB</p>
               </div>
             </motion.div>
           )}

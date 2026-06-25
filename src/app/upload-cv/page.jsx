@@ -13,10 +13,10 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { saveCV } from '@/lib/storage';
-import { parsePDF } from '@/lib/cvParser';
+import { parseFile } from '@/lib/cvParser';
 
 const TIPS = [
-  { icon: FileText, text: 'PDF format is supported for automatic info extraction' },
+  { icon: FileText, text: 'PDF and DOCX formats are both supported for automatic info extraction' },
   { icon: ShieldCheck, text: 'Your file is processed locally — never sent to a server' },
   { icon: Upload, text: 'After uploading, take the assessment to see your skills report' },
 ];
@@ -33,20 +33,9 @@ export default function UploadCVPage() {
 
   async function handleFile(file) {
     console.log('[UploadCVPage] File received for processing:', file.name);
-
-    const ext = file.name.split('.').pop()?.toLowerCase();
-
-    if (ext === 'docx') {
-      console.log('[UploadCVPage] DOCX file — redirecting to Build CV');
-      setParseError('docx');
-      setParsedInfo(EMPTY_INFO);
-      setPageState('review');
-      return;
-    }
-
     setPageState('parsing');
     try {
-      const info = await parsePDF(file);
+      const info = await parseFile(file);
       console.log('[UploadCVPage] Parsed info:', info);
       setParsedInfo(info);
       setParseError(null);
@@ -123,21 +112,7 @@ export default function UploadCVPage() {
               exit={{ opacity: 0 }}
               className="max-w-xl mx-auto"
             >
-              {parseError === 'docx' ? (
-                <Card padding="lg" className="text-center">
-                  <AlertCircle size={36} className="text-amber-500 mx-auto mb-3" />
-                  <h3 className="font-semibold text-slate-800 text-lg mb-2">
-                    DOCX auto-parsing is not supported
-                  </h3>
-                  <p className="text-slate-500 text-sm mb-6">
-                    Use the CV Builder to fill in your information — it only takes a few minutes.
-                  </p>
-                  <Button onClick={() => router.push('/build-cv')} rightIcon={<ArrowRight size={16} />}>
-                    Go to CV Builder
-                  </Button>
-                </Card>
-              ) : (
-                <Card padding="lg">
+              <Card padding="lg">
                   {/* Status banner */}
                   {parseError === 'failed' ? (
                     <div className="flex items-start gap-3 mb-5 p-3 bg-amber-50 border border-amber-100 rounded-xl">
@@ -197,7 +172,6 @@ export default function UploadCVPage() {
                     </Button>
                   </div>
                 </Card>
-              )}
             </motion.div>
           )}
         </AnimatePresence>

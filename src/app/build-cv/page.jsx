@@ -77,28 +77,49 @@ export default function BuildCVPage() {
     setCurrentStep((s) => Math.max(s - 1, 1));
   }
 
-  function downloadAsPDF() {
+  const [downloading, setDownloading] = useState(false);
+
+  async function downloadAsPDF() {
+    const element = document.getElementById('cv-print-content');
+    if (!element) return;
+
     console.log('[BuildCVPage] Generating PDF for:', cv.personalInfo.fullName);
+    setDownloading(true);
 
-    const printStyle = document.createElement('style');
-    printStyle.id = 'cv-pdf-print-style';
-    printStyle.innerHTML = `
-      @media print {
-        body * { visibility: hidden; }
-        #cv-print-content, #cv-print-content * { visibility: visible; }
-        #cv-print-content { position: fixed; top: 0; left: 0; width: 100%; padding: 0; margin: 0; }
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const jsPDF = (await import('jspdf')).default;
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgHeight = (canvas.height * pageWidth) / canvas.width;
+
+      let y = 0;
+      while (y < imgHeight) {
+        pdf.addImage(imgData, 'PNG', 0, -y, pageWidth, imgHeight);
+        if (y + pageHeight < imgHeight) pdf.addPage();
+        y += pageHeight;
       }
-    `;
-    document.head.appendChild(printStyle);
 
-    const cleanup = () => {
-      const el = document.getElementById('cv-pdf-print-style');
-      if (el) el.remove();
-      window.removeEventListener('afterprint', cleanup);
-    };
-    window.addEventListener('afterprint', cleanup);
-
-    window.print();
+      const fileName = cv.personalInfo.fullName
+        ? `${cv.personalInfo.fullName.replace(/\s+/g, '_')}_CV.pdf`
+        : 'CV.pdf';
+      pdf.save(fileName);
+      console.log('[BuildCVPage] PDF saved as:', fileName);
+    } catch (err) {
+      console.error('[BuildCVPage] PDF generation failed:', err);
+    } finally {
+      setDownloading(false);
+    }
   }
 
   function handleSubmit() {
@@ -139,8 +160,9 @@ export default function BuildCVPage() {
                 size="sm"
                 leftIcon={<Download size={15} />}
                 onClick={downloadAsPDF}
+                disabled={downloading}
               >
-                Download PDF
+                {downloading ? 'Generating…' : 'Download PDF'}
               </Button>
               <Button
                 variant="secondary"

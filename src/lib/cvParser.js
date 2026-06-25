@@ -1,4 +1,19 @@
-export async function parsePDF(file) {
+export async function parseFile(file) {
+  const ext = file.name.split('.').pop()?.toLowerCase();
+  if (ext === 'docx') return parseDOCX(file);
+  return parsePDF(file);
+}
+
+async function parseDOCX(file) {
+  console.log('[cvParser] Starting DOCX parse for:', file.name);
+  const mammoth = await import('mammoth');
+  const arrayBuffer = await file.arrayBuffer();
+  const result = await mammoth.extractRawText({ arrayBuffer });
+  console.log('[cvParser] DOCX text extracted, length:', result.value.length);
+  return extractPersonalInfo(result.value);
+}
+
+async function parsePDF(file) {
   console.log('[cvParser] Starting PDF parse for:', file.name);
 
   const pdfjsLib = await import('pdfjs-dist');
