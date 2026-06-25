@@ -62,9 +62,17 @@ export default function AssessmentPage() {
   function setAnswer(questionId, value) {
     console.log('[AssessmentPage] Answer set — questionId:', questionId, '| value:', value);
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
+    setSubmitError(null);
   }
 
   function goNext() {
+    const current = ASSESSMENT_QUESTIONS[currentQ];
+    if (!answers[current.id]?.trim()) {
+      console.warn('[AssessmentPage] Cannot proceed — Q', currentQ + 1, 'not answered');
+      setSubmitError('Please answer this question before moving on.');
+      return;
+    }
+    setSubmitError(null);
     if (currentQ < ASSESSMENT_QUESTIONS.length - 1) {
       console.log('[AssessmentPage] Moving to question', currentQ + 2);
       setCurrentQ((q) => q + 1);
@@ -74,6 +82,7 @@ export default function AssessmentPage() {
   function goBack() {
     if (currentQ > 0) {
       console.log('[AssessmentPage] Going back to question', currentQ);
+      setSubmitError(null);
       setCurrentQ((q) => q - 1);
     }
   }
@@ -296,19 +305,28 @@ export default function AssessmentPage() {
 
         {/* Answer dots */}
         <div className="flex justify-center gap-1.5 mt-6">
-          {ASSESSMENT_QUESTIONS.map((q, i) => (
-            <button
-              key={q.id}
-              onClick={() => setCurrentQ(i)}
-              className={`w-2 h-2 rounded-full transition-all ${
-                i === currentQ
-                  ? 'bg-blue-600 w-4'
-                  : answers[q.id]
-                  ? 'bg-emerald-400'
-                  : 'bg-slate-200'
-              }`}
-            />
-          ))}
+          {ASSESSMENT_QUESTIONS.map((q, i) => {
+            const isAnswered = !!answers[q.id]?.trim();
+            const canNavigate = i <= currentQ || isAnswered;
+            return (
+              <button
+                key={q.id}
+                onClick={() => {
+                  if (!canNavigate) return;
+                  setSubmitError(null);
+                  setCurrentQ(i);
+                }}
+                disabled={!canNavigate}
+                className={`h-2 rounded-full transition-all ${
+                  i === currentQ
+                    ? 'bg-blue-600 w-4'
+                    : isAnswered
+                    ? 'bg-emerald-400 w-2 cursor-pointer'
+                    : 'bg-slate-200 w-2 cursor-not-allowed opacity-50'
+                }`}
+              />
+            );
+          })}
         </div>
       </Container>
     </div>
