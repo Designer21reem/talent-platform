@@ -31,9 +31,13 @@ export default function AssessmentPage() {
   useEffect(() => {
     const cv = loadCV();
     if (cv) {
+      const phone = cv.personalInfo.phone || '';
       setCandidateName(cv.personalInfo.fullName);
-      setCvPhone(cv.personalInfo.phone || null);
-      console.log('[AssessmentPage] CV loaded — name:', cv.personalInfo.fullName, '| phone:', cv.personalInfo.phone);
+      if (phone) {
+        setCvPhone(phone);
+        setResolvedPhone(phone);
+      }
+      console.log('[AssessmentPage] CV loaded — name:', cv.personalInfo.fullName, '| phone:', phone || '(none)');
     }
   }, []);
 
@@ -41,19 +45,18 @@ export default function AssessmentPage() {
     console.log('[AssessmentPage] Attempting to start assessment…');
 
     if (cvPhone) {
-      console.log('[AssessmentPage] Phone found in CV:', cvPhone);
-      setResolvedPhone(cvPhone);
+      console.log('[AssessmentPage] Using phone from CV:', cvPhone);
       setPageState('assessment');
       return;
     }
 
     if (!phoneInput.trim()) {
       console.warn('[AssessmentPage] Phone number missing — blocking start');
-      setPhoneError('Phone number is required before starting the assessment.');
+      setPhoneError('Phone number is required to start the assessment.');
       return;
     }
 
-    console.log('[AssessmentPage] Phone entered manually:', phoneInput);
+    console.log('[AssessmentPage] Using manually entered phone:', phoneInput);
     setResolvedPhone(phoneInput.trim());
     setPhoneError(null);
     setPageState('assessment');
@@ -144,20 +147,13 @@ export default function AssessmentPage() {
             transition={{ delay: 0.15 }}
             className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sm:p-8"
           >
-            <div className="flex items-start gap-3 mb-6 p-4 bg-amber-50 border border-amber-100 rounded-xl">
-              <AlertTriangle size={18} className="text-amber-500 shrink-0 mt-0.5" />
-              <p className="text-sm text-amber-700">
-                A <strong>phone number is required</strong> to start the assessment. If you already built
-                your CV with a phone number, it will be used automatically.
-              </p>
-            </div>
-
             {cvPhone ? (
               <div className="flex items-center gap-3 mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
                 <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
-                <p className="text-sm text-emerald-700">
-                  Phone number found from your CV. You're ready to start!
-                </p>
+                <div>
+                  <p className="text-sm font-medium text-emerald-800">Phone number found</p>
+                  <p className="text-xs text-emerald-600 mt-0.5">{cvPhone} — ready to start!</p>
+                </div>
               </div>
             ) : (
               <div className="mb-6">
@@ -174,7 +170,7 @@ export default function AssessmentPage() {
                   error={phoneError ?? undefined}
                   leftElement={<Phone size={15} />}
                   required
-                  hint="This will not be stored on any server."
+                  hint="Required to identify your results in the dashboard."
                 />
               </div>
             )}
