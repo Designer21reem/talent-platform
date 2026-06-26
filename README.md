@@ -8,11 +8,6 @@ A modern, fully responsive web platform built for **THE VALUE** that allows cand
 
 ---
 
-## Brand & Theme System
-
-The platform uses a centralized CSS variable theme — every color (backgrounds, typography, inputs, buttons) is controlled from a single `:root` block in `src/app/globals.css`. Updating one variable automatically updates every component across the entire site.
-
----
 
 ## Pages
 
