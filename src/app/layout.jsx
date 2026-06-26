@@ -11,6 +11,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="h-full">
+      <head>
+        <link rel="icon" type="image/png" href="/favicon.png" />
+      </head>
       <body className="min-h-screen flex flex-col bg-dark antialiased">
         <Header />
         <main className="flex-1">{children}</main>
