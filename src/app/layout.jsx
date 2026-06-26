@@ -6,6 +6,10 @@ export const metadata = {
   title: "THE VALUE's GOT TALENT",
   description:
     'Upload your CV, build a professional profile, and complete skill assessments to showcase your talents to THE VALUE.',
+  icons: {
+    icon: '/Logo (1).png',
+    apple: '/Logo (1).png',
+  },
 };
 
 export default function RootLayout({ children }) {
