@@ -10,42 +10,7 @@ A modern, fully responsive web platform built for **THE VALUE** that allows cand
 
 ## Brand & Theme System
 
-The platform uses a **centralized CSS variable theme** — every color across the entire site is controlled from a single block in `src/app/globals.css`. To change any color, update one variable and every component updates automatically.
-
-**Logo:** `public/Logo (1).png`
-
-### Changing colors
-
-Open `src/app/globals.css` and edit any variable inside `:root`:
-
-```css
-:root {
-  /* Backgrounds */
-  --tv-bg:        #080808;   /* main page background */
-  --tv-surface:   #111111;   /* card / panel background */
-  --tv-surface-2: #1e1e1e;   /* elevated elements inside cards */
-
-  /* Brand / Gold — change this to retheme the entire accent color */
-  --tv-gold:       #c99b25;  /* primary gold — buttons, borders, icons */
-  --tv-gold-light: #d4aa3a;  /* lighter gold — button hover state */
-  --tv-gold-dark:  #a67b18;  /* darker gold — button active/pressed state */
-
-  /* Typography */
-  --tv-title:   #f2eee6;     /* main headings h1 / h2 / h3 */
-  --tv-body:    #e2ddd5;     /* paragraphs and card body text */
-  --tv-muted:   #dddddd;     /* labels / secondary text */
-  --tv-subtle:  #9a9a9a;     /* captions, hints, timestamps */
-
-  /* Form Fields — controls input/textarea/select in ALL states */
-  --tv-field-bg:           #161616;  /* field background */
-  --tv-field-border:       #2e2e2e;  /* border — normal state */
-  --tv-field-border-hover: #c99b25;  /* border — hover state */
-  --tv-field-border-focus: #c99b25;  /* border — focused state */
-  --tv-field-text:         #f2eee6;  /* text typed inside the field */
-  --tv-field-placeholder:  #666666;  /* placeholder text */
-  --tv-field-label:        #e2ddd5;  /* label above the field */
-}
-```
+The platform uses a centralized CSS variable theme — every color (backgrounds, typography, inputs, buttons) is controlled from a single `:root` block in `src/app/globals.css`. Updating one variable automatically updates every component across the entire site.
 
 ---
 
@@ -147,7 +112,4 @@ src/
     ├── assessmentQuestions.js
     ├── mockDashboard.js   # Dashboard data builder + scoring
     └── utils.js           # cn() helper
-public/
-├── Logo (1).png           # THE VALUE brand logo
-└── founder-aws-fawzi.jpg  # Founder photo (About page)
 ```
