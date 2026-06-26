@@ -19,10 +19,10 @@ export function StepIndicator({ steps, currentStep }) {
                   className={cn(
                     'w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-200',
                     done
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-brand text-dark'
                       : active
-                      ? 'bg-blue-600 text-white ring-4 ring-blue-100'
-                      : 'bg-slate-100 text-slate-400'
+                      ? 'bg-brand text-dark ring-4 ring-brand/20'
+                      : 'bg-(--tv-step-inactive-bg) text-(--tv-step-inactive-text)'
                   )}
                 >
                   {done ? <CheckCircle2 size={16} /> : step.id}
@@ -30,7 +30,7 @@ export function StepIndicator({ steps, currentStep }) {
                 <span
                   className={cn(
                     'text-xs font-medium whitespace-nowrap',
-                    active ? 'text-blue-600' : done ? 'text-slate-600' : 'text-slate-400'
+                    active ? 'text-brand' : done ? 'text-silver' : 'text-silver'
                   )}
                 >
                   {step.label}
@@ -40,7 +40,7 @@ export function StepIndicator({ steps, currentStep }) {
                 <div
                   className={cn(
                     'h-0.5 w-12 sm:w-16 mx-2 mt-[-14px] rounded-full transition-colors duration-300',
-                    done ? 'bg-blue-600' : 'bg-slate-200'
+                    done ? 'bg-brand' : 'bg-(--tv-step-connector)'
                   )}
                 />
               )}

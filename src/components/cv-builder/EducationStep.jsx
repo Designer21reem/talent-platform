@@ -31,8 +31,8 @@ export function EducationStep({ data, onChange }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-slate-900">Education</h2>
-      <p className="text-sm text-slate-500">Add your academic background, starting with the most recent.</p>
+      <h2 className="text-xl font-semibold text-warm-light">Education</h2>
+      <p className="text-sm text-silver">Add your academic background, starting with the most recent.</p>
 
       <AnimatePresence initial={false}>
         {data.map((entry, i) => (
@@ -45,13 +45,13 @@ export function EducationStep({ data, onChange }) {
           >
             <Card padding="md" className="relative">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
-                  <GraduationCap size={16} className="text-blue-500" />
+                <div className="flex items-center gap-2 text-sm font-medium text-silver">
+                  <GraduationCap size={16} className="text-brand" />
                   Education {i + 1}
                 </div>
                 <button
                   onClick={() => removeEntry(entry.id)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  className="p-1.5 rounded-lg text-silver hover:text-red-500 hover:bg-red-500/10 transition-colors"
                 >
                   <Trash2 size={15} />
                 </button>
@@ -99,7 +99,7 @@ export function EducationStep({ data, onChange }) {
       </AnimatePresence>
 
       {data.length === 0 && (
-        <div className="text-center py-8 text-slate-400 text-sm border-2 border-dashed border-slate-200 rounded-xl">
+        <div className="text-center py-8 text-silver text-sm border-2 border-dashed border-surface-2 rounded-xl">
           No education added yet. Click below to add one.
         </div>
       )}

@@ -7,13 +7,13 @@ import { cn } from '@/lib/utils';
 
 const variantStyles = {
   primary:
-    'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm hover:shadow-md',
+    'bg-brand text-dark hover:bg-brand-light active:bg-brand-dark font-semibold shadow-sm hover:shadow-md',
   secondary:
-    'bg-slate-100 text-slate-800 hover:bg-slate-200 active:bg-slate-300',
-  ghost: 'bg-transparent text-slate-700 hover:bg-slate-100 active:bg-slate-200',
+    'bg-surface-2 text-warm border border-surface-2 hover:border-brand/40 hover:text-warm-light active:bg-surface',
+  ghost: 'bg-transparent text-warm hover:bg-surface-2 active:bg-surface',
   danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800',
   outline:
-    'border border-blue-600 text-blue-600 hover:bg-blue-50 active:bg-blue-100 bg-transparent',
+    'border border-brand text-brand hover:bg-brand/10 active:bg-brand/20 bg-transparent',
 };
 
 const sizeStyles = {
@@ -50,7 +50,7 @@ const Button = forwardRef(
         className={cn(
           'inline-flex items-center justify-center rounded-lg font-medium',
           'transition-colors duration-150 focus-visible:outline-none',
-          'focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
+          'focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2',
           'disabled:cursor-not-allowed disabled:opacity-50',
           variantStyles[variant],
           sizeStyles[size],

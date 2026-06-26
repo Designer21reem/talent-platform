@@ -19,7 +19,7 @@ export function Card({ hover = false, padding = 'md', className, children, onCli
       style={style}
       id={id}
       className={cn(
-        'bg-white rounded-2xl border border-slate-100 shadow-sm',
+        'bg-surface rounded-2xl border border-surface-2 shadow-sm',
         paddingStyles[padding],
         hover && 'cursor-pointer',
         className
@@ -40,7 +40,7 @@ export function CardHeader({ className, children, ...props }) {
 
 export function CardTitle({ className, children, ...props }) {
   return (
-    <h3 className={cn('text-lg font-semibold text-slate-900', className)} {...props}>
+    <h3 className={cn('text-lg font-semibold text-white', className)} {...props}>
       {children}
     </h3>
   );
@@ -48,7 +48,7 @@ export function CardTitle({ className, children, ...props }) {
 
 export function CardBody({ className, children, ...props }) {
   return (
-    <div className={cn('text-slate-600', className)} {...props}>
+    <div className={cn('text-silver', className)} {...props}>
       {children}
     </div>
   );

@@ -15,8 +15,8 @@ export function FeatureCard({ icon: Icon, title, description, color, delay = 0 }
         <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center mb-4`}>
           <Icon size={22} className="text-white" />
         </div>
-        <h3 className="font-semibold text-slate-900 text-lg mb-2">{title}</h3>
-        <p className="text-slate-500 text-sm leading-relaxed">{description}</p>
+        <h3 className="font-semibold text-white text-lg mb-2">{title}</h3>
+        <p className="text-silver text-sm leading-relaxed">{description}</p>
       </Card>
     </motion.div>
   );

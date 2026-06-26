@@ -9,14 +9,14 @@ const Input = forwardRef(({ label, error, hint, leftElement, className, id, ...p
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={inputId} className="text-sm font-medium text-slate-700">
+        <label htmlFor={inputId} className="tv-label">
           {label}
           {props.required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
       <div className="relative">
         {leftElement && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-silver">
             {leftElement}
           </div>
         )}
@@ -24,11 +24,8 @@ const Input = forwardRef(({ label, error, hint, leftElement, className, id, ...p
           ref={ref}
           id={inputId}
           className={cn(
-            'w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900',
-            'placeholder:text-slate-400 transition-all duration-150',
-            'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-            'disabled:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-400',
-            error && 'border-red-400 focus:ring-red-400',
+            'tv-field w-full rounded-lg border px-4 py-2.5 text-sm transition-all duration-150',
+            error && 'tv-field-error',
             leftElement && 'pl-10',
             className
           )}
@@ -36,7 +33,7 @@ const Input = forwardRef(({ label, error, hint, leftElement, className, id, ...p
         />
       </div>
       {error && <p className="text-xs text-red-500 mt-0.5">{error}</p>}
-      {hint && !error && <p className="text-xs text-slate-400">{hint}</p>}
+      {hint && !error && <p className="text-xs text-subtle mt-0.5">{hint}</p>}
     </div>
   );
 });

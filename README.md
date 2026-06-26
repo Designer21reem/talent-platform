@@ -1,10 +1,51 @@
-# TalentHub — Candidate Talent Platform
+# THE VALUE's GOT TALENT — Candidate Talent Platform
 
-A modern, fully responsive web platform that allows candidates to upload their CV, build a professional CV from scratch, take a skill assessment, and view a personalized skills dashboard.
+A modern, fully responsive web platform built for **THE VALUE** that allows candidates to upload their CV, build a professional CV from scratch, take a skill assessment, and view a personalized skills dashboard.
 
 ## Live Demo
 
 [talent-platform-xi.vercel.app](https://talent-platform-xi.vercel.app)
+
+---
+
+## Brand & Theme System
+
+The platform uses a **centralized CSS variable theme** — every color across the entire site is controlled from a single block in `src/app/globals.css`. To change any color, update one variable and every component updates automatically.
+
+**Logo:** `public/Logo (1).png`
+
+### Changing colors
+
+Open `src/app/globals.css` and edit any variable inside `:root`:
+
+```css
+:root {
+  /* Backgrounds */
+  --tv-bg:        #080808;   /* main page background */
+  --tv-surface:   #111111;   /* card / panel background */
+  --tv-surface-2: #1e1e1e;   /* elevated elements inside cards */
+
+  /* Brand / Gold — change this to retheme the entire accent color */
+  --tv-gold:       #c99b25;  /* primary gold — buttons, borders, icons */
+  --tv-gold-light: #d4aa3a;  /* lighter gold — button hover state */
+  --tv-gold-dark:  #a67b18;  /* darker gold — button active/pressed state */
+
+  /* Typography */
+  --tv-title:   #f2eee6;     /* main headings h1 / h2 / h3 */
+  --tv-body:    #e2ddd5;     /* paragraphs and card body text */
+  --tv-muted:   #dddddd;     /* labels / secondary text */
+  --tv-subtle:  #9a9a9a;     /* captions, hints, timestamps */
+
+  /* Form Fields — controls input/textarea/select in ALL states */
+  --tv-field-bg:           #161616;  /* field background */
+  --tv-field-border:       #2e2e2e;  /* border — normal state */
+  --tv-field-border-hover: #c99b25;  /* border — hover state */
+  --tv-field-border-focus: #c99b25;  /* border — focused state */
+  --tv-field-text:         #f2eee6;  /* text typed inside the field */
+  --tv-field-placeholder:  #666666;  /* placeholder text */
+  --tv-field-label:        #e2ddd5;  /* label above the field */
+}
+```
 
 ---
 
@@ -13,6 +54,7 @@ A modern, fully responsive web platform that allows candidates to upload their C
 | Page | Description |
 |------|-------------|
 | **Landing** | Hero section, features overview, stats, and call-to-action |
+| **About** | THE VALUE organization info, mission, vision, and founder profile |
 | **Upload CV** | Drag-and-drop PDF upload with automatic text extraction — name, email, and phone are parsed from the file and saved directly to the profile |
 | **Build CV** | 7-step wizard (Personal Info → Education → Experience → Skills → Languages → Certifications → Projects) with live preview and one-click PDF download |
 | **Assessment** | Phone-gated skill assessment with 6 questions — each question must be answered before moving to the next, dot navigation is locked for unanswered questions |
@@ -26,13 +68,13 @@ A modern, fully responsive web platform that allows candidates to upload their C
 |------|---------|
 | **Next.js 16** (App Router) | Framework — routing, static export, layouts |
 | **React 19** | UI component model, hooks, state management |
-| **Tailwind CSS v4** | Utility-first styling, responsive design |
+| **Tailwind CSS v4** | Utility-first styling with `@theme` color tokens |
 | **Framer Motion** | Page animations, hover effects, transitions |
 | **Lucide React** | Icon library |
 | **pdfjs-dist** | Client-side PDF text extraction (no backend needed) |
 | **mammoth** | Client-side DOCX text extraction |
-| **html-to-image** | Captures DOM element as image via SVG foreignObject (supports modern CSS colors like oklch) |
-| **jsPDF** | Generates a real PDF file from canvas and triggers browser download |
+| **html-to-image** | Captures DOM element as image for PDF export |
+| **jsPDF** | Generates a real PDF file and triggers browser download |
 | **clsx + tailwind-merge** | Conditional class merging utility |
 | **localStorage** | Client-side data persistence (CV data, assessment answers) |
 | **JavaScript (ES Modules)** | No TypeScript — pure JS with JSX |
@@ -43,6 +85,7 @@ A modern, fully responsive web platform that allows candidates to upload their C
 
 - Fully responsive — works on all screen sizes
 - No backend required — all data stored in `localStorage`
+- **Centralized theme system** — change any color in one place, every component updates automatically
 - **PDF parsing** — upload a CV and name, email, phone are extracted automatically in the browser
 - **PDF export** — download your built CV as a PDF directly from the browser
 - Reusable component library (`Button`, `Input`, `Card`, `Badge`, `ProgressBar`, `Select`, `Textarea`)
@@ -50,7 +93,7 @@ A modern, fully responsive web platform that allows candidates to upload their C
 - Assessment enforces sequential answering — cannot skip questions
 - Mock dashboard fallback when no assessment data exists
 - `console.log` at every key step for easy debugging
-- Deployed on Vercel (zero config) and GitHub Pages (via GitHub Actions)
+- Deployed on Vercel (zero config)
 
 ---
 
@@ -83,23 +126,28 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ```
 src/
-├── app/                  # Next.js App Router pages
+├── app/
+│   ├── globals.css       # Master theme variables — edit here to retheme everything
 │   ├── page.jsx          # Landing page
+│   ├── about/            # About THE VALUE page
 │   ├── upload-cv/        # Upload CV + PDF parsing flow
 │   ├── build-cv/         # CV Builder wizard
 │   ├── assessment/       # Skill assessment
 │   └── dashboard/        # Skills dashboard
 ├── components/
-│   ├── ui/               # Reusable UI components
+│   ├── ui/               # Reusable UI components (Button, Input, Card, Badge…)
 │   ├── layout/           # Header, Footer, Container
-│   ├── cv-builder/       # CV wizard step components
+│   ├── cv-builder/       # CV wizard step components + live preview
 │   ├── assessment/       # Question card component
 │   ├── dashboard/        # Skill progress card
 │   └── landing/          # Feature card component
 └── lib/
     ├── storage.js         # localStorage utilities
-    ├── cvParser.js        # Client-side PDF text extraction and field parsing
+    ├── cvParser.js        # Client-side PDF/DOCX text extraction
     ├── assessmentQuestions.js
-    ├── mockDashboard.js   # Dashboard data builder
+    ├── mockDashboard.js   # Dashboard data builder + scoring
     └── utils.js           # cn() helper
+public/
+├── Logo (1).png           # THE VALUE brand logo
+└── founder-aws-fawzi.jpg  # Founder photo (About page)
 ```

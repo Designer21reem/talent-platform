@@ -17,8 +17,8 @@ const LEVEL_OPTIONS = [
 
 const LEVEL_BADGE = {
   Beginner: 'slate',
-  Intermediate: 'blue',
-  Advanced: 'purple',
+  Intermediate: 'brand',
+  Advanced: 'brand',
   Expert: 'green',
 };
 
@@ -43,8 +43,8 @@ export function SkillsStep({ data, onChange }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-slate-900">Skills</h2>
-      <p className="text-sm text-slate-500">Add your technical and soft skills.</p>
+      <h2 className="text-xl font-semibold text-warm-light">Skills</h2>
+      <p className="text-sm text-silver">Add your technical and soft skills.</p>
 
       <div className="flex gap-3 items-end">
         <div className="flex-1">
@@ -77,13 +77,13 @@ export function SkillsStep({ data, onChange }) {
               initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.85 }}
-              className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-3 py-1.5 text-sm"
+              className="flex items-center gap-1.5 bg-surface-2 border border-brand/20 rounded-full px-3 py-1.5 text-sm"
             >
-              <span className="font-medium text-slate-700">{skill.name}</span>
+              <span className="font-medium text-warm">{skill.name}</span>
               <Badge variant={LEVEL_BADGE[skill.level]}>{skill.level}</Badge>
               <button
                 onClick={() => removeSkill(skill.id)}
-                className="ml-1 text-slate-400 hover:text-red-500 transition-colors"
+                className="ml-1 text-silver hover:text-red-500 transition-colors"
               >
                 <X size={12} />
               </button>
@@ -91,7 +91,7 @@ export function SkillsStep({ data, onChange }) {
           ))}
         </AnimatePresence>
         {data.length === 0 && (
-          <p className="text-slate-400 text-sm self-center">No skills added yet.</p>
+          <p className="text-silver text-sm self-center">No skills added yet.</p>
         )}
       </div>
     </div>

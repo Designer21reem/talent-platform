@@ -169,7 +169,7 @@ export default function BuildCVPage() {
           </motion.div>
 
           <div className="flex flex-wrap justify-between items-center gap-3 mb-6">
-            <h2 className="text-2xl font-bold text-slate-900">Your CV Preview</h2>
+            <h2 className="text-2xl font-bold text-white">Your CV Preview</h2>
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
@@ -206,11 +206,11 @@ export default function BuildCVPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-violet-600 mb-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-4">
             <FileEdit size={26} className="text-white" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-2">Build Your CV</h1>
-          <p className="text-slate-500 text-lg">Fill in each section and we'll generate a professional CV.</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Build Your CV</h1>
+          <p className="text-silver text-lg">Fill in each section and we'll generate a professional CV.</p>
         </motion.div>
 
         {/* Step indicator */}
@@ -221,7 +221,7 @@ export default function BuildCVPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Form panel */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sm:p-8">
+            <div className="bg-surface rounded-2xl border border-surface-2 shadow-sm p-6 sm:p-8">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentStep}
@@ -266,7 +266,7 @@ export default function BuildCVPage() {
               )}
 
               {/* Navigation buttons */}
-              <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-100">
+              <div className="flex justify-between items-center mt-8 pt-6 border-t border-surface-2">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -277,7 +277,7 @@ export default function BuildCVPage() {
                   Back
                 </Button>
 
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-silver">
                   Step {currentStep} of {STEPS.length}
                 </div>
 
@@ -298,22 +298,22 @@ export default function BuildCVPage() {
           <div className="hidden lg:block">
             <div className="sticky top-24">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-medium text-slate-700">Live Preview</p>
+                <p className="text-sm font-medium text-warm">Live Preview</p>
                 <button
                   onClick={() => setShowPreview((v) => !v)}
-                  className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-silver hover:text-warm transition-colors"
                 >
                   {showPreview ? <EyeOff size={13} /> : <Eye size={13} />}
                   {showPreview ? 'Hide' : 'Show'}
                 </button>
               </div>
               {showPreview ? (
-                <div className="max-h-[70vh] overflow-y-auto rounded-2xl border border-slate-200 shadow-sm">
+                <div className="max-h-[70vh] overflow-y-auto rounded-2xl border border-surface-2 shadow-sm">
                   <CVPreview data={cv} />
                 </div>
               ) : (
                 <div
-                  className="rounded-2xl border-2 border-dashed border-slate-200 p-8 text-center text-slate-400 text-sm cursor-pointer hover:border-blue-300 hover:text-blue-400 transition-colors"
+                  className="rounded-2xl border-2 border-dashed border-surface-2 p-8 text-center text-silver text-sm cursor-pointer hover:border-brand hover:text-brand transition-colors"
                   onClick={() => setShowPreview(true)}
                 >
                   <Eye size={24} className="mx-auto mb-2 opacity-50" />

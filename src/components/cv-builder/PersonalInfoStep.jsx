@@ -13,8 +13,8 @@ export function PersonalInfoStep({ data, onChange }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-slate-900">Personal Information</h2>
-      <p className="text-sm text-slate-500">Tell us the basics — this will appear at the top of your CV.</p>
+      <h2 className="text-xl font-semibold text-warm-light">Personal Information</h2>
+      <p className="text-sm text-silver">Tell us the basics — this will appear at the top of your CV.</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <Input

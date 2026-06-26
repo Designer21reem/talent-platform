@@ -44,8 +44,8 @@ export default function DashboardPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-slate-500 text-sm">Loading your dashboard…</p>
+          <div className="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-silver text-sm">Loading your dashboard…</p>
         </div>
       </div>
     );
@@ -87,12 +87,12 @@ export default function DashboardPage() {
           className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8"
         >
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
-              <BarChart3 size={22} className="text-amber-600" />
+            <div className="w-12 h-12 rounded-xl bg-brand/20 flex items-center justify-center">
+              <BarChart3 size={22} className="text-brand" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Skills Dashboard</h1>
-              <p className="text-slate-500 text-sm">Your personal skill assessment results</p>
+              <h1 className="text-2xl font-bold text-white">Skills Dashboard</h1>
+              <p className="text-silver text-sm">Your personal skill assessment results</p>
             </div>
           </div>
           <Link href="/assessment">
@@ -106,12 +106,12 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Candidate card */}
           <Card padding="md" className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-              <User size={24} className="text-blue-600" />
+            <div className="w-14 h-14 rounded-full bg-brand/20 flex items-center justify-center shrink-0">
+              <User size={24} className="text-brand" />
             </div>
             <div className="min-w-0">
-              <p className="font-bold text-slate-900 text-lg truncate">{dashboard.candidateName || 'Candidate'}</p>
-              <p className="flex items-center gap-1.5 text-sm text-slate-500 mt-0.5">
+              <p className="font-bold text-white text-lg truncate">{dashboard.candidateName || 'Candidate'}</p>
+              <p className="flex items-center gap-1.5 text-sm text-silver mt-0.5">
                 <Phone size={13} />
                 {dashboard.phoneNumber}
               </p>
@@ -121,18 +121,18 @@ export default function DashboardPage() {
           {/* Overall score */}
           <Card padding="md" className="lg:col-span-2">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-slate-800">Overall Score</h2>
+              <h2 className="font-semibold text-white">Overall Score</h2>
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, delay: 0.3 }}
-                className="text-3xl font-extrabold text-blue-600"
+                className="text-3xl font-extrabold text-brand"
               >
                 {dashboard.overallScore}%
               </motion.span>
             </div>
             <ProgressBar value={dashboard.overallScore} showValue={false} size="lg" animated />
-            <div className="flex justify-between text-xs text-slate-400 mt-1.5">
+            <div className="flex justify-between text-xs text-silver mt-1.5">
               <span>Developing</span>
               <span>Proficient</span>
               <span>Expert</span>
@@ -142,7 +142,7 @@ export default function DashboardPage() {
 
         {/* Skills grid */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Skill Breakdown</h2>
+          <h2 className="text-lg font-semibold text-white mb-4">Skill Breakdown</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {dashboard.skills.map((skill, i) => (
               <SkillProgressCard key={skill.category} skill={skill} delay={i * 0.07} />
@@ -156,7 +156,7 @@ export default function DashboardPage() {
           <Card padding="md">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp size={18} className="text-emerald-500" />
-              <h2 className="font-semibold text-slate-900">Your Strengths</h2>
+              <h2 className="font-semibold text-white">Your Strengths</h2>
             </div>
             {dashboard.strengths.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -168,7 +168,7 @@ export default function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-slate-400 text-sm">Complete the assessment to see your strengths.</p>
+              <p className="text-silver text-sm">Complete the assessment to see your strengths.</p>
             )}
           </Card>
 
@@ -176,7 +176,7 @@ export default function DashboardPage() {
           <Card padding="md">
             <div className="flex items-center gap-2 mb-4">
               <TrendingDown size={18} className="text-amber-500" />
-              <h2 className="font-semibold text-slate-900">Areas for Improvement</h2>
+              <h2 className="font-semibold text-white">Areas for Improvement</h2>
             </div>
             {dashboard.areasForImprovement.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -185,7 +185,7 @@ export default function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-slate-400 text-sm italic">All skill areas are strong — great work!</p>
+              <p className="text-silver text-sm italic">All skill areas are strong — great work!</p>
             )}
           </Card>
         </div>
@@ -193,13 +193,13 @@ export default function DashboardPage() {
         {/* Top skills */}
         <Card padding="md" className="mb-8">
           <div className="flex items-center gap-2 mb-5">
-            <ClipboardCheck size={18} className="text-blue-500" />
-            <h2 className="font-semibold text-slate-900">Top Performing Skills</h2>
+            <ClipboardCheck size={18} className="text-brand" />
+            <h2 className="font-semibold text-white">Top Performing Skills</h2>
           </div>
           <div className="space-y-4">
             {topSkills.map((skill, i) => (
               <div key={skill.category} className="flex items-center gap-4">
-                <span className="text-sm font-semibold text-slate-400 w-4">#{i + 1}</span>
+                <span className="text-sm font-semibold text-silver w-4">#{i + 1}</span>
                 <div className="flex-1">
                   <ProgressBar label={skill.category} value={skill.score} size="sm" animated />
                 </div>
@@ -214,12 +214,12 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <Card padding="lg" className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100">
-            <h2 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-              <BarChart3 size={18} className="text-blue-600" />
+          <Card padding="lg" className="bg-linear-to-br from-brand/10 to-brand/5 border-brand/20">
+            <h2 className="font-semibold text-white mb-3 flex items-center gap-2">
+              <BarChart3 size={18} className="text-brand" />
               Overall Assessment Summary
             </h2>
-            <p className="text-slate-700 leading-relaxed text-sm sm:text-base">
+            <p className="text-warm leading-relaxed text-sm sm:text-base">
               {dashboard.overallSummary}
             </p>
           </Card>

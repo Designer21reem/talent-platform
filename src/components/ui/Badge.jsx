@@ -1,15 +1,16 @@
 import { cn } from '@/lib/utils';
 
 const variantStyles = {
-  blue: 'bg-blue-100 text-blue-700',
-  green: 'bg-emerald-100 text-emerald-700',
-  amber: 'bg-amber-100 text-amber-700',
-  red: 'bg-red-100 text-red-700',
-  slate: 'bg-slate-100 text-slate-600',
-  purple: 'bg-purple-100 text-purple-700',
+  brand:  'bg-brand/15 text-brand border border-brand/20',
+  green:  'bg-emerald-400/15 text-emerald-400',
+  amber:  'bg-amber-400/15 text-amber-400',
+  red:    'bg-red-400/15 text-red-400',
+  slate:  'bg-surface-2 text-silver',
+  blue:   'bg-brand/15 text-brand border border-brand/20',
+  purple: 'bg-brand/15 text-brand border border-brand/20',
 };
 
-export function Badge({ variant = 'blue', className, children, ...props }) {
+export function Badge({ variant = 'brand', className, children, ...props }) {
   return (
     <span
       className={cn(

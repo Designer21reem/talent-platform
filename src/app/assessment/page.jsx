@@ -132,11 +132,11 @@ export default function AssessmentPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-10"
           >
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-600 mb-4">
-              <ClipboardCheck size={26} className="text-white" />
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-4">
+              <ClipboardCheck size={26} className="text-dark" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-2">Skill Assessment</h1>
-            <p className="text-slate-500 text-lg">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Skill Assessment</h1>
+            <p className="text-silver text-lg">
               This optional assessment evaluates your key professional skills.
             </p>
           </motion.div>
@@ -145,7 +145,7 @@ export default function AssessmentPage() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sm:p-8"
+            className="bg-surface rounded-2xl border border-surface-2 shadow-sm p-6 sm:p-8"
           >
             {cvPhone ? (
               <div className="flex items-center gap-3 mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
@@ -175,7 +175,7 @@ export default function AssessmentPage() {
               </div>
             )}
 
-            <div className="flex items-center justify-between text-sm text-slate-500 mb-6">
+            <div className="flex items-center justify-between text-sm text-silver mb-6">
               <span>{ASSESSMENT_QUESTIONS.length} questions</span>
               <span>~10 minutes</span>
             </div>
@@ -204,13 +204,13 @@ export default function AssessmentPage() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 300, delay: 0.1 }}
-              className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-6"
+              className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-6"
             >
               <CheckCircle2 size={36} className="text-emerald-500" />
             </motion.div>
 
-            <h2 className="text-3xl font-bold text-slate-900 mb-3">Assessment Submitted!</h2>
-            <p className="text-slate-500 text-lg mb-8">
+            <h2 className="text-3xl font-bold text-white mb-3">Assessment Submitted!</h2>
+            <p className="text-silver text-lg mb-8">
               Thank you{candidateName ? `, ${candidateName.split(' ')[0]}` : ''}! Your responses have been
               saved. Head to your dashboard to see your personalised skills report.
             </p>
@@ -246,7 +246,7 @@ export default function AssessmentPage() {
       <Container maxWidth="md">
         {/* Progress header */}
         <div className="mb-8">
-          <div className="flex justify-between text-sm text-slate-500 mb-2">
+          <div className="flex justify-between text-sm text-silver mb-2">
             <span>Question {currentQ + 1} of {ASSESSMENT_QUESTIONS.length}</span>
             <span>{Math.round(progress)}% complete</span>
           </div>
@@ -315,7 +315,7 @@ export default function AssessmentPage() {
                 disabled={!canNavigate}
                 className={`h-2 rounded-full transition-all ${
                   i === currentQ
-                    ? 'bg-blue-600 w-4'
+                    ? 'bg-brand w-4'
                     : isAnswered
                     ? 'bg-emerald-400 w-2 cursor-pointer'
                     : 'bg-slate-200 w-2 cursor-not-allowed opacity-50'

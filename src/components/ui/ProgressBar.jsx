@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 const colorStyles = {
-  blue: 'bg-blue-500',
+  brand: 'bg-brand',
   green: 'bg-emerald-500',
   amber: 'bg-amber-500',
   red: 'bg-red-500',
@@ -20,7 +20,7 @@ const sizeStyles = {
 function getColor(value) {
   if (value < 40) return 'red';
   if (value < 65) return 'amber';
-  if (value < 80) return 'blue';
+  if (value < 80) return 'brand';
   return 'green';
 }
 
@@ -41,13 +41,13 @@ export function ProgressBar({
     <div className={cn('w-full', className)}>
       {(label || showValue) && (
         <div className="flex justify-between items-center mb-1.5">
-          {label && <span className="text-sm font-medium text-slate-700">{label}</span>}
+          {label && <span className="text-sm font-medium text-warm">{label}</span>}
           {showValue && (
-            <span className="text-sm font-semibold text-slate-900">{Math.round(percentage)}%</span>
+            <span className="text-sm font-semibold text-white">{Math.round(percentage)}%</span>
           )}
         </div>
       )}
-      <div className={cn('w-full bg-slate-100 rounded-full overflow-hidden', sizeStyles[size])}>
+      <div className={cn('w-full bg-surface-2 rounded-full overflow-hidden', sizeStyles[size])}>
         {animated ? (
           <motion.div
             initial={{ width: 0 }}

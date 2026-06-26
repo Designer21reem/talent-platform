@@ -71,11 +71,11 @@ export default function UploadCVPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-600 mb-5">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-5">
             <Upload size={26} className="text-white" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3">Upload Your CV</h1>
-          <p className="text-slate-500 text-lg max-w-lg mx-auto">
+          <h1 className="text-3xl sm:text-4xl font-bold text-warm-light mb-3">Upload Your CV</h1>
+          <p className="text-silver text-lg max-w-lg mx-auto">
             Upload your CV in PDF format and we'll extract your information automatically.
           </p>
         </motion.div>
@@ -97,9 +97,9 @@ export default function UploadCVPage() {
               exit={{ opacity: 0 }}
               className="flex flex-col items-center gap-4 py-20"
             >
-              <div className="w-14 h-14 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-              <p className="text-slate-700 font-medium">Reading your CV…</p>
-              <p className="text-slate-400 text-sm">Extracting your information</p>
+              <div className="w-14 h-14 border-4 border-brand border-t-transparent rounded-full animate-spin" />
+              <p className="text-warm font-medium">Reading your CV…</p>
+              <p className="text-silver text-sm">Extracting your information</p>
             </motion.div>
           )}
 
@@ -186,10 +186,10 @@ export default function UploadCVPage() {
           >
             {TIPS.map(({ icon: Icon, text }) => (
               <Card key={text} padding="md" className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-                  <Icon size={16} className="text-blue-600" />
+                <div className="w-9 h-9 rounded-lg bg-brand/10 flex items-center justify-center shrink-0">
+                  <Icon size={16} className="text-brand" />
                 </div>
-                <p className="text-sm text-slate-600 leading-relaxed">{text}</p>
+                <p className="text-sm text-silver leading-relaxed">{text}</p>
               </Card>
             ))}
           </motion.div>

@@ -40,8 +40,8 @@ export function WorkExperienceStep({ data, onChange }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-slate-900">Work Experience</h2>
-      <p className="text-sm text-slate-500">List your professional experience, most recent first.</p>
+      <h2 className="text-xl font-semibold text-warm-light">Work Experience</h2>
+      <p className="text-sm text-silver">List your professional experience, most recent first.</p>
 
       <AnimatePresence initial={false}>
         {data.map((entry, i) => (
@@ -54,13 +54,13 @@ export function WorkExperienceStep({ data, onChange }) {
           >
             <Card padding="md">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
-                  <Briefcase size={16} className="text-violet-500" />
+                <div className="flex items-center gap-2 text-sm font-medium text-silver">
+                  <Briefcase size={16} className="text-brand" />
                   Position {i + 1}
                 </div>
                 <button
                   onClick={() => removeEntry(entry.id)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  className="p-1.5 rounded-lg text-silver hover:text-red-500 hover:bg-red-500/10 transition-colors"
                 >
                   <Trash2 size={15} />
                 </button>
@@ -95,12 +95,12 @@ export function WorkExperienceStep({ data, onChange }) {
                 )}
               </div>
 
-              <label className="flex items-center gap-2 mt-3 cursor-pointer text-sm text-slate-600">
+              <label className="flex items-center gap-2 mt-3 cursor-pointer text-sm text-silver">
                 <input
                   type="checkbox"
                   checked={entry.current}
                   onChange={(e) => updateEntry(entry.id, 'current', e.target.checked)}
-                  className="w-4 h-4 rounded accent-blue-600"
+                  className="w-4 h-4 rounded accent-brand"
                 />
                 I currently work here
               </label>
@@ -121,7 +121,7 @@ export function WorkExperienceStep({ data, onChange }) {
       </AnimatePresence>
 
       {data.length === 0 && (
-        <div className="text-center py-8 text-slate-400 text-sm border-2 border-dashed border-slate-200 rounded-xl">
+        <div className="text-center py-8 text-silver text-sm border-2 border-dashed border-surface-2 rounded-xl">
           No experience added yet.
         </div>
       )}

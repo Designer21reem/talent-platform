@@ -107,12 +107,12 @@ export function FileUploader({ onFile }) {
           'relative border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-200',
           'cursor-pointer select-none',
           dragging
-            ? 'border-blue-500 bg-blue-50 scale-[1.01]'
+            ? 'border-brand bg-brand/10 scale-[1.01]'
             : status === 'error'
-            ? 'border-red-300 bg-red-50'
+            ? 'border-red-500 bg-red-500/10'
             : status === 'success'
-            ? 'border-emerald-400 bg-emerald-50 cursor-default'
-            : 'border-slate-200 bg-white hover:border-blue-400 hover:bg-blue-50/50'
+            ? 'border-emerald-400 bg-emerald-400/10 cursor-default'
+            : 'border-surface-2 bg-surface-2 hover:border-brand hover:bg-brand/5'
         )}
       >
         <input
@@ -133,15 +133,15 @@ export function FileUploader({ onFile }) {
               exit={{ opacity: 0, y: -8 }}
               className="flex flex-col items-center gap-4"
             >
-              <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center">
-                <UploadCloud size={30} className="text-blue-500" />
+              <div className="w-16 h-16 rounded-2xl bg-brand/20 flex items-center justify-center">
+                <UploadCloud size={30} className="text-brand" />
               </div>
               <div>
-                <p className="font-semibold text-slate-800 text-lg">
+                <p className="font-semibold text-white text-lg">
                   Drop your CV here or{' '}
-                  <span className="text-blue-600 underline underline-offset-2">browse</span>
+                  <span className="text-brand underline underline-offset-2">browse</span>
                 </p>
-                <p className="text-slate-400 text-sm mt-1">PDF and DOCX supported · Max 10 MB</p>
+                <p className="text-silver text-sm mt-1">PDF and DOCX supported · Max 10 MB</p>
               </div>
             </motion.div>
           )}
@@ -155,14 +155,14 @@ export function FileUploader({ onFile }) {
               exit={{ opacity: 0, y: -8 }}
               className="flex flex-col items-center gap-4"
             >
-              <div className="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center">
-                <FileText size={26} className="text-blue-500" />
+              <div className="w-14 h-14 rounded-xl bg-brand/20 flex items-center justify-center">
+                <FileText size={26} className="text-brand" />
               </div>
-              <p className="font-medium text-slate-700 text-sm truncate max-w-xs">{fileName}</p>
+              <p className="font-medium text-warm text-sm truncate max-w-xs">{fileName}</p>
               <div className="w-full max-w-sm">
                 <ProgressBar value={progress} showValue size="md" />
               </div>
-              <p className="text-xs text-slate-400">Uploading…</p>
+              <p className="text-xs text-silver">Uploading…</p>
             </motion.div>
           )}
 
@@ -185,7 +185,7 @@ export function FileUploader({ onFile }) {
               </motion.div>
               <div>
                 <p className="font-semibold text-emerald-700 text-lg">Upload successful!</p>
-                <p className="text-slate-500 text-sm mt-0.5 truncate max-w-xs">{fileName}</p>
+                <p className="text-silver text-sm mt-0.5 truncate max-w-xs">{fileName}</p>
               </div>
               <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); reset(); }}>
                 Upload a different file
@@ -220,7 +220,7 @@ export function FileUploader({ onFile }) {
         {status === 'uploading' && (
           <button
             onClick={(e) => { e.stopPropagation(); reset(); }}
-            className="absolute top-3 right-3 p-1 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="absolute top-3 right-3 p-1 rounded-full text-silver hover:text-warm hover:bg-surface transition-colors"
           >
             <X size={16} />
           </button>
@@ -228,7 +228,7 @@ export function FileUploader({ onFile }) {
       </div>
 
       {/* Accepted formats note */}
-      <p className="text-center text-xs text-slate-400 mt-3">
+      <p className="text-center text-xs text-silver mt-3">
         Accepted formats: PDF, DOCX &nbsp;·&nbsp; Maximum file size: 10 MB
       </p>
     </div>

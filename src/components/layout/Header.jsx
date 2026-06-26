@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { BriefcaseBusiness, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Container } from './Container';
 import { Button } from '@/components/ui/Button';
@@ -15,6 +15,7 @@ const NAV_LINKS = [
   { href: '/build-cv', label: 'Build CV' },
   { href: '/assessment', label: 'Assessment' },
   { href: '/dashboard', label: 'Dashboard' },
+  { href: '/about', label: 'About' },
 ];
 
 export function Header() {
@@ -22,15 +23,13 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
+    <header className="sticky top-0 z-50 bg-dark/95 backdrop-blur-md border-b border-brand/20 shadow-sm">
       <Container>
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm group-hover:bg-blue-700 transition-colors">
-              <BriefcaseBusiness size={18} className="text-white" />
-            </div>
-            <span className="font-bold text-slate-900 text-lg tracking-tight">TalentHub</span>
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <img src="/Logo (1).png" alt="THE VALUE" className="h-8 w-auto object-contain" />
+            <span className="font-bold text-white text-lg tracking-tight">THE VALUE</span>
           </Link>
 
           {/* Desktop Nav */}
@@ -44,8 +43,8 @@ export function Header() {
                   className={cn(
                     'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                     isActive
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      ? 'bg-brand/15 text-brand'
+                      : 'text-warm hover:bg-surface-2 hover:text-white'
                   )}
                 >
                   {link.label}
@@ -57,13 +56,15 @@ export function Header() {
           {/* CTA */}
           <div className="hidden md:block">
             <Link href="/build-cv">
-              <Button size="sm">Get Started</Button>
+              <Button size="sm" className="bg-brand hover:bg-brand-light text-dark font-semibold border-0">
+                Get Started
+              </Button>
             </Link>
           </div>
 
           {/* Mobile toggle */}
           <button
-            className="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100"
+            className="md:hidden p-2 rounded-lg text-warm hover:bg-surface-2"
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Toggle menu"
           >
@@ -78,7 +79,7 @@ export function Header() {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
-          className="md:hidden border-t border-slate-100 bg-white"
+          className="md:hidden border-t border-brand/20 bg-dark"
         >
           <Container>
             <nav className="py-3 flex flex-col gap-1">
@@ -92,8 +93,8 @@ export function Header() {
                     className={cn(
                       'px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                       isActive
-                        ? 'bg-blue-50 text-blue-600'
-                        : 'text-slate-600 hover:bg-slate-50'
+                        ? 'bg-brand/15 text-brand'
+                        : 'text-warm hover:bg-surface-2 hover:text-white'
                     )}
                   >
                     {link.label}

@@ -17,8 +17,8 @@ const PROFICIENCY_OPTIONS = [
 
 const PROFICIENCY_BADGE = {
   Basic: 'slate',
-  Conversational: 'blue',
-  Fluent: 'purple',
+  Conversational: 'brand',
+  Fluent: 'brand',
   Native: 'green',
 };
 
@@ -43,8 +43,8 @@ export function LanguagesStep({ data, onChange }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-slate-900">Languages</h2>
-      <p className="text-sm text-slate-500">List languages you speak and your proficiency level.</p>
+      <h2 className="text-xl font-semibold text-warm-light">Languages</h2>
+      <p className="text-sm text-silver">List languages you speak and your proficiency level.</p>
 
       <div className="flex gap-3 items-end">
         <div className="flex-1">
@@ -77,20 +77,20 @@ export function LanguagesStep({ data, onChange }) {
               initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.85 }}
-              className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-3 py-1.5 text-sm"
+              className="flex items-center gap-1.5 bg-surface-2 border border-brand/20 rounded-full px-3 py-1.5 text-sm"
             >
-              <span className="font-medium text-slate-700">{lang.name}</span>
+              <span className="font-medium text-warm">{lang.name}</span>
               <Badge variant={PROFICIENCY_BADGE[lang.proficiency]}>{lang.proficiency}</Badge>
               <button
                 onClick={() => removeLanguage(lang.id)}
-                className="ml-1 text-slate-400 hover:text-red-500 transition-colors"
+                className="ml-1 text-silver hover:text-red-500 transition-colors"
               >
                 <X size={12} />
               </button>
             </motion.div>
           ))}
         </AnimatePresence>
-        {data.length === 0 && <p className="text-slate-400 text-sm self-center">No languages added yet.</p>}
+        {data.length === 0 && <p className="text-silver text-sm self-center">No languages added yet.</p>}
       </div>
     </div>
   );

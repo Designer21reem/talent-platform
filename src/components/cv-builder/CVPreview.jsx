@@ -11,7 +11,7 @@ function Section({ title, icon: Icon, children }) {
   return (
     <section className="mb-6">
       <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-200">
-        <Icon size={16} className="text-blue-600" />
+        <Icon size={16} className="text-brand" />
         <h3 className="font-semibold text-slate-800 text-sm uppercase tracking-wide">{title}</h3>
       </div>
       {children}
@@ -31,9 +31,9 @@ export function CVPreview({ data }) {
       className="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden"
     >
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white p-8">
+      <div className="bg-linear-to-r from-dark to-surface-2 text-white p-8">
         <h1 className="text-3xl font-bold mb-1">{personalInfo.fullName || 'Your Name'}</h1>
-        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-blue-100 text-sm">
+        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-brand/80 text-sm">
           {personalInfo.email && (
             <span className="flex items-center gap-1.5">
               <Mail size={13} /> {personalInfo.email}
@@ -107,10 +107,10 @@ export function CVPreview({ data }) {
               {skills.map((s) => (
                 <span
                   key={s.id}
-                  className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-sm font-medium border border-blue-100"
+                  className="px-3 py-1 rounded-full bg-brand/10 text-brand text-sm font-medium border border-brand/20"
                 >
                   {s.name}
-                  <span className="ml-1.5 text-blue-400 text-xs">· {s.level}</span>
+                  <span className="ml-1.5 text-brand/70 text-xs">· {s.level}</span>
                 </span>
               ))}
             </div>
@@ -122,9 +122,12 @@ export function CVPreview({ data }) {
           <Section title="Languages" icon={Languages}>
             <div className="flex flex-wrap gap-2">
               {languages.map((l) => (
-                <Badge key={l.id} variant="slate">
+                <span
+                  key={l.id}
+                  className="px-3 py-1 rounded-full bg-brand/10 text-brand text-xs font-medium border border-brand/20"
+                >
                   {l.name} · {l.proficiency}
-                </Badge>
+                </span>
               ))}
             </div>
           </Section>
@@ -160,7 +163,7 @@ export function CVPreview({ data }) {
                         href={p.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-500 hover:text-blue-700 shrink-0"
+                        className="text-brand hover:text-brand shrink-0"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <ExternalLink size={13} />

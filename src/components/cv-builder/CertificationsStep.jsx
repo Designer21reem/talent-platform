@@ -31,8 +31,8 @@ export function CertificationsStep({ data, onChange }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-slate-900">Certifications</h2>
-      <p className="text-sm text-slate-500">Add any relevant certifications or licences you hold.</p>
+      <h2 className="text-xl font-semibold text-warm-light">Certifications</h2>
+      <p className="text-sm text-silver">Add any relevant certifications or licences you hold.</p>
 
       <AnimatePresence initial={false}>
         {data.map((entry, i) => (
@@ -45,13 +45,13 @@ export function CertificationsStep({ data, onChange }) {
           >
             <Card padding="md">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
+                <div className="flex items-center gap-2 text-sm font-medium text-silver">
                   <Award size={16} className="text-amber-500" />
                   Certification {i + 1}
                 </div>
                 <button
                   onClick={() => removeEntry(entry.id)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  className="p-1.5 rounded-lg text-silver hover:text-red-500 hover:bg-red-500/10 transition-colors"
                 >
                   <Trash2 size={15} />
                 </button>
@@ -87,7 +87,7 @@ export function CertificationsStep({ data, onChange }) {
       </AnimatePresence>
 
       {data.length === 0 && (
-        <div className="text-center py-8 text-slate-400 text-sm border-2 border-dashed border-slate-200 rounded-xl">
+        <div className="text-center py-8 text-silver text-sm border-2 border-dashed border-surface-2 rounded-xl">
           No certifications added yet.
         </div>
       )}

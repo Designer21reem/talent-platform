@@ -10,7 +10,7 @@ const Textarea = forwardRef(({ label, error, hint, showCount, maxLength, classNa
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={textareaId} className="text-sm font-medium text-slate-700">
+        <label htmlFor={textareaId} className="tv-label">
           {label}
           {props.required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -21,20 +21,17 @@ const Textarea = forwardRef(({ label, error, hint, showCount, maxLength, classNa
         value={value}
         maxLength={maxLength}
         className={cn(
-          'w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900',
-          'placeholder:text-slate-400 transition-all duration-150 resize-y min-h-[100px]',
-          'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-          'disabled:bg-slate-50 disabled:cursor-not-allowed',
-          error && 'border-red-400 focus:ring-red-400',
+          'tv-field w-full rounded-lg border px-4 py-3 text-sm transition-all duration-150 resize-y min-h-[100px]',
+          error && 'tv-field-error',
           className
         )}
         {...props}
       />
       <div className="flex justify-between items-center">
         <span>{error && <p className="text-xs text-red-500">{error}</p>}</span>
-        <span>{hint && !error && <p className="text-xs text-slate-400">{hint}</p>}</span>
+        <span>{hint && !error && <p className="text-xs text-subtle">{hint}</p>}</span>
         {showCount && maxLength && (
-          <span className="text-xs text-slate-400 ml-auto">
+          <span className="text-xs text-subtle ml-auto">
             {charCount}/{maxLength}
           </span>
         )}
