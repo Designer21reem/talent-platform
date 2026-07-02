@@ -95,23 +95,18 @@ export function PersonalInfoStep({ data, onChange }) {
           value={countryIdx}
           onChange={handleCountryChange}
         />
-        <div className="flex gap-2 items-end">
-          <div className="w-20 shrink-0">
-            <Input label={t('Code')} value={country.dial} readOnly disabled dir="ltr" />
-          </div>
-          <div className="flex-1">
-            <Input
-              label={t('Phone Number')}
-              type="tel"
-              dir="ltr"
-              placeholder={t('770 123 4567')}
-              value={phoneDigits}
-              onChange={handlePhoneChange}
-              required
-              hint={t('Required to start the assessment later')}
-            />
-          </div>
-        </div>
+        <Input
+          label={t('Phone Number')}
+          type="tel"
+          dir="ltr"
+          placeholder={t('770 123 4567')}
+          value={phoneDigits}
+          onChange={handlePhoneChange}
+          required
+          hint={t('Required to start the assessment later')}
+          leftElement={<span dir="ltr" className="text-warm text-sm font-medium">{country.dial}</span>}
+          className="pl-16"
+        />
         <Select
           label={t('Location')}
           options={country.cities.map((city, i) => ({ value: i, label: t(city) }))}

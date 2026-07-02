@@ -140,14 +140,14 @@ function StatBubble({ label, value, icon: Icon, delay }) {
   const { t } = useLanguage();
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12, scale: 0.9 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
       transition={{ delay, duration: 0.5 }}
     >
       <motion.div
         animate={{ y: [0, -5, 0] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay }}
-        className="flex items-center gap-2.5 rounded-full bg-brand/15 border border-brand px-4 py-2"
+        className="flex items-center gap-2.5 rounded-full bg-brand/15 border border-brand px-4 py-2 whitespace-nowrap"
         style={{ boxShadow: '0 0 6px rgba(201,155,37,0.35)' }}
       >
         <motion.div
@@ -163,6 +163,46 @@ function StatBubble({ label, value, icon: Icon, delay }) {
         </div>
       </motion.div>
     </motion.div>
+  );
+}
+
+// Corner slots the stat bubbles occupy — kept clear of the centered hero
+// copy (heading, tagline, buttons) and the full-width testimonial row
+// so they never sit on top of other content.
+const STAT_SLOTS = [
+  { top: '9%', left: '8%' },
+  { top: '9%', left: '92%' },
+  { top: '50%', left: '11%' },
+];
+const STAT_ROTATE_MS = 30_000;
+
+function StatBubbleField() {
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setOffset((o) => (o + 1) % STAT_SLOTS.length);
+    }, STAT_ROTATE_MS);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="absolute inset-0 z-20 hidden xl:block pointer-events-none">
+      {STATS.map((stat, i) => {
+        const slot = STAT_SLOTS[(i + offset) % STAT_SLOTS.length];
+        return (
+          <motion.div
+            key={stat.label}
+            className="absolute pointer-events-auto"
+            style={{ transform: 'translate(-50%, -50%)' }}
+            animate={{ top: slot.top, left: slot.left }}
+            transition={{ duration: 1.4, ease: 'easeInOut' }}
+          >
+            <StatBubble {...stat} delay={i * 0.15} />
+          </motion.div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -183,26 +223,23 @@ export default function LandingPage() {
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-brand/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-brand-dark/30 rounded-full blur-3xl pointer-events-none" />
 
-        {stage >= 3 && (
-          <div className="absolute top-6 inset-x-0 flex flex-wrap items-center justify-center gap-3 z-20 px-4">
-            {STATS.map((stat, i) => (
-              <StatBubble key={stat.label} {...stat} delay={i * 0.15} />
-            ))}
-          </div>
-        )}
+        {stage >= 3 && <StatBubbleField />}
 
         <Container maxWidth="lg">
           <div className="text-center relative z-10">
-            <motion.h1
+            <motion.div
               initial={{ opacity: 0, scale: 0.3, y: 0 }}
               animate={{ opacity: [0, 1, 1], scale: [0.3, 1.35, 1], y: [0, 0, -6] }}
               transition={{ duration: 1.5, times: [0, 0.55, 1], ease: 'easeOut' }}
-              className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-wide mb-6"
+              className="relative inline-block mb-6"
             >
-              <span className="text-brand">THE VALUE</span>
-              <br />
-              <span className="text-white text-3xl sm:text-4xl lg:text-5xl tracking-[0.2em]">{t('GOT TALENT')}</span>
-            </motion.h1>
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-wide text-brand">
+                THE VALUE
+              </h1>
+              <span className="absolute inset-0 flex items-center justify-center translate-y-0.75 text-white/95 text-[9px] sm:text-[11px] lg:text-xs font-semibold tracking-[0.35em] pointer-events-none">
+                GOT TALENT
+              </span>
+            </motion.div>
 
             <TypewriterText
               text={t(TAGLINE)}
