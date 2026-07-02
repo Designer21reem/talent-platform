@@ -236,14 +236,14 @@ export default function LandingPage() {
               initial={{ opacity: 0, scale: 0.3, y: 0 }}
               animate={{ opacity: [0, 1, 1], scale: [0.3, 1.35, 1], y: [0, 0, -6] }}
               transition={{ duration: 1.5, times: [0, 0.55, 1], ease: 'easeOut' }}
-              className="relative inline-block mb-6"
+              className="inline-flex flex-col items-center mb-6"
             >
+              <span className="mb-3 inline-flex items-center px-3 py-1 rounded-full border border-brand/40 bg-brand/10 text-white/90 text-[10px] sm:text-xs font-semibold tracking-[0.3em]">
+                GOT TALENT
+              </span>
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-wide text-brand">
                 THE VALUE
               </h1>
-              <span className="absolute inset-x-0 bottom-0 flex items-center justify-center translate-y-1/3 text-white/95 text-[9px] sm:text-[11px] lg:text-xs font-semibold tracking-[0.35em] pointer-events-none">
-                GOT TALENT
-              </span>
             </motion.div>
 
             <TypewriterText
