@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/upload-cv', label: 'Upload CV' },
-  { href: '/build-cv', label: 'Build CV' },
+  { href: '/build-cv', label: 'CV Builder' },
   { href: '/assessment', label: 'Assessment' },
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/about', label: 'About' },

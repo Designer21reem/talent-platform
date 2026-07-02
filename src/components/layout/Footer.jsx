@@ -14,7 +14,7 @@ export function Footer() {
           <nav className="flex flex-wrap justify-center gap-4 text-sm">
             <Link href="/" className="hover:text-brand transition-colors">Home</Link>
             <Link href="/upload-cv" className="hover:text-brand transition-colors">Upload CV</Link>
-            <Link href="/build-cv" className="hover:text-brand transition-colors">Build CV</Link>
+            <Link href="/build-cv" className="hover:text-brand transition-colors">CV Builder</Link>
             <Link href="/assessment" className="hover:text-brand transition-colors">Assessment</Link>
             <Link href="/dashboard" className="hover:text-brand transition-colors">Dashboard</Link>
             <Link href="/about" className="hover:text-brand transition-colors">About</Link>

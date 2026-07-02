@@ -18,12 +18,9 @@ import { saveCV } from '@/lib/storage';
 
 const STEPS = [
   { id: 1, label: 'Personal' },
-  { id: 2, label: 'Education' },
-  { id: 3, label: 'Experience' },
-  { id: 4, label: 'Skills' },
-  { id: 5, label: 'Languages' },
-  { id: 6, label: 'Certifications' },
-  { id: 7, label: 'Projects' },
+  { id: 2, label: 'Education & Certifications' },
+  { id: 3, label: 'Experience & Projects' },
+  { id: 4, label: 'Skills & Languages' },
 ];
 
 const EMPTY_CV = {
@@ -209,7 +206,7 @@ export default function BuildCVPage() {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-4">
             <FileEdit size={26} className="text-white" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Build Your CV</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">CV Builder</h1>
           <p className="text-silver text-lg">Fill in each section and we'll generate a professional CV.</p>
         </motion.div>
 
@@ -234,22 +231,28 @@ export default function BuildCVPage() {
                     <PersonalInfoStep data={cv.personalInfo} onChange={updatePersonalInfo} />
                   )}
                   {currentStep === 2 && (
-                    <EducationStep data={cv.education} onChange={(d) => setCv((p) => ({ ...p, education: d }))} />
+                    <div className="space-y-8">
+                      <EducationStep data={cv.education} onChange={(d) => setCv((p) => ({ ...p, education: d }))} />
+                      <div className="border-t border-surface-2 pt-8">
+                        <CertificationsStep data={cv.certifications} onChange={(d) => setCv((p) => ({ ...p, certifications: d }))} />
+                      </div>
+                    </div>
                   )}
                   {currentStep === 3 && (
-                    <WorkExperienceStep data={cv.workExperience} onChange={(d) => setCv((p) => ({ ...p, workExperience: d }))} />
+                    <div className="space-y-8">
+                      <WorkExperienceStep data={cv.workExperience} onChange={(d) => setCv((p) => ({ ...p, workExperience: d }))} />
+                      <div className="border-t border-surface-2 pt-8">
+                        <ProjectsStep data={cv.projects} onChange={(d) => setCv((p) => ({ ...p, projects: d }))} />
+                      </div>
+                    </div>
                   )}
                   {currentStep === 4 && (
-                    <SkillsStep data={cv.skills} onChange={(d) => setCv((p) => ({ ...p, skills: d }))} />
-                  )}
-                  {currentStep === 5 && (
-                    <LanguagesStep data={cv.languages} onChange={(d) => setCv((p) => ({ ...p, languages: d }))} />
-                  )}
-                  {currentStep === 6 && (
-                    <CertificationsStep data={cv.certifications} onChange={(d) => setCv((p) => ({ ...p, certifications: d }))} />
-                  )}
-                  {currentStep === 7 && (
-                    <ProjectsStep data={cv.projects} onChange={(d) => setCv((p) => ({ ...p, projects: d }))} />
+                    <div className="space-y-8">
+                      <SkillsStep data={cv.skills} onChange={(d) => setCv((p) => ({ ...p, skills: d }))} />
+                      <div className="border-t border-surface-2 pt-8">
+                        <LanguagesStep data={cv.languages} onChange={(d) => setCv((p) => ({ ...p, languages: d }))} />
+                      </div>
+                    </div>
                   )}
                 </motion.div>
               </AnimatePresence>

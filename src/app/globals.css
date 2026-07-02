@@ -46,7 +46,7 @@
   --tv-field-ring:         rgba(201,155,37,0.28);/* focus glow ring */
 
   /* ── Step Indicator ───────────────────────────────────────────────────
-     Progress bar steps on the Build CV page
+     Progress bar steps on the CV Builder page
   ── */
   --tv-step-inactive-bg:   #252525;   /* background of inactive step circle */
   --tv-step-inactive-text: #888888;   /* number color of inactive step */

@@ -29,7 +29,7 @@ const FEATURES = [
   },
   {
     icon: FileEdit,
-    title: 'Build a CV',
+    title: 'CV Builder',
     description:
       'Create a polished, structured CV from scratch using our guided form. Add experience, skills, projects, and more.',
     color: 'bg-brand-dark',
@@ -113,7 +113,7 @@ export default function LandingPage() {
                   className="border-brand/40 text-brand hover:bg-brand/10 w-full sm:w-auto"
                   leftIcon={<FileEdit size={18} />}
                 >
-                  Build CV
+                  CV Builder
                 </Button>
               </Link>
               <Link href="/assessment">
@@ -224,7 +224,7 @@ export default function LandingPage() {
             >
               {[
                 { label: 'Upload CV', emoji: '📄', href: '/upload-cv' },
-                { label: 'Build CV', emoji: '✏️', href: '/build-cv' },
+                { label: 'CV Builder', emoji: '✏️', href: '/build-cv' },
                 { label: 'Assessment', emoji: '📋', href: '/assessment' },
                 { label: 'Dashboard', emoji: '📊', href: '/dashboard' },
               ].map(({ label, emoji, href }) => (
@@ -267,7 +267,7 @@ export default function LandingPage() {
                   className="bg-brand hover:bg-brand-light text-dark font-semibold border-0 w-full sm:w-auto"
                   rightIcon={<ArrowRight size={18} />}
                 >
-                  Build My CV
+                  Open CV Builder
                 </Button>
               </Link>
               <Link href="/assessment">
