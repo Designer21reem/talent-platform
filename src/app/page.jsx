@@ -174,9 +174,9 @@ function StatBubble({ label, value, icon: Icon, delay, tilt = 0 }) {
 // three stats means one slot always sits empty, so the swap every 30s
 // reads as a real shuffle instead of a fixed 3-way loop.
 const STAT_SLOTS = [
-  { top: '20%', left: '15%' },
+  { top: '20%', left: '21%' },
   { top: '28%', left: '82%' },
-  { top: '52%', left: '8%' },
+  { top: '52%', left: '16%' },
   { top: '58%', left: '89%' },
 ];
 const STAT_ROTATE_MS = 30_000;
