@@ -136,12 +136,15 @@ function TestimonialCarousel() {
   );
 }
 
-function StatBubble({ label, value, icon: Icon, delay }) {
+// Small fixed tilt per stat — a hand-scattered feel, kept subtle.
+const STAT_TILTS = [-4, 5, -3];
+
+function StatBubble({ label, value, icon: Icon, delay, tilt = 0 }) {
   const { t } = useLanguage();
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, scale: 0.9, rotate: tilt }}
+      animate={{ opacity: 1, scale: 1, rotate: tilt }}
       transition={{ delay, duration: 0.5 }}
     >
       <motion.div
@@ -166,13 +169,15 @@ function StatBubble({ label, value, icon: Icon, delay }) {
   );
 }
 
-// Corner slots the stat bubbles occupy — kept clear of the centered hero
-// copy (heading, tagline, buttons) and the full-width testimonial row
-// so they never sit on top of other content.
+// Slots the stat bubbles occupy, flanking the headline close in on each
+// side — kept clear of the heading, tagline, and buttons. Four slots for
+// three stats means one slot always sits empty, so the swap every 30s
+// reads as a real shuffle instead of a fixed 3-way loop.
 const STAT_SLOTS = [
-  { top: '9%', left: '8%' },
-  { top: '9%', left: '92%' },
-  { top: '50%', left: '11%' },
+  { top: '20%', left: '15%' },
+  { top: '28%', left: '82%' },
+  { top: '52%', left: '8%' },
+  { top: '58%', left: '89%' },
 ];
 const STAT_ROTATE_MS = 30_000;
 
@@ -198,7 +203,7 @@ function StatBubbleField() {
             animate={{ top: slot.top, left: slot.left }}
             transition={{ duration: 1.4, ease: 'easeInOut' }}
           >
-            <StatBubble {...stat} delay={i * 0.15} />
+            <StatBubble {...stat} delay={i * 0.15} tilt={STAT_TILTS[i]} />
           </motion.div>
         );
       })}
@@ -236,7 +241,7 @@ export default function LandingPage() {
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-wide text-brand">
                 THE VALUE
               </h1>
-              <span className="absolute inset-0 flex items-center justify-center translate-y-0.75 text-white/95 text-[9px] sm:text-[11px] lg:text-xs font-semibold tracking-[0.35em] pointer-events-none">
+              <span className="absolute inset-x-0 bottom-0 flex items-center justify-center translate-y-1/3 text-white/95 text-[9px] sm:text-[11px] lg:text-xs font-semibold tracking-[0.35em] pointer-events-none">
                 GOT TALENT
               </span>
             </motion.div>
