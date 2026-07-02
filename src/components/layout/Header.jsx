@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Container } from './Container';
-import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 
 const NAV_LINKS = [
@@ -52,15 +51,6 @@ export function Header() {
               );
             })}
           </nav>
-
-          {/* CTA */}
-          <div className="hidden md:block">
-            <Link href="/build-cv">
-              <Button size="sm" className="bg-brand hover:bg-brand-light text-dark font-semibold border-0">
-                Get Started
-              </Button>
-            </Link>
-          </div>
 
           {/* Mobile toggle */}
           <button

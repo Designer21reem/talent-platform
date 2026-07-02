@@ -27,7 +27,6 @@ function Bullets({ text }) {
 export function CVPreview({ data }) {
   const { personalInfo, education, workExperience, skills, languages, certifications, projects } = data;
 
-  console.log('[CVPreview] Rendering CV preview for:', personalInfo.fullName);
 
   const skillsLine = skills.map((s) => `${s.name} (${s.level})`).join(', ');
   const languagesLine = languages.map((l) => `${l.name} (${l.proficiency})`).join(', ');

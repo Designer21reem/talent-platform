@@ -1,57 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Upload,
   FileEdit,
   ClipboardCheck,
-  BarChart3,
-  ArrowRight,
-  CheckCircle2,
   Star,
   Users,
   Zap,
+  Quote,
 } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
 import { Button } from '@/components/ui/Button';
-import { FeatureCard } from '@/components/landing/FeatureCard';
-import { Card, CardBody } from '@/components/ui/Card';
 
-const FEATURES = [
-  {
-    icon: Upload,
-    title: 'Upload Your CV',
-    description:
-      'Quickly upload your existing CV in PDF or DOCX format. We parse and store it securely so you can move on fast.',
-    color: 'bg-brand',
-    href: '/upload-cv',
-  },
-  {
-    icon: FileEdit,
-    title: 'CV Builder',
-    description:
-      'Create a polished, structured CV from scratch using our guided form. Add experience, skills, projects, and more.',
-    color: 'bg-brand-dark',
-    href: '/build-cv',
-  },
-  {
-    icon: ClipboardCheck,
-    title: 'Skill Assessment',
-    description:
-      'Take an optional assessment that evaluates your communication, problem solving, leadership, and technical skills.',
-    color: 'bg-stone-600',
-    href: '/assessment',
-  },
-  {
-    icon: BarChart3,
-    title: 'Skills Dashboard',
-    description:
-      'View a personalised breakdown of your skill scores, strengths, and areas for improvement in one clear view.',
-    color: 'bg-brand-dark',
-    href: '/dashboard',
-  },
-];
+const TAGLINE =
+  'Upload or build a professional CV, complete a skill assessment, and get a personal skills dashboard — all in one place, no sign-up required.';
 
 const STATS = [
   { label: 'Candidates placed', value: '12,400+', icon: Users },
@@ -59,16 +24,110 @@ const STATS = [
   { label: 'Assessment completion rate', value: '94%', icon: Zap },
 ];
 
-const CHECKLIST = [
-  'No account needed to get started',
-  'Fully browser-based — no data leaves your device',
-  'Professional CV preview ready to download',
-  'Instant skill score breakdown after assessment',
+const TESTIMONIALS = [
+  { name: 'Layla Hassan', role: 'Frontend Developer', quote: 'Built my CV in minutes and landed 3 interviews the same week.', score: '98% match' },
+  { name: 'Omar Al-Sabti', role: 'Data Analyst', quote: 'Uploaded my old CV and the skill report was spot on.', score: '95% match' },
+  { name: 'Farah Nasser', role: 'Product Designer', quote: 'The guided builder made my experience look so much more professional.', score: '97% match' },
+  { name: 'Yousif Kareem', role: 'Backend Engineer', quote: 'The assessment results helped me negotiate a better offer.', score: '96% match' },
+  { name: 'Dana Saleh', role: 'Marketing Specialist', quote: 'Clean CV, fast process, got noticed right away.', score: '94% match' },
+  { name: 'Ali Mahmoud', role: 'DevOps Engineer', quote: 'From upload to offer letter in two weeks flat.', score: '99% match' },
+  { name: 'Rana Fadel', role: 'UX Researcher', quote: 'Loved how simple the whole flow was, start to finish.', score: '95% match' },
 ];
 
-export default function LandingPage() {
-  console.log('[LandingPage] Rendered');
+const ROTATE_INTERVAL_MS = 90_000;
 
+function initials(name) {
+  return name.split(' ').map((p) => p[0]).join('').slice(0, 2).toUpperCase();
+}
+
+function TypewriterText({ text, className, startDelay = 0, speed = 18 }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let interval;
+    const timeout = setTimeout(() => {
+      interval = setInterval(() => {
+        setCount((c) => {
+          if (c >= text.length) {
+            clearInterval(interval);
+            return c;
+          }
+          return c + 1;
+        });
+      }, speed);
+    }, startDelay);
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, [text, startDelay, speed]);
+
+  const done = count >= text.length;
+
+  return (
+    <p className={className}>
+      {text.slice(0, count)}
+      {!done && <span className="inline-block w-0.5 h-[1em] align-middle bg-brand ml-0.5 animate-pulse" />}
+    </p>
+  );
+}
+
+function TestimonialCarousel() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setIndex((i) => (i + 1) % TESTIMONIALS.length);
+    }, ROTATE_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, []);
+
+  const slots = [-2, -1, 0, 1, 2].map((offset) => {
+    const i = ((index + offset) % TESTIMONIALS.length + TESTIMONIALS.length) % TESTIMONIALS.length;
+    return { offset, item: TESTIMONIALS[i] };
+  });
+
+  return (
+    <div className="flex items-center justify-center gap-4">
+      <AnimatePresence mode="popLayout">
+        {slots.map(({ offset, item }) => (
+          <motion.div
+            key={`${index}-${offset}`}
+            initial={{ opacity: 0, x: offset > 0 ? 24 : offset < 0 ? -24 : 0, scale: 0.9 }}
+            animate={{
+              opacity: offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.7 : 0.4,
+              x: 0,
+              scale: offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.9 : 0.78,
+            }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            className={[
+              'w-64 shrink-0 rounded-2xl border p-5 bg-surface',
+              offset === 0 ? 'border-brand/40 shadow-lg shadow-black/30 z-20' : 'border-surface-2 z-10',
+              Math.abs(offset) === 2 ? 'hidden lg:block' : '',
+              Math.abs(offset) === 1 ? 'hidden sm:block' : '',
+            ].join(' ')}
+          >
+            <Quote size={16} className="text-brand mb-2" />
+            <p className="text-sm text-warm leading-relaxed mb-4 line-clamp-3">{item.quote}</p>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-brand/15 text-brand text-xs font-semibold flex items-center justify-center shrink-0">
+                {initials(item.name)}
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-white truncate">{item.name}</p>
+                <p className="text-[11px] text-silver truncate">{item.role}</p>
+              </div>
+              <span className="ml-auto text-[10px] font-semibold text-brand shrink-0">{item.score}</span>
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+export default function LandingPage() {
   return (
     <div className="overflow-x-hidden">
       {/* ── Hero ── */}
@@ -77,26 +136,28 @@ export default function LandingPage() {
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-brand-dark/30 rounded-full blur-3xl pointer-events-none" />
 
         <Container maxWidth="lg">
-          <motion.div
-            initial={{ opacity: 0, y: 32 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center relative z-10"
-          >
-            <span className="inline-block mb-4 bg-brand/10 backdrop-blur-sm border border-brand/30 rounded-full px-4 py-1.5 text-sm font-medium text-brand">
-              Your career, elevated
-            </span>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight mb-6">
-              Showcase your talent.
-              <br />
-              <span className="text-brand">Land your next role.</span>
-            </h1>
-            <p className="max-w-2xl mx-auto text-lg sm:text-xl text-warm leading-relaxed mb-10">
-              Upload or build a professional CV, complete a skill assessment, and get a personal
-              skills dashboard — all in one place, no sign-up required.
-            </p>
+          <div className="text-center relative z-10">
+            <motion.h1
+              initial={{ opacity: 0, scale: 0.3, y: 0 }}
+              animate={{ opacity: [0, 1, 1], scale: [0.3, 1.35, 1], y: [0, 0, -6] }}
+              transition={{ duration: 1.5, times: [0, 0.55, 1], ease: 'easeOut' }}
+              className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-wide text-brand mb-6"
+            >
+              THE VALUE
+            </motion.h1>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <TypewriterText
+              text={TAGLINE}
+              startDelay={1500}
+              className="max-w-2xl mx-auto text-lg sm:text-xl text-warm leading-relaxed mb-10 min-h-[3.5em] sm:min-h-[2.5em]"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.8, duration: 0.6 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+            >
               <Link href="/upload-cv">
                 <Button
                   size="lg"
@@ -126,8 +187,17 @@ export default function LandingPage() {
                   Start Assessment
                 </Button>
               </Link>
-            </div>
-          </motion.div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 2.2, duration: 0.6 }}
+              className="mt-16"
+            >
+              <TestimonialCarousel />
+            </motion.div>
+          </div>
         </Container>
       </section>
 
@@ -139,9 +209,8 @@ export default function LandingPage() {
               <motion.div
                 key={label}
                 initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 2.4 + i * 0.1, duration: 0.5 }}
                 className="flex items-center gap-4 py-8 px-6"
               >
                 <div className="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
@@ -154,133 +223,6 @@ export default function LandingPage() {
               </motion.div>
             ))}
           </div>
-        </Container>
-      </section>
-
-      {/* ── Features ── */}
-      <section className="py-20 sm:py-28 bg-dark">
-        <Container>
-          <div className="text-center mb-14">
-            <motion.h2
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-3xl sm:text-4xl font-bold text-white mb-4"
-            >
-              Everything you need to stand out
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-silver text-lg max-w-xl mx-auto"
-            >
-              Four powerful tools to help you present your best professional self.
-            </motion.p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {FEATURES.map((f, i) => (
-              <Link key={f.title} href={f.href} className="block">
-                <FeatureCard {...f} delay={i * 0.1} />
-              </Link>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* ── Why THE VALUE ── */}
-      <section className="py-20 bg-surface border-y border-surface-2">
-        <Container maxWidth="lg">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -24 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold text-white mb-4">
-                Why candidates choose THE VALUE
-              </h2>
-              <p className="text-silver leading-relaxed mb-8">
-                THE VALUE was built to give every candidate — regardless of experience — a
-                professional, structured way to present their skills and background to recruiters.
-              </p>
-              <ul className="space-y-3">
-                {CHECKLIST.map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <CheckCircle2 size={18} className="text-brand mt-0.5 shrink-0" />
-                    <span className="text-warm text-sm">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 24 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="grid grid-cols-2 gap-4"
-            >
-              {[
-                { label: 'Upload CV', emoji: '📄', href: '/upload-cv' },
-                { label: 'CV Builder', emoji: '✏️', href: '/build-cv' },
-                { label: 'Assessment', emoji: '📋', href: '/assessment' },
-                { label: 'Dashboard', emoji: '📊', href: '/dashboard' },
-              ].map(({ label, emoji, href }) => (
-                <Link key={label} href={href}>
-                  <Card
-                    hover
-                    padding="lg"
-                    className="flex flex-col items-center text-center gap-3 h-full"
-                  >
-                    <span className="text-4xl">{emoji}</span>
-                    <CardBody>
-                      <p className="font-semibold text-white text-sm">{label}</p>
-                    </CardBody>
-                    <ArrowRight size={14} className="text-brand" />
-                  </Card>
-                </Link>
-              ))}
-            </motion.div>
-          </div>
-        </Container>
-      </section>
-
-      {/* ── CTA ── */}
-      <section className="py-20 bg-linear-to-br from-dark to-surface-2 text-white">
-        <Container maxWidth="md">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Ready to get started?</h2>
-            <p className="text-silver mb-8 text-lg">
-              Takes less than 5 minutes. No sign-up required.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/build-cv">
-                <Button
-                  size="lg"
-                  className="bg-brand hover:bg-brand-light text-dark font-semibold border-0 w-full sm:w-auto"
-                  rightIcon={<ArrowRight size={18} />}
-                >
-                  Open CV Builder
-                </Button>
-              </Link>
-              <Link href="/assessment">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-stone-600 text-warm hover:bg-surface w-full sm:w-auto"
-                >
-                  Take Assessment
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
         </Container>
       </section>
     </div>

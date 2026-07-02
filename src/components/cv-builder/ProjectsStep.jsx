@@ -12,21 +12,17 @@ function newEntry() {
 }
 
 export function ProjectsStep({ data, onChange }) {
-  console.log('[ProjectsStep] Rendered with', data.length, 'projects');
 
   function addEntry() {
     const entry = newEntry();
-    console.log('[ProjectsStep] Adding project:', entry.id);
     onChange([...data, entry]);
   }
 
   function removeEntry(id) {
-    console.log('[ProjectsStep] Removing project:', id);
     onChange(data.filter((e) => e.id !== id));
   }
 
   function updateEntry(id, field, value) {
-    console.log(`[ProjectsStep] Updating project ${id}, field "${field}":`, value);
     onChange(data.map((e) => (e.id === id ? { ...e, [field]: value } : e)));
   }
 

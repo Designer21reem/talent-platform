@@ -26,18 +26,15 @@ export function LanguagesStep({ data, onChange }) {
   const [name, setName] = useState('');
   const [proficiency, setProficiency] = useState('Fluent');
 
-  console.log('[LanguagesStep] Rendered with', data.length, 'languages');
 
   function addLanguage() {
     if (!name.trim()) return;
     const lang = { id: crypto.randomUUID(), name: name.trim(), proficiency };
-    console.log('[LanguagesStep] Adding language:', lang);
     onChange([...data, lang]);
     setName('');
   }
 
   function removeLanguage(id) {
-    console.log('[LanguagesStep] Removing language:', id);
     onChange(data.filter((l) => l.id !== id));
   }
 

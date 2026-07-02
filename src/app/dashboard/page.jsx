@@ -21,11 +21,9 @@ export default function DashboardPage() {
   const [usingMock, setUsingMock] = useState(false);
 
   useEffect(() => {
-    console.log('[DashboardPage] Loading assessment data from storage…');
     const assessment = loadAssessment();
 
     if (assessment) {
-      console.log('[DashboardPage] Assessment found — building real dashboard');
       const data = buildDashboard(
         assessment.answers,
         assessment.candidateName,
@@ -34,7 +32,6 @@ export default function DashboardPage() {
       setDashboard(data);
       setUsingMock(false);
     } else {
-      console.log('[DashboardPage] No assessment found — using mock dashboard data');
       setDashboard(MOCK_DASHBOARD);
       setUsingMock(true);
     }
@@ -53,7 +50,6 @@ export default function DashboardPage() {
 
   const topSkills = [...dashboard.skills].sort((a, b) => b.score - a.score).slice(0, 3);
 
-  console.log('[DashboardPage] Rendering dashboard for:', dashboard.candidateName, '| Overall score:', dashboard.overallScore);
 
   return (
     <div className="py-12 sm:py-16">

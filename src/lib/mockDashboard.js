@@ -66,7 +66,6 @@ function buildSummary(overall, strengths, gaps) {
 // ─── Main Factory ─────────────────────────────────────────────────────────────
 
 export function buildDashboard(answers, candidateName, phoneNumber) {
-  console.log('[Dashboard] Building dashboard from answers:', answers);
 
   const categoryMap = new Map();
 
@@ -98,7 +97,6 @@ export function buildDashboard(answers, candidateName, phoneNumber) {
     overallScore,
   };
 
-  console.log('[Dashboard] Dashboard data built:', dashboard);
   return dashboard;
 }
 

@@ -11,21 +11,17 @@ function newEntry() {
 }
 
 export function EducationStep({ data, onChange }) {
-  console.log('[EducationStep] Rendered with', data.length, 'entries');
 
   function addEntry() {
     const entry = newEntry();
-    console.log('[EducationStep] Adding entry:', entry.id);
     onChange([...data, entry]);
   }
 
   function removeEntry(id) {
-    console.log('[EducationStep] Removing entry:', id);
     onChange(data.filter((e) => e.id !== id));
   }
 
   function updateEntry(id, field, value) {
-    console.log(`[EducationStep] Updating entry ${id}, field "${field}":`, value);
     onChange(data.map((e) => (e.id === id ? { ...e, [field]: value } : e)));
   }
 

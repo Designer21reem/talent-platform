@@ -20,21 +20,17 @@ function newEntry() {
 }
 
 export function WorkExperienceStep({ data, onChange }) {
-  console.log('[WorkExperienceStep] Rendered with', data.length, 'entries');
 
   function addEntry() {
     const entry = newEntry();
-    console.log('[WorkExperienceStep] Adding entry:', entry.id);
     onChange([...data, entry]);
   }
 
   function removeEntry(id) {
-    console.log('[WorkExperienceStep] Removing entry:', id);
     onChange(data.filter((e) => e.id !== id));
   }
 
   function updateEntry(id, field, value) {
-    console.log(`[WorkExperienceStep] Updating entry ${id}, field "${field}":`, value);
     onChange(data.map((e) => (e.id === id ? { ...e, [field]: value } : e)));
   }
 

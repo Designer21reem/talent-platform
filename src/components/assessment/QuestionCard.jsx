@@ -5,7 +5,6 @@ import { Textarea } from '@/components/ui/Textarea';
 import { cn } from '@/lib/utils';
 
 export function QuestionCard({ question, answer, questionIndex, total, onChange }) {
-  console.log(`[QuestionCard] Rendering Q${questionIndex + 1}:`, question.id, '| Current answer:', answer || '(none)');
 
   return (
     <motion.div
@@ -36,7 +35,6 @@ export function QuestionCard({ question, answer, questionIndex, total, onChange 
               <button
                 key={option.id}
                 onClick={() => {
-                  console.log(`[QuestionCard] Q${questionIndex + 1} answer selected:`, option.id, '-', option.label);
                   onChange(option.id);
                 }}
                 className={cn(
@@ -71,7 +69,6 @@ export function QuestionCard({ question, answer, questionIndex, total, onChange 
           placeholder="Write your answer here… (minimum 20 words recommended)"
           value={answer}
           onChange={(e) => {
-            console.log(`[QuestionCard] Q${questionIndex + 1} textarea updated, length:`, e.target.value.length);
             onChange(e.target.value);
           }}
           rows={5}

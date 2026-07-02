@@ -64,7 +64,6 @@ export default function BuildCVPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [error, setError] = useState(null);
 
-  console.log('[BuildCVPage] Rendered — step:', currentStep, 'submitted:', submitted);
 
   function updatePersonalInfo(data) {
     setCv((prev) => ({ ...prev, personalInfo: data }));
@@ -73,18 +72,15 @@ export default function BuildCVPage() {
   function goNext() {
     const validationError = validateStep(currentStep, cv);
     if (validationError) {
-      console.warn('[BuildCVPage] Validation error on step', currentStep, ':', validationError);
       setError(validationError);
       return;
     }
     setError(null);
-    console.log('[BuildCVPage] Going to step', currentStep + 1);
     setCurrentStep((s) => Math.min(s + 1, STEPS.length));
   }
 
   function goBack() {
     setError(null);
-    console.log('[BuildCVPage] Going back to step', currentStep - 1);
     setCurrentStep((s) => Math.max(s - 1, 1));
   }
 
@@ -94,7 +90,6 @@ export default function BuildCVPage() {
     const element = document.getElementById('cv-print-content');
     if (!element) return;
 
-    console.log('[BuildCVPage] Generating PDF for:', cv.personalInfo.fullName);
     setDownloading(true);
 
     try {
@@ -126,9 +121,7 @@ export default function BuildCVPage() {
         ? `${cv.personalInfo.fullName.replace(/\s+/g, '_')}_CV.pdf`
         : 'CV.pdf';
       pdf.save(fileName);
-      console.log('[BuildCVPage] PDF saved as:', fileName);
-    } catch (err) {
-      console.error('[BuildCVPage] PDF generation failed:', err);
+    } catch {
     } finally {
       setDownloading(false);
     }
@@ -140,7 +133,6 @@ export default function BuildCVPage() {
       setError(validationError);
       return;
     }
-    console.log('[BuildCVPage] Submitting CV:', cv);
     saveCV(cv);
     setSubmitted(true);
     setShowPreview(true);

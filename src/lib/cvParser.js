@@ -5,16 +5,13 @@ export async function parseFile(file) {
 }
 
 async function parseDOCX(file) {
-  console.log('[cvParser] Starting DOCX parse for:', file.name);
   const mammoth = await import('mammoth');
   const arrayBuffer = await file.arrayBuffer();
   const result = await mammoth.extractRawText({ arrayBuffer });
-  console.log('[cvParser] DOCX text extracted, length:', result.value.length);
   return extractPersonalInfo(result.value);
 }
 
 async function parsePDF(file) {
-  console.log('[cvParser] Starting PDF parse for:', file.name);
 
   const pdfjsLib = await import('pdfjs-dist');
   pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -23,7 +20,6 @@ async function parsePDF(file) {
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
 
-  console.log('[cvParser] PDF loaded — pages:', pdf.numPages);
 
   let fullText = '';
   for (let i = 1; i <= Math.min(pdf.numPages, 3); i++) {
@@ -32,7 +28,6 @@ async function parsePDF(file) {
     fullText += content.items.map((item) => item.str).join(' ') + '\n';
   }
 
-  console.log('[cvParser] Text extracted, length:', fullText.length);
   return extractPersonalInfo(fullText);
 }
 
@@ -58,7 +53,6 @@ function extractPersonalInfo(text) {
 
   const locationMatch = text.match(/([A-Z][a-zA-Z\s.]+),\s*([A-Z][a-zA-Z\s]{2,})/);
 
-  console.log('[cvParser] Extracted — name:', nameLine, '| email:', emailMatch?.[0], '| phone:', phoneMatch?.[0]);
 
   return {
     fullName: nameLine,

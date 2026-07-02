@@ -46,25 +46,20 @@ export function FileUploader({ onFile }) {
   });
 
   function handleFile(file) {
-    console.log('[FileUploader] File selected:', file.name, file.type, file.size);
 
     const error = validateFile(file);
     if (error) {
-      console.warn('[FileUploader] Validation failed:', error);
       setState({ status: 'error', fileName: file.name, progress: 0, errorMessage: error });
       return;
     }
 
     setState({ status: 'uploading', fileName: file.name, progress: 0, errorMessage: null });
-    console.log('[FileUploader] Starting simulated upload for:', file.name);
 
     simulateUpload(
       (p) => {
-        console.log(`[FileUploader] Upload progress: ${Math.round(p)}%`);
         setState((prev) => ({ ...prev, progress: p }));
       },
       () => {
-        console.log('[FileUploader] Upload complete:', file.name);
         setState((prev) => ({ ...prev, status: 'success', progress: 100 }));
         if (onFile) onFile(file);
       }
@@ -82,13 +77,11 @@ export function FileUploader({ onFile }) {
     setDragging(false);
     const file = e.dataTransfer.files?.[0];
     if (file) {
-      console.log('[FileUploader] File dropped:', file.name);
       handleFile(file);
     }
   }
 
   function reset() {
-    console.log('[FileUploader] Reset');
     setState({ status: 'idle', fileName: null, progress: 0, errorMessage: null });
     if (inputRef.current) inputRef.current.value = '';
   }

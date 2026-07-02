@@ -26,18 +26,15 @@ export function SkillsStep({ data, onChange }) {
   const [name, setName] = useState('');
   const [level, setLevel] = useState('Intermediate');
 
-  console.log('[SkillsStep] Rendered with', data.length, 'skills');
 
   function addSkill() {
     if (!name.trim()) return;
     const skill = { id: crypto.randomUUID(), name: name.trim(), level };
-    console.log('[SkillsStep] Adding skill:', skill);
     onChange([...data, skill]);
     setName('');
   }
 
   function removeSkill(id) {
-    console.log('[SkillsStep] Removing skill:', id);
     onChange(data.filter((s) => s.id !== id));
   }
 

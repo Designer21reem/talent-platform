@@ -26,7 +26,6 @@ export default function AssessmentPage() {
   const [resolvedPhone, setResolvedPhone] = useState('');
   const [cvPhone, setCvPhone] = useState(null);
 
-  console.log('[AssessmentPage] Rendered — state:', pageState, '| question:', currentQ);
 
   useEffect(() => {
     const cv = loadCV();
@@ -37,33 +36,27 @@ export default function AssessmentPage() {
         setCvPhone(phone);
         setResolvedPhone(phone);
       }
-      console.log('[AssessmentPage] CV loaded — name:', cv.personalInfo.fullName, '| phone:', phone || '(none)');
     }
   }, []);
 
   function startAssessment() {
-    console.log('[AssessmentPage] Attempting to start assessment…');
 
     if (cvPhone) {
-      console.log('[AssessmentPage] Using phone from CV:', cvPhone);
       setPageState('assessment');
       return;
     }
 
     if (!phoneInput.trim()) {
-      console.warn('[AssessmentPage] Phone number missing — blocking start');
       setPhoneError('Phone number is required to start the assessment.');
       return;
     }
 
-    console.log('[AssessmentPage] Using manually entered phone:', phoneInput);
     setResolvedPhone(phoneInput.trim());
     setPhoneError(null);
     setPageState('assessment');
   }
 
   function setAnswer(questionId, value) {
-    console.log('[AssessmentPage] Answer set — questionId:', questionId, '| value:', value);
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
     setSubmitError(null);
   }
@@ -71,20 +64,17 @@ export default function AssessmentPage() {
   function goNext() {
     const current = ASSESSMENT_QUESTIONS[currentQ];
     if (!answers[current.id]?.trim()) {
-      console.warn('[AssessmentPage] Cannot proceed — Q', currentQ + 1, 'not answered');
       setSubmitError('Please answer this question before moving on.');
       return;
     }
     setSubmitError(null);
     if (currentQ < ASSESSMENT_QUESTIONS.length - 1) {
-      console.log('[AssessmentPage] Moving to question', currentQ + 2);
       setCurrentQ((q) => q + 1);
     }
   }
 
   function goBack() {
     if (currentQ > 0) {
-      console.log('[AssessmentPage] Going back to question', currentQ);
       setSubmitError(null);
       setCurrentQ((q) => q - 1);
     }
@@ -95,7 +85,6 @@ export default function AssessmentPage() {
 
     if (unanswered.length > 0) {
       const msg = `Please answer all questions before submitting. Missing: Q${unanswered.map((q) => ASSESSMENT_QUESTIONS.indexOf(q) + 1).join(', ')}.`;
-      console.warn('[AssessmentPage] Submit blocked —', msg);
       setSubmitError(msg);
       return;
     }
@@ -113,7 +102,6 @@ export default function AssessmentPage() {
       candidatePhone: resolvedPhone,
     };
 
-    console.log('[AssessmentPage] Submitting assessment:', data);
     saveAssessment(data);
     setSubmitError(null);
     setPageState('submitted');
@@ -165,7 +153,6 @@ export default function AssessmentPage() {
                   onChange={(e) => {
                     setPhoneInput(e.target.value);
                     setPhoneError(null);
-                    console.log('[AssessmentPage] Phone input changed:', e.target.value);
                   }}
                   error={phoneError ?? undefined}
                   leftElement={<Phone size={15} />}

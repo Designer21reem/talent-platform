@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import {
-  Upload, FileText, ShieldCheck, CheckCircle2,
+  Upload, CheckCircle2,
   AlertCircle, User, Mail, Phone, MapPin, ArrowRight,
 } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
@@ -15,12 +15,6 @@ import { Input } from '@/components/ui/Input';
 import { saveCV } from '@/lib/storage';
 import { parseFile } from '@/lib/cvParser';
 
-const TIPS = [
-  { icon: FileText, text: 'PDF and DOCX formats are both supported for automatic info extraction' },
-  { icon: ShieldCheck, text: 'Your file is processed locally — never sent to a server' },
-  { icon: Upload, text: 'After uploading, take the assessment to see your skills report' },
-];
-
 const EMPTY_INFO = { fullName: '', email: '', phone: '', location: '' };
 
 export default function UploadCVPage() {
@@ -29,19 +23,15 @@ export default function UploadCVPage() {
   const [parsedInfo, setParsedInfo] = useState(EMPTY_INFO);
   const [parseError, setParseError] = useState(null);
 
-  console.log('[UploadCVPage] Rendered — state:', pageState);
 
   async function handleFile(file) {
-    console.log('[UploadCVPage] File received for processing:', file.name);
     setPageState('parsing');
     try {
       const info = await parseFile(file);
-      console.log('[UploadCVPage] Parsed info:', info);
       setParsedInfo(info);
       setParseError(null);
       setPageState('review');
-    } catch (err) {
-      console.error('[UploadCVPage] Parse failed:', err);
+    } catch {
       setParseError('failed');
       setParsedInfo(EMPTY_INFO);
       setPageState('review');
@@ -49,7 +39,6 @@ export default function UploadCVPage() {
   }
 
   function saveAndContinue() {
-    console.log('[UploadCVPage] Saving CV personalInfo to storage…', parsedInfo);
     saveCV({
       personalInfo: parsedInfo,
       education: [],
@@ -175,25 +164,6 @@ export default function UploadCVPage() {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Tips — only on upload state */}
-        {pageState === 'upload' && (
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4"
-          >
-            {TIPS.map(({ icon: Icon, text }) => (
-              <Card key={text} padding="md" className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-lg bg-brand/10 flex items-center justify-center shrink-0">
-                  <Icon size={16} className="text-brand" />
-                </div>
-                <p className="text-sm text-silver leading-relaxed">{text}</p>
-              </Card>
-            ))}
-          </motion.div>
-        )}
       </Container>
     </div>
   );

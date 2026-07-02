@@ -4,10 +4,8 @@ import { Input } from '@/components/ui/Input';
 import { User, Mail, Phone, MapPin } from 'lucide-react';
 
 export function PersonalInfoStep({ data, onChange }) {
-  console.log('[PersonalInfoStep] Rendered with data:', data);
 
   function update(field, value) {
-    console.log(`[PersonalInfoStep] Field "${field}" updated:`, value);
     onChange({ ...data, [field]: value });
   }
 
