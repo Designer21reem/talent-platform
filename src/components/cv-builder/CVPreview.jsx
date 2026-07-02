@@ -12,6 +12,11 @@ function Section({ title, children }) {
   );
 }
 
+function yearOf(dateStr) {
+  if (!dateStr) return '';
+  return dateStr.includes('-') ? dateStr.split('-')[0] : dateStr;
+}
+
 function Bullets({ text }) {
   const lines = (text || '').split('\n').map((l) => l.trim()).filter(Boolean);
   if (lines.length === 0) return null;
@@ -72,7 +77,7 @@ export function CVPreview({ data }) {
                   <p className="font-bold text-[13.5px]">{e.institution}</p>
                   {(e.startYear || e.endYear) && (
                     <p className="font-bold text-[13px] shrink-0">
-                      {e.startYear} {e.endYear && `– ${e.endYear}`}
+                      {yearOf(e.startYear)} {e.endYear && `– ${yearOf(e.endYear)}`}
                     </p>
                   )}
                 </div>

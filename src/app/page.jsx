@@ -40,7 +40,7 @@ function initials(name) {
   return name.split(' ').map((p) => p[0]).join('').slice(0, 2).toUpperCase();
 }
 
-function TypewriterText({ text, className, startDelay = 0, speed = 18 }) {
+function TypewriterText({ text, className, startDelay = 0, speed = 18, onDone }) {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -61,6 +61,13 @@ function TypewriterText({ text, className, startDelay = 0, speed = 18 }) {
       clearInterval(interval);
     };
   }, [text, startDelay, speed]);
+
+  useEffect(() => {
+    if (count === text.length && text.length > 0) {
+      onDone?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [count]);
 
   const done = count >= text.length;
 
@@ -127,7 +134,44 @@ function TestimonialCarousel() {
   );
 }
 
+function StatBubble({ label, value, icon: Icon, delay }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay, duration: 0.5 }}
+    >
+      <motion.div
+        animate={{ y: [0, -5, 0] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay }}
+        className="flex items-center gap-2.5 rounded-full bg-brand/15 border border-brand px-4 py-2"
+        style={{ boxShadow: '0 0 6px rgba(201,155,37,0.35)' }}
+      >
+        <motion.div
+          animate={{ boxShadow: ['0 0 0px rgba(201,155,37,0)', '0 0 10px rgba(201,155,37,0.7)', '0 0 0px rgba(201,155,37,0)'] }}
+          transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut', delay }}
+          className="w-7 h-7 rounded-full bg-brand/20 flex items-center justify-center shrink-0"
+        >
+          <Icon size={14} className="text-brand" />
+        </motion.div>
+        <div className="text-left leading-tight">
+          <p className="text-sm font-bold text-white">{value}</p>
+          <p className="text-[10px] text-silver whitespace-nowrap">{label}</p>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function LandingPage() {
+  const [stage, setStage] = useState(0);
+
+  function handleTypewriterDone() {
+    setStage(1);
+    setTimeout(() => setStage(2), 500);
+    setTimeout(() => setStage(3), 1100);
+  }
+
   return (
     <div className="overflow-x-hidden">
       {/* ── Hero ── */}
@@ -135,93 +179,83 @@ export default function LandingPage() {
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-brand/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-brand-dark/30 rounded-full blur-3xl pointer-events-none" />
 
+        {stage >= 3 && (
+          <div className="absolute top-6 inset-x-0 flex flex-wrap items-center justify-center gap-3 z-20 px-4">
+            {STATS.map((stat, i) => (
+              <StatBubble key={stat.label} {...stat} delay={i * 0.15} />
+            ))}
+          </div>
+        )}
+
         <Container maxWidth="lg">
           <div className="text-center relative z-10">
             <motion.h1
               initial={{ opacity: 0, scale: 0.3, y: 0 }}
               animate={{ opacity: [0, 1, 1], scale: [0.3, 1.35, 1], y: [0, 0, -6] }}
               transition={{ duration: 1.5, times: [0, 0.55, 1], ease: 'easeOut' }}
-              className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-wide text-brand mb-6"
+              className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-wide mb-6"
             >
-              THE VALUE
+              <span className="text-brand">THE VALUE</span>
+              <br />
+              <span className="text-white text-3xl sm:text-4xl lg:text-5xl tracking-[0.2em]">GOT TALENT</span>
             </motion.h1>
 
             <TypewriterText
               text={TAGLINE}
               startDelay={1500}
+              onDone={handleTypewriterDone}
               className="max-w-2xl mx-auto text-lg sm:text-xl text-warm leading-relaxed mb-10 min-h-[3.5em] sm:min-h-[2.5em]"
             />
 
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.8, duration: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
-            >
-              <Link href="/upload-cv">
-                <Button
-                  size="lg"
-                  className="bg-brand hover:bg-brand-light text-dark font-semibold border-0 shadow-lg shadow-amber-900/30 w-full sm:w-auto"
-                  leftIcon={<Upload size={18} />}
-                >
-                  Upload CV
-                </Button>
-              </Link>
-              <Link href="/build-cv">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-brand/40 text-brand hover:bg-brand/10 w-full sm:w-auto"
-                  leftIcon={<FileEdit size={18} />}
-                >
-                  CV Builder
-                </Button>
-              </Link>
-              <Link href="/assessment">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-stone-500/40 text-warm hover:bg-stone-700/50 w-full sm:w-auto"
-                  leftIcon={<ClipboardCheck size={18} />}
-                >
-                  Start Assessment
-                </Button>
-              </Link>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 2.2, duration: 0.6 }}
-              className="mt-16"
-            >
-              <TestimonialCarousel />
-            </motion.div>
-          </div>
-        </Container>
-      </section>
-
-      {/* ── Stats ── */}
-      <section className="bg-surface border-b border-surface-2">
-        <Container>
-          <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-surface-2">
-            {STATS.map(({ label, value, icon: Icon }, i) => (
+            {stage >= 1 && (
               <motion.div
-                key={label}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2.4 + i * 0.1, duration: 0.5 }}
-                className="flex items-center gap-4 py-8 px-6"
+                transition={{ duration: 0.6 }}
+                className="flex flex-col sm:flex-row gap-4 justify-center"
               >
-                <div className="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
-                  <Icon size={22} className="text-brand" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-white">{value}</p>
-                  <p className="text-sm text-silver">{label}</p>
-                </div>
+                <Link href="/upload-cv">
+                  <Button
+                    size="lg"
+                    className="bg-brand hover:bg-brand-light text-dark font-semibold border-0 shadow-lg shadow-amber-900/30 w-full sm:w-auto"
+                    leftIcon={<Upload size={18} />}
+                  >
+                    Upload CV
+                  </Button>
+                </Link>
+                <Link href="/build-cv">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-brand/40 text-brand hover:bg-brand/10 w-full sm:w-auto"
+                    leftIcon={<FileEdit size={18} />}
+                  >
+                    CV Builder
+                  </Button>
+                </Link>
+                <Link href="/assessment">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-stone-500/40 text-warm hover:bg-stone-700/50 w-full sm:w-auto"
+                    leftIcon={<ClipboardCheck size={18} />}
+                  >
+                    Start Assessment
+                  </Button>
+                </Link>
               </motion.div>
-            ))}
+            )}
+
+            {stage >= 2 && (
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="mt-16"
+              >
+                <TestimonialCarousel />
+              </motion.div>
+            )}
           </div>
         </Container>
       </section>

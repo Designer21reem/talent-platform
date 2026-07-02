@@ -3,15 +3,20 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Briefcase } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { JOB_TITLES, OTHER_VALUE, toOptions } from '@/lib/formOptions';
+
+const JOB_TITLE_OPTIONS = toOptions(JOB_TITLES);
 
 function newEntry() {
   return {
     id: crypto.randomUUID(),
     company: '',
     position: '',
+    positionOther: false,
     startDate: '',
     endDate: '',
     current: false,
@@ -32,6 +37,14 @@ export function WorkExperienceStep({ data, onChange }) {
 
   function updateEntry(id, field, value) {
     onChange(data.map((e) => (e.id === id ? { ...e, [field]: value } : e)));
+  }
+
+  function selectPosition(id, selected) {
+    if (selected === OTHER_VALUE) {
+      onChange(data.map((e) => (e.id === id ? { ...e, position: '', positionOther: true } : e)));
+    } else {
+      onChange(data.map((e) => (e.id === id ? { ...e, position: selected, positionOther: false } : e)));
+    }
   }
 
   return (
@@ -69,12 +82,22 @@ export function WorkExperienceStep({ data, onChange }) {
                   value={entry.company}
                   onChange={(e) => updateEntry(entry.id, 'company', e.target.value)}
                 />
-                <Input
-                  label="Position / Title"
-                  placeholder="e.g. Frontend Developer"
-                  value={entry.position}
-                  onChange={(e) => updateEntry(entry.id, 'position', e.target.value)}
-                />
+                <div className="space-y-2">
+                  <Select
+                    label="Position / Title"
+                    placeholder="Select position…"
+                    options={JOB_TITLE_OPTIONS}
+                    value={entry.positionOther ? OTHER_VALUE : entry.position}
+                    onChange={(e) => selectPosition(entry.id, e.target.value)}
+                  />
+                  {entry.positionOther && (
+                    <Input
+                      placeholder="Type your position / title"
+                      value={entry.position}
+                      onChange={(e) => updateEntry(entry.id, 'position', e.target.value)}
+                    />
+                  )}
+                </div>
                 <Input
                   label="Start Date"
                   placeholder="MM/YYYY"

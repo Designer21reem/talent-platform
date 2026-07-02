@@ -3,18 +3,53 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, GraduationCap } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { UNIVERSITIES, DEGREES, FIELDS_OF_STUDY, OTHER_VALUE, toOptions } from '@/lib/formOptions';
+
+const UNIVERSITY_OPTIONS = toOptions(UNIVERSITIES);
+const DEGREE_OPTIONS = toOptions(DEGREES);
+const FIELD_OPTIONS = toOptions(FIELDS_OF_STUDY);
 
 function newEntry() {
-  return { id: crypto.randomUUID(), institution: '', degree: '', field: '', startYear: '', endYear: '' };
+  return {
+    id: crypto.randomUUID(),
+    institution: '',
+    institutionOther: false,
+    degree: '',
+    degreeOther: false,
+    field: '',
+    fieldOther: false,
+    startYear: '',
+    endYear: '',
+  };
+}
+
+function DropdownWithOther({ label, options, otherFlag, value, onSelect, onCustomChange, placeholder }) {
+  return (
+    <div className="space-y-2">
+      <Select
+        label={label}
+        placeholder={placeholder}
+        options={options}
+        value={otherFlag ? OTHER_VALUE : value}
+        onChange={(e) => onSelect(e.target.value)}
+      />
+      {otherFlag && (
+        <Input
+          placeholder={`Type your ${label.toLowerCase()}`}
+          value={value}
+          onChange={(e) => onCustomChange(e.target.value)}
+        />
+      )}
+    </div>
+  );
 }
 
 export function EducationStep({ data, onChange }) {
-
   function addEntry() {
-    const entry = newEntry();
-    onChange([...data, entry]);
+    onChange([...data, newEntry()]);
   }
 
   function removeEntry(id) {
@@ -23,6 +58,14 @@ export function EducationStep({ data, onChange }) {
 
   function updateEntry(id, field, value) {
     onChange(data.map((e) => (e.id === id ? { ...e, [field]: value } : e)));
+  }
+
+  function selectField(id, field, otherFlagField, selected) {
+    if (selected === OTHER_VALUE) {
+      onChange(data.map((e) => (e.id === id ? { ...e, [field]: '', [otherFlagField]: true } : e)));
+    } else {
+      onChange(data.map((e) => (e.id === id ? { ...e, [field]: selected, [otherFlagField]: false } : e)));
+    }
   }
 
   return (
@@ -54,36 +97,43 @@ export function EducationStep({ data, onChange }) {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input
+                <DropdownWithOther
                   label="Institution"
-                  placeholder="University / School name"
+                  placeholder="Select institution…"
+                  options={UNIVERSITY_OPTIONS}
+                  otherFlag={entry.institutionOther}
                   value={entry.institution}
-                  onChange={(e) => updateEntry(entry.id, 'institution', e.target.value)}
+                  onSelect={(v) => selectField(entry.id, 'institution', 'institutionOther', v)}
+                  onCustomChange={(v) => updateEntry(entry.id, 'institution', v)}
                 />
-                <Input
+                <DropdownWithOther
                   label="Degree"
-                  placeholder="e.g. Bachelor of Science"
+                  placeholder="Select degree…"
+                  options={DEGREE_OPTIONS}
+                  otherFlag={entry.degreeOther}
                   value={entry.degree}
-                  onChange={(e) => updateEntry(entry.id, 'degree', e.target.value)}
+                  onSelect={(v) => selectField(entry.id, 'degree', 'degreeOther', v)}
+                  onCustomChange={(v) => updateEntry(entry.id, 'degree', v)}
                 />
-                <Input
+                <DropdownWithOther
                   label="Field of Study"
-                  placeholder="e.g. Computer Science"
+                  placeholder="Select field of study…"
+                  options={FIELD_OPTIONS}
+                  otherFlag={entry.fieldOther}
                   value={entry.field}
-                  onChange={(e) => updateEntry(entry.id, 'field', e.target.value)}
+                  onSelect={(v) => selectField(entry.id, 'field', 'fieldOther', v)}
+                  onCustomChange={(v) => updateEntry(entry.id, 'field', v)}
                 />
                 <div className="grid grid-cols-2 gap-3">
                   <Input
-                    label="Start Year"
-                    placeholder="2019"
-                    maxLength={4}
+                    label="Start Date"
+                    type="date"
                     value={entry.startYear}
                     onChange={(e) => updateEntry(entry.id, 'startYear', e.target.value)}
                   />
                   <Input
-                    label="End Year"
-                    placeholder="2023"
-                    maxLength={4}
+                    label="End Date"
+                    type="date"
                     value={entry.endYear}
                     onChange={(e) => updateEntry(entry.id, 'endYear', e.target.value)}
                   />
