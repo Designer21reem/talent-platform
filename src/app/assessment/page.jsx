@@ -13,9 +13,11 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { QuestionCard } from '@/components/assessment/QuestionCard';
 import { ASSESSMENT_QUESTIONS } from '@/lib/assessmentQuestions';
 import { saveAssessment, loadCV } from '@/lib/storage';
+import { useLanguage } from '@/lib/i18n';
 
 export default function AssessmentPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [pageState, setPageState] = useState('gate');
   const [phoneInput, setPhoneInput] = useState('');
   const [phoneError, setPhoneError] = useState(null);
@@ -47,7 +49,7 @@ export default function AssessmentPage() {
     }
 
     if (!phoneInput.trim()) {
-      setPhoneError('Phone number is required to start the assessment.');
+      setPhoneError(t('Phone number is required to start the assessment.'));
       return;
     }
 
@@ -64,7 +66,7 @@ export default function AssessmentPage() {
   function goNext() {
     const current = ASSESSMENT_QUESTIONS[currentQ];
     if (!answers[current.id]?.trim()) {
-      setSubmitError('Please answer this question before moving on.');
+      setSubmitError(t('Please answer this question before moving on.'));
       return;
     }
     setSubmitError(null);
@@ -84,7 +86,7 @@ export default function AssessmentPage() {
     const unanswered = ASSESSMENT_QUESTIONS.filter((q) => !answers[q.id]?.trim());
 
     if (unanswered.length > 0) {
-      const msg = `Please answer all questions before submitting. Missing: Q${unanswered.map((q) => ASSESSMENT_QUESTIONS.indexOf(q) + 1).join(', ')}.`;
+      const msg = `${t('Please answer all questions before submitting. Missing:')} Q${unanswered.map((q) => ASSESSMENT_QUESTIONS.indexOf(q) + 1).join(', ')}.`;
       setSubmitError(msg);
       return;
     }
@@ -123,9 +125,9 @@ export default function AssessmentPage() {
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-4">
               <ClipboardCheck size={26} className="text-dark" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Skill Assessment</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">{t('Skill Assessment')}</h1>
             <p className="text-silver text-lg">
-              This optional assessment evaluates your key professional skills.
+              {t('This optional assessment evaluates your key professional skills.')}
             </p>
           </motion.div>
 
@@ -139,14 +141,16 @@ export default function AssessmentPage() {
               <div className="flex items-center gap-3 mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
                 <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-emerald-800">Phone number found</p>
-                  <p className="text-xs text-emerald-600 mt-0.5">{cvPhone} — ready to start!</p>
+                  <p className="text-sm font-medium text-emerald-800">{t('Phone number found')}</p>
+                  <p className="text-xs text-emerald-600 mt-0.5">
+                    <span dir="ltr" className="inline-block">{cvPhone}</span> — {t('ready to start!')}
+                  </p>
                 </div>
               </div>
             ) : (
               <div className="mb-6">
                 <Input
-                  label="Your Phone Number"
+                  label={t('Your Phone Number')}
                   type="tel"
                   placeholder="+1 555 000 0000"
                   value={phoneInput}
@@ -157,18 +161,18 @@ export default function AssessmentPage() {
                   error={phoneError ?? undefined}
                   leftElement={<Phone size={15} />}
                   required
-                  hint="Required to identify your results in the dashboard."
+                  hint={t('Required to identify your results in the dashboard.')}
                 />
               </div>
             )}
 
             <div className="flex items-center justify-between text-sm text-silver mb-6">
-              <span>{ASSESSMENT_QUESTIONS.length} questions</span>
-              <span>~10 minutes</span>
+              <span>{ASSESSMENT_QUESTIONS.length} {t('questions')}</span>
+              <span>{t('~10 minutes')}</span>
             </div>
 
             <Button fullWidth size="lg" onClick={startAssessment} rightIcon={<ChevronRight size={18} />}>
-              Start Assessment
+              {t('Start Assessment')}
             </Button>
           </motion.div>
         </Container>
@@ -196,15 +200,14 @@ export default function AssessmentPage() {
               <CheckCircle2 size={36} className="text-emerald-500" />
             </motion.div>
 
-            <h2 className="text-3xl font-bold text-white mb-3">Assessment Submitted!</h2>
+            <h2 className="text-3xl font-bold text-white mb-3">{t('Assessment Submitted!')}</h2>
             <p className="text-silver text-lg mb-8">
-              Thank you{candidateName ? `, ${candidateName.split(' ')[0]}` : ''}! Your responses have been
-              saved. Head to your dashboard to see your personalised skills report.
+              {t('Thank you')}{candidateName ? `, ${candidateName.split(' ')[0]}` : ''}! {t('Your responses have been saved. Head to your dashboard to see your personalised skills report.')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button size="lg" onClick={() => router.push('/dashboard')}>
-                View My Dashboard
+                {t('View My Dashboard')}
               </Button>
               <Button
                 size="lg"
@@ -215,7 +218,7 @@ export default function AssessmentPage() {
                   setPageState('gate');
                 }}
               >
-                Retake Assessment
+                {t('Retake Assessment')}
               </Button>
             </div>
           </motion.div>
@@ -234,8 +237,8 @@ export default function AssessmentPage() {
         {/* Progress header */}
         <div className="mb-8">
           <div className="flex justify-between text-sm text-silver mb-2">
-            <span>Question {currentQ + 1} of {ASSESSMENT_QUESTIONS.length}</span>
-            <span>{Math.round(progress)}% complete</span>
+            <span>{t('Question')} {currentQ + 1} {t('of')} {ASSESSMENT_QUESTIONS.length}</span>
+            <span>{Math.round(progress)}% {t('complete')}</span>
           </div>
           <ProgressBar value={progress} showValue={false} size="sm" />
         </div>
@@ -272,16 +275,16 @@ export default function AssessmentPage() {
             disabled={currentQ === 0}
             leftIcon={<ChevronLeft size={16} />}
           >
-            Back
+            {t('Back')}
           </Button>
 
           {currentQ < ASSESSMENT_QUESTIONS.length - 1 ? (
             <Button size="sm" onClick={goNext} rightIcon={<ChevronRight size={16} />}>
-              Next
+              {t('Next')}
             </Button>
           ) : (
             <Button size="sm" onClick={handleSubmit} rightIcon={<Send size={15} />}>
-              Submit Assessment
+              {t('Submit Assessment')}
             </Button>
           )}
         </div>

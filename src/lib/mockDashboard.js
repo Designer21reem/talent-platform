@@ -1,4 +1,10 @@
+import { AR_DICT } from '@/lib/i18n';
+
 const CATEGORY_MAX = 100;
+
+function ar(category) {
+  return AR_DICT[category] ?? category;
+}
 
 const SCORE_MAP = {
   q1: { a: 90, b: 60, c: 85, d: 30 },
@@ -63,6 +69,30 @@ function buildSummary(overall, strengths, gaps) {
   }`;
 }
 
+function buildSummaryAr(overall, strengthsAr, gapsAr) {
+  if (overall >= 85) {
+    return `أداء ممتاز! أظهرت قدرات قوية عبر معظم فئات المهارات${
+      strengthsAr.length ? `، خصوصاً في ${strengthsAr.join(' و')}` : ''
+    }. واصل البناء على نقاط القوة هذه لتطوير مسيرتك المهنية أكثر.`;
+  }
+  if (overall >= 70) {
+    return `أداء عام جيد. تُظهر مهارات متينة في عدة مجالات${
+      strengthsAr.length ? ` منها ${strengthsAr.join(' و')}` : ''
+    }${
+      gapsAr.length
+        ? `. التركيز على ${gapsAr.join(' و')} سيساعدك على الوصول إلى المستوى التالي.`
+        : '.'
+    }`;
+  }
+  return `لديك أساس جيد يمكن البناء عليه${
+    strengthsAr.length ? `، مع نقاط قوة واضحة في ${strengthsAr.join(' و')}` : ''
+  }${
+    gapsAr.length
+      ? `. استثمار الوقت في ${gapsAr.join(' و')} سيعزز ملفك الشخصي بشكل كبير.`
+      : '.'
+  }`;
+}
+
 // ─── Main Factory ─────────────────────────────────────────────────────────────
 
 export function buildDashboard(answers, candidateName, phoneNumber) {
@@ -86,6 +116,11 @@ export function buildDashboard(answers, candidateName, phoneNumber) {
 
   const { strengths, areasForImprovement } = classifyStrengthsAndGaps(skills);
   const overallSummary = buildSummary(overallScore, strengths, areasForImprovement);
+  const overallSummaryAr = buildSummaryAr(
+    overallScore,
+    strengths.map(ar),
+    areasForImprovement.map(ar)
+  );
 
   const dashboard = {
     candidateName,
@@ -94,6 +129,7 @@ export function buildDashboard(answers, candidateName, phoneNumber) {
     strengths,
     areasForImprovement,
     overallSummary,
+    overallSummaryAr,
     overallScore,
   };
 
@@ -118,4 +154,6 @@ export const MOCK_DASHBOARD = {
   areasForImprovement: ['Leadership'],
   overallSummary:
     'Strong overall profile with outstanding technical skills and excellent communication. Leadership is an area to develop through mentorship and team-lead opportunities.',
+  overallSummaryAr:
+    'ملف شخصي قوي بمهارات تقنية متميزة وتواصل ممتاز. القيادة مجال يمكن تطويره من خلال الإرشاد وفرص قيادة الفريق.',
 };

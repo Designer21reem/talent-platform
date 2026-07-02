@@ -5,12 +5,14 @@ import { Plus, Trash2, Award } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { useLanguage } from '@/lib/i18n';
 
 function newEntry() {
   return { id: crypto.randomUUID(), name: '', issuer: '', year: '' };
 }
 
 export function CertificationsStep({ data, onChange }) {
+  const { t } = useLanguage();
 
   function addEntry() {
     const entry = newEntry();
@@ -27,8 +29,8 @@ export function CertificationsStep({ data, onChange }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-warm-light">Certifications</h2>
-      <p className="text-sm text-silver">Add any relevant certifications or licences you hold.</p>
+      <h2 className="text-xl font-semibold text-warm-light">{t('Certifications')}</h2>
+      <p className="text-sm text-silver">{t('Add any relevant certifications or licences you hold.')}</p>
 
       <AnimatePresence initial={false}>
         {data.map((entry, i) => (
@@ -43,7 +45,7 @@ export function CertificationsStep({ data, onChange }) {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2 text-sm font-medium text-silver">
                   <Award size={16} className="text-amber-500" />
-                  Certification {i + 1}
+                  {t('Certification')} {i + 1}
                 </div>
                 <button
                   onClick={() => removeEntry(entry.id)}
@@ -55,14 +57,14 @@ export function CertificationsStep({ data, onChange }) {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2">
                   <Input
-                    label="Certificate Name"
-                    placeholder="e.g. AWS Solutions Architect"
+                    label={t('Certificate Name')}
+                    placeholder={t('e.g. AWS Solutions Architect')}
                     value={entry.name}
                     onChange={(e) => updateEntry(entry.id, 'name', e.target.value)}
                   />
                 </div>
                 <Input
-                  label="Year"
+                  label={t('Year')}
                   placeholder="2023"
                   maxLength={4}
                   value={entry.year}
@@ -70,8 +72,8 @@ export function CertificationsStep({ data, onChange }) {
                 />
                 <div className="sm:col-span-3">
                   <Input
-                    label="Issuing Organisation"
-                    placeholder="e.g. Amazon Web Services"
+                    label={t('Issuing Organisation')}
+                    placeholder={t('e.g. Amazon Web Services')}
                     value={entry.issuer}
                     onChange={(e) => updateEntry(entry.id, 'issuer', e.target.value)}
                   />
@@ -84,12 +86,12 @@ export function CertificationsStep({ data, onChange }) {
 
       {data.length === 0 && (
         <div className="text-center py-8 text-silver text-sm border-2 border-dashed border-surface-2 rounded-xl">
-          No certifications added yet.
+          {t('No certifications added yet.')}
         </div>
       )}
 
       <Button variant="outline" size="sm" onClick={addEntry} leftIcon={<Plus size={15} />}>
-        Add Certification
+        {t('Add Certification')}
       </Button>
     </div>
   );

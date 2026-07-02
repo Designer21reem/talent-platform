@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
 import { Button } from '@/components/ui/Button';
+import { useLanguage } from '@/lib/i18n';
 
 const TAGLINE =
   'Upload or build a professional CV, complete a skill assessment, and get a personal skills dashboard — all in one place, no sign-up required.';
@@ -81,6 +82,7 @@ function TypewriterText({ text, className, startDelay = 0, speed = 18, onDone })
 
 function TestimonialCarousel() {
   const [index, setIndex] = useState(0);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -116,16 +118,16 @@ function TestimonialCarousel() {
             ].join(' ')}
           >
             <Quote size={16} className="text-brand mb-2" />
-            <p className="text-sm text-warm leading-relaxed mb-4 line-clamp-3">{item.quote}</p>
+            <p className="text-sm text-warm leading-relaxed mb-4 line-clamp-3">{t(item.quote)}</p>
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-brand/15 text-brand text-xs font-semibold flex items-center justify-center shrink-0">
                 {initials(item.name)}
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-white truncate">{item.name}</p>
-                <p className="text-[11px] text-silver truncate">{item.role}</p>
+                <p className="text-[11px] text-silver truncate">{t(item.role)}</p>
               </div>
-              <span className="ml-auto text-[10px] font-semibold text-brand shrink-0">{item.score}</span>
+              <span className="ml-auto text-[10px] font-semibold text-brand shrink-0">{item.score.replace('match', t('match'))}</span>
             </div>
           </motion.div>
         ))}
@@ -135,6 +137,7 @@ function TestimonialCarousel() {
 }
 
 function StatBubble({ label, value, icon: Icon, delay }) {
+  const { t } = useLanguage();
   return (
     <motion.div
       initial={{ opacity: 0, y: 12, scale: 0.9 }}
@@ -156,7 +159,7 @@ function StatBubble({ label, value, icon: Icon, delay }) {
         </motion.div>
         <div className="text-left leading-tight">
           <p className="text-sm font-bold text-white">{value}</p>
-          <p className="text-[10px] text-silver whitespace-nowrap">{label}</p>
+          <p className="text-[10px] text-silver whitespace-nowrap">{t(label)}</p>
         </div>
       </motion.div>
     </motion.div>
@@ -165,6 +168,7 @@ function StatBubble({ label, value, icon: Icon, delay }) {
 
 export default function LandingPage() {
   const [stage, setStage] = useState(0);
+  const { t } = useLanguage();
 
   function handleTypewriterDone() {
     setStage(1);
@@ -197,11 +201,11 @@ export default function LandingPage() {
             >
               <span className="text-brand">THE VALUE</span>
               <br />
-              <span className="text-white text-3xl sm:text-4xl lg:text-5xl tracking-[0.2em]">GOT TALENT</span>
+              <span className="text-white text-3xl sm:text-4xl lg:text-5xl tracking-[0.2em]">{t('GOT TALENT')}</span>
             </motion.h1>
 
             <TypewriterText
-              text={TAGLINE}
+              text={t(TAGLINE)}
               startDelay={1500}
               onDone={handleTypewriterDone}
               className="max-w-2xl mx-auto text-lg sm:text-xl text-warm leading-relaxed mb-10 min-h-[3.5em] sm:min-h-[2.5em]"
@@ -220,7 +224,7 @@ export default function LandingPage() {
                     className="bg-brand hover:bg-brand-light text-dark font-semibold border-0 shadow-lg shadow-amber-900/30 w-full sm:w-auto"
                     leftIcon={<Upload size={18} />}
                   >
-                    Upload CV
+                    {t('Upload CV')}
                   </Button>
                 </Link>
                 <Link href="/build-cv">
@@ -230,7 +234,7 @@ export default function LandingPage() {
                     className="border-brand/40 text-brand hover:bg-brand/10 w-full sm:w-auto"
                     leftIcon={<FileEdit size={18} />}
                   >
-                    CV Builder
+                    {t('CV Builder')}
                   </Button>
                 </Link>
                 <Link href="/assessment">
@@ -240,7 +244,7 @@ export default function LandingPage() {
                     className="border-stone-500/40 text-warm hover:bg-stone-700/50 w-full sm:w-auto"
                     leftIcon={<ClipboardCheck size={18} />}
                   >
-                    Start Assessment
+                    {t('Start Assessment')}
                   </Button>
                 </Link>
               </motion.div>

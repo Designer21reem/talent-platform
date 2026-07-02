@@ -6,6 +6,7 @@ import { UploadCloud, FileText, CheckCircle2, XCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/lib/i18n';
 
 const ACCEPTED_TYPES = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 const ACCEPTED_EXTENSIONS = ['.pdf', '.docx'];
@@ -36,6 +37,7 @@ function simulateUpload(onProgress, onComplete) {
 }
 
 export function FileUploader({ onFile }) {
+  const { t } = useLanguage();
   const inputRef = useRef(null);
   const [dragging, setDragging] = useState(false);
   const [state, setState] = useState({
@@ -131,10 +133,10 @@ export function FileUploader({ onFile }) {
               </div>
               <div>
                 <p className="font-semibold text-white text-lg">
-                  Drop your CV here or{' '}
-                  <span className="text-brand underline underline-offset-2">browse</span>
+                  {t('Drop your CV here or')}{' '}
+                  <span className="text-brand underline underline-offset-2">{t('browse')}</span>
                 </p>
-                <p className="text-silver text-sm mt-1">PDF and DOCX supported · Max 10 MB</p>
+                <p className="text-silver text-sm mt-1">{t('PDF and DOCX supported · Max 10 MB')}</p>
               </div>
             </motion.div>
           )}
@@ -155,7 +157,7 @@ export function FileUploader({ onFile }) {
               <div className="w-full max-w-sm">
                 <ProgressBar value={progress} showValue size="md" />
               </div>
-              <p className="text-xs text-silver">Uploading…</p>
+              <p className="text-xs text-silver">{t('Uploading…')}</p>
             </motion.div>
           )}
 
@@ -177,11 +179,11 @@ export function FileUploader({ onFile }) {
                 <CheckCircle2 size={30} className="text-emerald-500" />
               </motion.div>
               <div>
-                <p className="font-semibold text-emerald-700 text-lg">Upload successful!</p>
+                <p className="font-semibold text-emerald-700 text-lg">{t('Upload successful!')}</p>
                 <p className="text-silver text-sm mt-0.5 truncate max-w-xs">{fileName}</p>
               </div>
               <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); reset(); }}>
-                Upload a different file
+                {t('Upload a different file')}
               </Button>
             </motion.div>
           )}
@@ -199,11 +201,11 @@ export function FileUploader({ onFile }) {
                 <XCircle size={28} className="text-red-500" />
               </div>
               <div>
-                <p className="font-semibold text-red-700">Upload failed</p>
-                <p className="text-sm text-red-500 mt-0.5">{errorMessage}</p>
+                <p className="font-semibold text-red-700">{t('Upload failed')}</p>
+                <p className="text-sm text-red-500 mt-0.5">{t(errorMessage)}</p>
               </div>
               <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); reset(); }}>
-                Try again
+                {t('Try again')}
               </Button>
             </motion.div>
           )}
@@ -222,7 +224,7 @@ export function FileUploader({ onFile }) {
 
       {/* Accepted formats note */}
       <p className="text-center text-xs text-silver mt-3">
-        Accepted formats: PDF, DOCX &nbsp;·&nbsp; Maximum file size: 10 MB
+        {t('Accepted formats: PDF, DOCX')} &nbsp;·&nbsp; {t('Maximum file size: 10 MB')}
       </p>
     </div>
   );

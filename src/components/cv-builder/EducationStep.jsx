@@ -6,11 +6,33 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { UNIVERSITIES, DEGREES, FIELDS_OF_STUDY, OTHER_VALUE, toOptions } from '@/lib/formOptions';
+import { UNIVERSITIES, DEGREES, FIELDS_OF_STUDY, OTHER_VALUE } from '@/lib/formOptions';
+import { useLanguage } from '@/lib/i18n';
 
-const UNIVERSITY_OPTIONS = toOptions(UNIVERSITIES);
-const DEGREE_OPTIONS = toOptions(DEGREES);
-const FIELD_OPTIONS = toOptions(FIELDS_OF_STUDY);
+function DropdownWithOther({ label, otherPlaceholder, list, otherFlag, value, onSelect, onCustomChange, placeholder, t }) {
+  const options = [
+    ...list.map((v) => ({ value: v, label: t(v) })),
+    { value: OTHER_VALUE, label: t('Other (type your own)') },
+  ];
+  return (
+    <div className="space-y-2">
+      <Select
+        label={label}
+        placeholder={placeholder}
+        options={options}
+        value={otherFlag ? OTHER_VALUE : value}
+        onChange={(e) => onSelect(e.target.value)}
+      />
+      {otherFlag && (
+        <Input
+          placeholder={otherPlaceholder}
+          value={value}
+          onChange={(e) => onCustomChange(e.target.value)}
+        />
+      )}
+    </div>
+  );
+}
 
 function newEntry() {
   return {
@@ -26,28 +48,9 @@ function newEntry() {
   };
 }
 
-function DropdownWithOther({ label, options, otherFlag, value, onSelect, onCustomChange, placeholder }) {
-  return (
-    <div className="space-y-2">
-      <Select
-        label={label}
-        placeholder={placeholder}
-        options={options}
-        value={otherFlag ? OTHER_VALUE : value}
-        onChange={(e) => onSelect(e.target.value)}
-      />
-      {otherFlag && (
-        <Input
-          placeholder={`Type your ${label.toLowerCase()}`}
-          value={value}
-          onChange={(e) => onCustomChange(e.target.value)}
-        />
-      )}
-    </div>
-  );
-}
-
 export function EducationStep({ data, onChange }) {
+  const { t } = useLanguage();
+
   function addEntry() {
     onChange([...data, newEntry()]);
   }
@@ -70,8 +73,8 @@ export function EducationStep({ data, onChange }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-warm-light">Education</h2>
-      <p className="text-sm text-silver">Add your academic background, starting with the most recent.</p>
+      <h2 className="text-xl font-semibold text-warm-light">{t('Education')}</h2>
+      <p className="text-sm text-silver">{t('Add your academic background, starting with the most recent.')}</p>
 
       <AnimatePresence initial={false}>
         {data.map((entry, i) => (
@@ -86,7 +89,7 @@ export function EducationStep({ data, onChange }) {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2 text-sm font-medium text-silver">
                   <GraduationCap size={16} className="text-brand" />
-                  Education {i + 1}
+                  {t('Education')} {i + 1}
                 </div>
                 <button
                   onClick={() => removeEntry(entry.id)}
@@ -98,27 +101,33 @@ export function EducationStep({ data, onChange }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <DropdownWithOther
-                  label="Institution"
-                  placeholder="Select institution…"
-                  options={UNIVERSITY_OPTIONS}
+                  t={t}
+                  label={t('Institution')}
+                  placeholder={t('Select institution…')}
+                  otherPlaceholder={t('Type your institution')}
+                  list={UNIVERSITIES}
                   otherFlag={entry.institutionOther}
                   value={entry.institution}
                   onSelect={(v) => selectField(entry.id, 'institution', 'institutionOther', v)}
                   onCustomChange={(v) => updateEntry(entry.id, 'institution', v)}
                 />
                 <DropdownWithOther
-                  label="Degree"
-                  placeholder="Select degree…"
-                  options={DEGREE_OPTIONS}
+                  t={t}
+                  label={t('Degree')}
+                  placeholder={t('Select degree…')}
+                  otherPlaceholder={t('Type your degree')}
+                  list={DEGREES}
                   otherFlag={entry.degreeOther}
                   value={entry.degree}
                   onSelect={(v) => selectField(entry.id, 'degree', 'degreeOther', v)}
                   onCustomChange={(v) => updateEntry(entry.id, 'degree', v)}
                 />
                 <DropdownWithOther
-                  label="Field of Study"
-                  placeholder="Select field of study…"
-                  options={FIELD_OPTIONS}
+                  t={t}
+                  label={t('Field of Study')}
+                  placeholder={t('Select field of study…')}
+                  otherPlaceholder={t('Type your field of study')}
+                  list={FIELDS_OF_STUDY}
                   otherFlag={entry.fieldOther}
                   value={entry.field}
                   onSelect={(v) => selectField(entry.id, 'field', 'fieldOther', v)}
@@ -126,13 +135,13 @@ export function EducationStep({ data, onChange }) {
                 />
                 <div className="grid grid-cols-2 gap-3">
                   <Input
-                    label="Start Date"
+                    label={t('Start Date')}
                     type="date"
                     value={entry.startYear}
                     onChange={(e) => updateEntry(entry.id, 'startYear', e.target.value)}
                   />
                   <Input
-                    label="End Date"
+                    label={t('End Date')}
                     type="date"
                     value={entry.endYear}
                     onChange={(e) => updateEntry(entry.id, 'endYear', e.target.value)}
@@ -146,12 +155,12 @@ export function EducationStep({ data, onChange }) {
 
       {data.length === 0 && (
         <div className="text-center py-8 text-silver text-sm border-2 border-dashed border-surface-2 rounded-xl">
-          No education added yet. Click below to add one.
+          {t('No education added yet. Click below to add one.')}
         </div>
       )}
 
       <Button variant="outline" size="sm" onClick={addEntry} leftIcon={<Plus size={15} />}>
-        Add Education
+        {t('Add Education')}
       </Button>
     </div>
   );

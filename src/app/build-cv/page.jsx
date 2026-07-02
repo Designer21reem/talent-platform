@@ -15,6 +15,7 @@ import { CertificationsStep } from '@/components/cv-builder/CertificationsStep';
 import { ProjectsStep } from '@/components/cv-builder/ProjectsStep';
 import { CVPreview } from '@/components/cv-builder/CVPreview';
 import { saveCV } from '@/lib/storage';
+import { useLanguage } from '@/lib/i18n';
 
 const STEPS = [
   { id: 1, label: 'Personal' },
@@ -58,6 +59,7 @@ function validateStep(step, cv) {
 }
 
 export default function BuildCVPage() {
+  const { t } = useLanguage();
   const [currentStep, setCurrentStep] = useState(1);
   const [cv, setCv] = useState(EMPTY_CV);
   const [submitted, setSubmitted] = useState(false);
@@ -150,15 +152,15 @@ export default function BuildCVPage() {
           >
             <CheckCircle2 size={24} className="text-emerald-500 shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-emerald-800">CV saved successfully!</p>
+              <p className="font-semibold text-emerald-800">{t('CV saved successfully!')}</p>
               <p className="text-emerald-600 text-sm mt-0.5">
-                Your CV data has been saved. You can now take the assessment or come back later.
+                {t('Your CV data has been saved. You can now take the assessment or come back later.')}
               </p>
             </div>
           </motion.div>
 
           <div className="flex flex-wrap justify-between items-center gap-3 mb-6">
-            <h2 className="text-2xl font-bold text-white">Your CV Preview</h2>
+            <h2 className="text-2xl font-bold text-white">{t('Your CV Preview')}</h2>
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
@@ -166,14 +168,14 @@ export default function BuildCVPage() {
                 onClick={downloadAsPDF}
                 disabled={downloading}
               >
-                {downloading ? 'Generating…' : 'Download PDF'}
+                {downloading ? t('Generating…') : t('Download PDF')}
               </Button>
               <Button
                 variant="secondary"
                 size="sm"
                 onClick={() => { setSubmitted(false); setCurrentStep(1); }}
               >
-                Edit CV
+                {t('Edit CV')}
               </Button>
             </div>
           </div>
@@ -198,13 +200,13 @@ export default function BuildCVPage() {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-4">
             <FileEdit size={26} className="text-white" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">CV Builder</h1>
-          <p className="text-silver text-lg">Fill in each section and we'll generate a professional CV.</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">{t('CV Builder')}</h1>
+          <p className="text-silver text-lg">{t("Fill in each section and we'll generate a professional CV.")}</p>
         </motion.div>
 
         {/* Step indicator */}
         <div className="mb-8">
-          <StepIndicator steps={STEPS} currentStep={currentStep} />
+          <StepIndicator steps={STEPS.map((s) => ({ ...s, label: t(s.label) }))} currentStep={currentStep} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -256,7 +258,7 @@ export default function BuildCVPage() {
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-4 py-2.5"
                 >
-                  {error}
+                  {t(error)}
                 </motion.p>
               )}
 
@@ -269,20 +271,20 @@ export default function BuildCVPage() {
                   disabled={currentStep === 1}
                   leftIcon={<ChevronLeft size={16} />}
                 >
-                  Back
+                  {t('Back')}
                 </Button>
 
                 <div className="text-xs text-silver">
-                  Step {currentStep} of {STEPS.length}
+                  {t('Step')} {currentStep} {t('of')} {STEPS.length}
                 </div>
 
                 {currentStep < STEPS.length ? (
                   <Button size="sm" onClick={goNext} rightIcon={<ChevronRight size={16} />}>
-                    Continue
+                    {t('Continue')}
                   </Button>
                 ) : (
                   <Button size="sm" onClick={handleSubmit} rightIcon={<CheckCircle2 size={16} />}>
-                    Save CV
+                    {t('Save CV')}
                   </Button>
                 )}
               </div>
@@ -293,13 +295,13 @@ export default function BuildCVPage() {
           <div className="hidden lg:block">
             <div className="sticky top-24">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-medium text-warm">Live Preview</p>
+                <p className="text-sm font-medium text-warm">{t('Live Preview')}</p>
                 <button
                   onClick={() => setShowPreview((v) => !v)}
                   className="flex items-center gap-1.5 text-xs text-silver hover:text-warm transition-colors"
                 >
                   {showPreview ? <EyeOff size={13} /> : <Eye size={13} />}
-                  {showPreview ? 'Hide' : 'Show'}
+                  {showPreview ? t('Hide') : t('Show')}
                 </button>
               </div>
               {showPreview ? (
@@ -312,7 +314,7 @@ export default function BuildCVPage() {
                   onClick={() => setShowPreview(true)}
                 >
                   <Eye size={24} className="mx-auto mb-2 opacity-50" />
-                  Click to see your CV preview
+                  {t('Click to see your CV preview')}
                 </div>
               )}
             </div>

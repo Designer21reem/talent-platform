@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { User, Mail } from 'lucide-react';
 import { COUNTRIES } from '@/lib/formOptions';
+import { useLanguage } from '@/lib/i18n';
 
 function guessCountryIdx(phone) {
   const idx = COUNTRIES.findIndex((c) => phone?.trim().startsWith(c.dial));
@@ -25,6 +26,7 @@ function guessCityIdx(location, countryIdx) {
 }
 
 export function PersonalInfoStep({ data, onChange }) {
+  const { t } = useLanguage();
   const [countryIdx, setCountryIdx] = useState(() => guessCountryIdx(data.phone));
   const [cityIdx, setCityIdx] = useState(() => guessCityIdx(data.location, guessCountryIdx(data.phone)));
   const [phoneDigits, setPhoneDigits] = useState(() => guessDigits(data.phone, guessCountryIdx(data.phone)));
@@ -65,53 +67,54 @@ export function PersonalInfoStep({ data, onChange }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-warm-light">Personal Information</h2>
-      <p className="text-sm text-silver">Tell us the basics — this will appear at the top of your CV.</p>
+      <h2 className="text-xl font-semibold text-warm-light">{t('Personal Information')}</h2>
+      <p className="text-sm text-silver">{t('Tell us the basics — this will appear at the top of your CV.')}</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <Input
-          label="Full Name"
-          placeholder="e.g. Alex Johnson"
+          label={t('Full Name')}
+          placeholder={t('e.g. Alex Johnson')}
           value={data.fullName}
           onChange={(e) => update('fullName', e.target.value)}
           required
           leftElement={<User size={15} />}
         />
         <Input
-          label="Email Address"
+          label={t('Email Address')}
           type="email"
-          placeholder="alex@example.com"
+          placeholder={t('alex@example.com')}
           value={data.email}
           onChange={(e) => update('email', e.target.value)}
           required
           leftElement={<Mail size={15} />}
         />
         <Select
-          label="Country"
+          label={t('Country')}
           required
-          options={COUNTRIES.map((c, i) => ({ value: i, label: `${c.name} (${c.dial})` }))}
+          options={COUNTRIES.map((c, i) => ({ value: i, label: `${t(c.name)} (‎${c.dial}‎)` }))}
           value={countryIdx}
           onChange={handleCountryChange}
         />
         <div className="flex gap-2 items-end">
           <div className="w-20 shrink-0">
-            <Input label="Code" value={country.dial} readOnly disabled />
+            <Input label={t('Code')} value={country.dial} readOnly disabled dir="ltr" />
           </div>
           <div className="flex-1">
             <Input
-              label="Phone Number"
+              label={t('Phone Number')}
               type="tel"
-              placeholder="770 123 4567"
+              dir="ltr"
+              placeholder={t('770 123 4567')}
               value={phoneDigits}
               onChange={handlePhoneChange}
               required
-              hint="Required to start the assessment later"
+              hint={t('Required to start the assessment later')}
             />
           </div>
         </div>
         <Select
-          label="Location"
-          options={country.cities.map((city, i) => ({ value: i, label: city }))}
+          label={t('Location')}
+          options={country.cities.map((city, i) => ({ value: i, label: t(city) }))}
           value={cityIdx}
           onChange={handleCityChange}
         />

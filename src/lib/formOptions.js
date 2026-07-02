@@ -68,7 +68,3 @@ export const JOB_TITLES = [
   'HR Specialist',
   'Business Analyst',
 ];
-
-export function toOptions(list) {
-  return [...list.map((v) => ({ value: v, label: v })), { value: OTHER_VALUE, label: 'Other (type your own)' }];
-}

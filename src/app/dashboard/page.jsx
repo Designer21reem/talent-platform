@@ -15,8 +15,10 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { SkillProgressCard } from '@/components/dashboard/SkillProgressCard';
 import { loadAssessment } from '@/lib/storage';
 import { buildDashboard, MOCK_DASHBOARD } from '@/lib/mockDashboard';
+import { useLanguage } from '@/lib/i18n';
 
 export default function DashboardPage() {
+  const { t, lang } = useLanguage();
   const [dashboard, setDashboard] = useState(null);
   const [usingMock, setUsingMock] = useState(false);
 
@@ -42,7 +44,7 @@ export default function DashboardPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <div className="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-silver text-sm">Loading your dashboard…</p>
+          <p className="text-silver text-sm">{t('Loading your dashboard…')}</p>
         </div>
       </div>
     );
@@ -63,14 +65,14 @@ export default function DashboardPage() {
           >
             <Info size={18} className="text-amber-500 shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-amber-800">Showing sample dashboard</p>
+              <p className="text-sm font-medium text-amber-800">{t('Showing sample dashboard')}</p>
               <p className="text-xs text-amber-600 mt-0.5">
-                Complete the assessment to see your personalised skill results.
+                {t('Complete the assessment to see your personalised skill results.')}
               </p>
             </div>
             <Link href="/assessment">
               <Button size="sm" variant="outline" className="border-amber-400 text-amber-700 hover:bg-amber-50 shrink-0">
-                Take Assessment
+                {t('Take Assessment')}
               </Button>
             </Link>
           </motion.div>
@@ -87,13 +89,13 @@ export default function DashboardPage() {
               <BarChart3 size={22} className="text-brand" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Skills Dashboard</h1>
-              <p className="text-silver text-sm">Your personal skill assessment results</p>
+              <h1 className="text-2xl font-bold text-white">{t('Skills Dashboard')}</h1>
+              <p className="text-silver text-sm">{t('Your personal skill assessment results')}</p>
             </div>
           </div>
           <Link href="/assessment">
             <Button variant="secondary" size="sm" rightIcon={<ArrowRight size={14} />}>
-              Retake Assessment
+              {t('Retake Assessment')}
             </Button>
           </Link>
         </motion.div>
@@ -106,10 +108,10 @@ export default function DashboardPage() {
               <User size={24} className="text-brand" />
             </div>
             <div className="min-w-0">
-              <p className="font-bold text-white text-lg truncate">{dashboard.candidateName || 'Candidate'}</p>
+              <p className="font-bold text-white text-lg truncate">{dashboard.candidateName || t('Candidate')}</p>
               <p className="flex items-center gap-1.5 text-sm text-silver mt-0.5">
                 <Phone size={13} />
-                {dashboard.phoneNumber}
+                <span dir="ltr">{dashboard.phoneNumber}</span>
               </p>
             </div>
           </Card>
@@ -117,7 +119,7 @@ export default function DashboardPage() {
           {/* Overall score */}
           <Card padding="md" className="lg:col-span-2">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-white">Overall Score</h2>
+              <h2 className="font-semibold text-white">{t('Overall Score')}</h2>
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -129,16 +131,16 @@ export default function DashboardPage() {
             </div>
             <ProgressBar value={dashboard.overallScore} showValue={false} size="lg" animated />
             <div className="flex justify-between text-xs text-silver mt-1.5">
-              <span>Developing</span>
-              <span>Proficient</span>
-              <span>Expert</span>
+              <span>{t('Developing')}</span>
+              <span>{t('Proficient')}</span>
+              <span>{t('Expert')}</span>
             </div>
           </Card>
         </div>
 
         {/* Skills grid */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-white mb-4">Skill Breakdown</h2>
+          <h2 className="text-lg font-semibold text-white mb-4">{t('Skill Breakdown')}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {dashboard.skills.map((skill, i) => (
               <SkillProgressCard key={skill.category} skill={skill} delay={i * 0.07} />
@@ -152,19 +154,19 @@ export default function DashboardPage() {
           <Card padding="md">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp size={18} className="text-emerald-500" />
-              <h2 className="font-semibold text-white">Your Strengths</h2>
+              <h2 className="font-semibold text-white">{t('Your Strengths')}</h2>
             </div>
             {dashboard.strengths.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {dashboard.strengths.map((s) => (
                   <Badge key={s} variant="green" className="flex items-center gap-1.5 py-1 px-3">
                     <Star size={11} />
-                    {s}
+                    {t(s)}
                   </Badge>
                 ))}
               </div>
             ) : (
-              <p className="text-silver text-sm">Complete the assessment to see your strengths.</p>
+              <p className="text-silver text-sm">{t('Complete the assessment to see your strengths.')}</p>
             )}
           </Card>
 
@@ -172,16 +174,16 @@ export default function DashboardPage() {
           <Card padding="md">
             <div className="flex items-center gap-2 mb-4">
               <TrendingDown size={18} className="text-amber-500" />
-              <h2 className="font-semibold text-white">Areas for Improvement</h2>
+              <h2 className="font-semibold text-white">{t('Areas for Improvement')}</h2>
             </div>
             {dashboard.areasForImprovement.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {dashboard.areasForImprovement.map((s) => (
-                  <Badge key={s} variant="amber">{s}</Badge>
+                  <Badge key={s} variant="amber">{t(s)}</Badge>
                 ))}
               </div>
             ) : (
-              <p className="text-silver text-sm italic">All skill areas are strong — great work!</p>
+              <p className="text-silver text-sm italic">{t('All skill areas are strong — great work!')}</p>
             )}
           </Card>
         </div>
@@ -190,14 +192,14 @@ export default function DashboardPage() {
         <Card padding="md" className="mb-8">
           <div className="flex items-center gap-2 mb-5">
             <ClipboardCheck size={18} className="text-brand" />
-            <h2 className="font-semibold text-white">Top Performing Skills</h2>
+            <h2 className="font-semibold text-white">{t('Top Performing Skills')}</h2>
           </div>
           <div className="space-y-4">
             {topSkills.map((skill, i) => (
               <div key={skill.category} className="flex items-center gap-4">
                 <span className="text-sm font-semibold text-silver w-4">#{i + 1}</span>
                 <div className="flex-1">
-                  <ProgressBar label={skill.category} value={skill.score} size="sm" animated />
+                  <ProgressBar label={t(skill.category)} value={skill.score} size="sm" animated />
                 </div>
               </div>
             ))}
@@ -213,10 +215,10 @@ export default function DashboardPage() {
           <Card padding="lg" className="bg-linear-to-br from-brand/10 to-brand/5 border-brand/20">
             <h2 className="font-semibold text-white mb-3 flex items-center gap-2">
               <BarChart3 size={18} className="text-brand" />
-              Overall Assessment Summary
+              {t('Overall Assessment Summary')}
             </h2>
             <p className="text-warm leading-relaxed text-sm sm:text-base">
-              {dashboard.overallSummary}
+              {lang === 'ar' && dashboard.overallSummaryAr ? dashboard.overallSummaryAr : dashboard.overallSummary}
             </p>
           </Card>
         </motion.div>

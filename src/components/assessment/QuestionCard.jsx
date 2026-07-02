@@ -3,8 +3,10 @@
 import { motion } from 'framer-motion';
 import { Textarea } from '@/components/ui/Textarea';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/lib/i18n';
 
 export function QuestionCard({ question, answer, questionIndex, total, onChange }) {
+  const { t } = useLanguage();
 
   return (
     <motion.div
@@ -17,9 +19,9 @@ export function QuestionCard({ question, answer, questionIndex, total, onChange 
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
           <span className="inline-block mb-2 text-xs font-semibold text-brand bg-brand/10 px-2.5 py-0.5 rounded-full uppercase tracking-wide">
-            {question.category}
+            {t(question.category)}
           </span>
-          <h3 className="text-lg font-semibold text-white leading-snug">{question.question}</h3>
+          <h3 className="text-lg font-semibold text-white leading-snug">{t(question.question)}</h3>
         </div>
         <span className="shrink-0 text-xs font-medium text-silver bg-surface-2 px-2.5 py-1 rounded-full">
           {questionIndex + 1}/{total}
@@ -56,7 +58,7 @@ export function QuestionCard({ question, answer, questionIndex, total, onChange 
                   )}
                 </span>
                 <span className="font-medium text-xs text-silver mr-1">{option.id.toUpperCase()}.</span>
-                {option.label}
+                {t(option.label)}
               </button>
             );
           })}
@@ -66,7 +68,7 @@ export function QuestionCard({ question, answer, questionIndex, total, onChange 
       {/* Textarea */}
       {question.type === 'textarea' && (
         <Textarea
-          placeholder="Write your answer here… (minimum 20 words recommended)"
+          placeholder={t('Write your answer here… (minimum 20 words recommended)')}
           value={answer}
           onChange={(e) => {
             onChange(e.target.value);

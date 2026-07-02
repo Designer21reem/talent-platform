@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { MapPin, Target, Briefcase } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
+import { useLanguage } from '@/lib/i18n';
 
 const EXPERTISE = [
   'HR Strategy',
@@ -16,6 +17,8 @@ const EXPERTISE = [
 ];
 
 export default function AboutPage() {
+  const { t } = useLanguage();
+
   return (
     <div className="overflow-x-hidden">
       {/* ── Hero ── */}
@@ -33,11 +36,10 @@ export default function AboutPage() {
               <img src="/Logo (1).png" alt="THE VALUE" className="h-28 w-auto object-contain mx-auto" />
             </div>
             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">
-              About <span className="text-brand">THE VALUE</span>
+              {t('About')} <span className="text-brand">THE VALUE</span>
             </h1>
             <p className="max-w-2xl mx-auto text-lg text-warm leading-relaxed">
-              A private for-profit organization that delivers business solutions for individuals,
-              corporations, and government — enhancing the quality of business results.
+              {t('A private for-profit organization that delivers business solutions for individuals, corporations, and government — enhancing the quality of business results.')}
             </p>
           </motion.div>
         </Container>
@@ -52,13 +54,12 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <span className="text-sm font-semibold text-brand uppercase tracking-widest">Who We Are</span>
+              <span className="text-sm font-semibold text-brand uppercase tracking-widest">{t('Who We Are')}</span>
               <h2 className="text-3xl font-bold text-white mt-2 mb-6">
                 THE VALUE
               </h2>
               <p className="text-warm leading-relaxed">
-                The Value is a private for-profit organization that delivers business solutions for
-                individuals, corporations, and government.
+                {t('The Value is a private for-profit organization that delivers business solutions for individuals, corporations, and government.')}
               </p>
             </motion.div>
 
@@ -71,21 +72,20 @@ export default function AboutPage() {
               <div className="bg-surface rounded-2xl border border-surface-2 p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <Target size={20} className="text-brand" />
-                  <h3 className="font-semibold text-white">Mission</h3>
+                  <h3 className="font-semibold text-white">{t('Mission')}</h3>
                 </div>
                 <p className="text-warm leading-relaxed">
-                  To deliver standardized and customized business solutions to enhance the quality
-                  of business results.
+                  {t('To deliver standardized and customized business solutions to enhance the quality of business results.')}
                 </p>
               </div>
 
               <div className="bg-surface rounded-2xl border border-surface-2 p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <Briefcase size={20} className="text-brand" />
-                  <h3 className="font-semibold text-white">Vision</h3>
+                  <h3 className="font-semibold text-white">{t('Vision')}</h3>
                 </div>
                 <p className="text-warm leading-relaxed">
-                  To add value to our clients through our business solutions.
+                  {t('To add value to our clients through our business solutions.')}
                 </p>
               </div>
             </motion.div>
@@ -102,7 +102,7 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <span className="text-sm font-semibold text-brand uppercase tracking-widest">About the Founder</span>
+            <span className="text-sm font-semibold text-brand uppercase tracking-widest">{t('About the Founder')}</span>
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -130,15 +130,10 @@ export default function AboutPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl font-bold text-white mb-1">Aws Fawzi Mohamed</h2>
-              <p className="text-brand font-semibold mb-4">Founder of The Value</p>
+              <p className="text-brand font-semibold mb-4">{t('Founder of The Value')}</p>
 
               <p className="text-warm leading-relaxed mb-6">
-                The Founder of The Value and an experienced HR and business leader based in Baghdad
-                with over 20 years of experience. He holds an MBA and international HR certifications
-                including SPHRi and PHRi. His background includes senior HR leadership roles across
-                banking, telecom, automotive, and corporate organizations, with strong experience in
-                HR strategy, organizational development, talent acquisition, learning and development,
-                performance management, policies, grading structures, and HR process automation.
+                {t('The Founder of The Value and an experienced HR and business leader based in Baghdad with over 20 years of experience. He holds an MBA and international HR certifications including SPHRi and PHRi. His background includes senior HR leadership roles across banking, telecom, automotive, and corporate organizations, with strong experience in HR strategy, organizational development, talent acquisition, learning and development, performance management, policies, grading structures, and HR process automation.')}
               </p>
 
               {/* Certifications */}
@@ -152,20 +147,20 @@ export default function AboutPage() {
                   </span>
                 ))}
                 <span className="flex items-center gap-1 px-3 py-1 rounded-full bg-surface-2 text-silver text-xs">
-                  <MapPin size={11} /> Baghdad, Iraq
+                  <MapPin size={11} /> {t('Baghdad, Iraq')}
                 </span>
               </div>
 
               {/* Expertise */}
               <div>
-                <p className="text-xs font-semibold text-silver uppercase tracking-widest mb-3">Areas of Expertise</p>
+                <p className="text-xs font-semibold text-silver uppercase tracking-widest mb-3">{t('Areas of Expertise')}</p>
                 <div className="flex flex-wrap gap-2">
                   {EXPERTISE.map((item) => (
                     <span
                       key={item}
                       className="px-3 py-1 rounded-lg bg-surface-2 text-warm text-xs border border-surface-2"
                     >
-                      {item}
+                      {t(item)}
                     </span>
                   ))}
                 </div>
@@ -184,15 +179,15 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="text-3xl font-bold mb-4">Ready to showcase your talent?</h2>
+            <h2 className="text-3xl font-bold mb-4">{t('Ready to showcase your talent?')}</h2>
             <p className="text-silver mb-8">
-              Join candidates who have already built their profile with THE VALUE.
+              {t('Join candidates who have already built their profile with THE VALUE.')}
             </p>
             <a
               href="/upload-cv"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand hover:bg-brand-light text-dark font-semibold transition-colors"
             >
-              Get Started
+              {t('Get Started')}
             </a>
           </motion.div>
         </Container>

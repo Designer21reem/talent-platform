@@ -6,7 +6,9 @@ import { motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Container } from './Container';
+import { LanguageToggle } from './LanguageToggle';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/lib/i18n';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
@@ -20,6 +22,7 @@ const NAV_LINKS = [
 export function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useLanguage();
 
   return (
     <header className="sticky top-0 z-50 bg-dark/95 backdrop-blur-md border-b border-brand/20 shadow-sm">
@@ -46,11 +49,15 @@ export function Header() {
                       : 'text-warm hover:bg-surface-2 hover:text-white'
                   )}
                 >
-                  {link.label}
+                  {t(link.label)}
                 </Link>
               );
             })}
           </nav>
+
+          <div className="hidden md:block">
+            <LanguageToggle />
+          </div>
 
           {/* Mobile toggle */}
           <button
@@ -87,10 +94,13 @@ export function Header() {
                         : 'text-warm hover:bg-surface-2 hover:text-white'
                     )}
                   >
-                    {link.label}
+                    {t(link.label)}
                   </Link>
                 );
               })}
+              <div className="px-3 pt-2">
+                <LanguageToggle />
+              </div>
             </nav>
           </Container>
         </motion.div>

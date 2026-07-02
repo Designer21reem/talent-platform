@@ -7,13 +7,9 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { useLanguage } from '@/lib/i18n';
 
-const PROFICIENCY_OPTIONS = [
-  { value: 'Basic', label: 'Basic' },
-  { value: 'Conversational', label: 'Conversational' },
-  { value: 'Fluent', label: 'Fluent' },
-  { value: 'Native', label: 'Native' },
-];
+const PROFICIENCIES = ['Basic', 'Conversational', 'Fluent', 'Native'];
 
 const PROFICIENCY_BADGE = {
   Basic: 'slate',
@@ -23,9 +19,11 @@ const PROFICIENCY_BADGE = {
 };
 
 export function LanguagesStep({ data, onChange }) {
+  const { t } = useLanguage();
   const [name, setName] = useState('');
   const [proficiency, setProficiency] = useState('Fluent');
 
+  const proficiencyOptions = PROFICIENCIES.map((v) => ({ value: v, label: t(v) }));
 
   function addLanguage() {
     if (!name.trim()) return;
@@ -40,14 +38,14 @@ export function LanguagesStep({ data, onChange }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-warm-light">Languages</h2>
-      <p className="text-sm text-silver">List languages you speak and your proficiency level.</p>
+      <h2 className="text-xl font-semibold text-warm-light">{t('Languages')}</h2>
+      <p className="text-sm text-silver">{t('List languages you speak and your proficiency level.')}</p>
 
       <div className="flex gap-3 items-end">
         <div className="flex-1">
           <Input
-            label="Language"
-            placeholder="e.g. English, Arabic, French…"
+            label={t('Language')}
+            placeholder={t('e.g. English, Arabic, French…')}
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && addLanguage()}
@@ -55,14 +53,14 @@ export function LanguagesStep({ data, onChange }) {
         </div>
         <div className="w-44">
           <Select
-            label="Proficiency"
-            options={PROFICIENCY_OPTIONS}
+            label={t('Proficiency')}
+            options={proficiencyOptions}
             value={proficiency}
             onChange={(e) => setProficiency(e.target.value)}
           />
         </div>
         <Button onClick={addLanguage} leftIcon={<Plus size={15} />} className="shrink-0">
-          Add
+          {t('Add')}
         </Button>
       </div>
 
@@ -77,7 +75,7 @@ export function LanguagesStep({ data, onChange }) {
               className="flex items-center gap-1.5 bg-surface-2 border border-brand/20 rounded-full px-3 py-1.5 text-sm"
             >
               <span className="font-medium text-warm">{lang.name}</span>
-              <Badge variant={PROFICIENCY_BADGE[lang.proficiency]}>{lang.proficiency}</Badge>
+              <Badge variant={PROFICIENCY_BADGE[lang.proficiency]}>{t(lang.proficiency)}</Badge>
               <button
                 onClick={() => removeLanguage(lang.id)}
                 className="ml-1 text-silver hover:text-red-500 transition-colors"
@@ -87,7 +85,7 @@ export function LanguagesStep({ data, onChange }) {
             </motion.div>
           ))}
         </AnimatePresence>
-        {data.length === 0 && <p className="text-silver text-sm self-center">No languages added yet.</p>}
+        {data.length === 0 && <p className="text-silver text-sm self-center">{t('No languages added yet.')}</p>}
       </div>
     </div>
   );

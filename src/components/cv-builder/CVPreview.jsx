@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Mail, Phone, ExternalLink } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n';
 
 function Section({ title, children }) {
   return (
@@ -30,6 +31,7 @@ function Bullets({ text }) {
 }
 
 export function CVPreview({ data }) {
+  const { t } = useLanguage();
   const { personalInfo, education, workExperience, skills, languages, certifications, projects } = data;
 
 
@@ -48,7 +50,7 @@ export function CVPreview({ data }) {
           className="text-3xl font-bold tracking-wide uppercase"
           style={{ fontVariant: 'small-caps' }}
         >
-          {personalInfo.fullName || 'Your Name'}
+          {personalInfo.fullName || t('Your Name')}
         </h1>
         {personalInfo.location && (
           <p className="text-sm mt-1">{personalInfo.location}</p>
@@ -56,7 +58,7 @@ export function CVPreview({ data }) {
         <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2 text-[13px]">
           {personalInfo.phone && (
             <span className="flex items-center gap-1.5">
-              <Phone size={12} /> {personalInfo.phone}
+              <Phone size={12} /> <span dir="ltr">{personalInfo.phone}</span>
             </span>
           )}
           {personalInfo.email && (
@@ -69,7 +71,7 @@ export function CVPreview({ data }) {
 
       {/* Education (+ Certifications) */}
       {(education.length > 0 || certifications.length > 0) && (
-        <Section title="Education">
+        <Section title={t('Education')}>
           <div className="space-y-3">
             {education.map((e) => (
               <div key={e.id}>
@@ -91,7 +93,7 @@ export function CVPreview({ data }) {
 
             {certifications.length > 0 && (
               <div className={education.length > 0 ? 'pt-2' : ''}>
-                <p className="font-bold text-[13px] mb-1">Certifications</p>
+                <p className="font-bold text-[13px] mb-1">{t('Certifications')}</p>
                 <ul className="pl-5 list-disc space-y-0.5">
                   {certifications.map((c) => (
                     <li key={c.id} className="text-[12.5px] leading-snug flex justify-between gap-4">
@@ -110,14 +112,14 @@ export function CVPreview({ data }) {
 
       {/* Experience (+ Projects) */}
       {(workExperience.length > 0 || projects.length > 0) && (
-        <Section title="Experience">
+        <Section title={t('Experience')}>
           <div className="space-y-4">
             {workExperience.map((w) => (
               <div key={w.id}>
                 <div className="flex justify-between items-baseline gap-4">
                   <p className="font-bold text-[13.5px]">{w.company}</p>
                   <p className="font-bold text-[13px] shrink-0">
-                    {w.startDate} – {w.current ? 'Present' : w.endDate}
+                    {w.startDate} – {w.current ? t('Present') : w.endDate}
                   </p>
                 </div>
                 {w.position && <p className="italic text-[13px]">{w.position}</p>}
@@ -128,7 +130,7 @@ export function CVPreview({ data }) {
             {projects.length > 0 && (
               <div className={workExperience.length > 0 ? 'pt-2' : ''}>
                 {workExperience.length > 0 && (
-                  <p className="font-bold text-[13px] mb-1">Projects</p>
+                  <p className="font-bold text-[13px] mb-1">{t('Projects')}</p>
                 )}
                 <div className="space-y-3">
                   {projects.map((p) => (
@@ -164,13 +166,13 @@ export function CVPreview({ data }) {
 
       {/* Technical Skills (+ Languages) */}
       {(skillsLine || languagesLine) && (
-        <Section title="Technical Skills">
+        <Section title={t('Technical Skills')}>
           <div className="space-y-1 text-[13px]">
             {skillsLine && (
-              <p><span className="font-bold">Skills</span>: {skillsLine}</p>
+              <p><span className="font-bold">{t('Skills')}</span>: {skillsLine}</p>
             )}
             {languagesLine && (
-              <p><span className="font-bold">Languages</span>: {languagesLine}</p>
+              <p><span className="font-bold">{t('Languages')}</span>: {languagesLine}</p>
             )}
           </div>
         </Section>
@@ -180,7 +182,7 @@ export function CVPreview({ data }) {
       <div className="flex justify-end items-center gap-1.5 mt-6 pt-2 border-t border-slate-200">
         <img src="/Logo (1).png" alt="" className="h-3 w-auto object-contain opacity-80" />
         <span className="font-sans text-[8px] tracking-wide text-brand-dark font-semibold">
-          Made with THE VALUE
+          {t('Made with THE VALUE')}
         </span>
       </div>
     </motion.div>

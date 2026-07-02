@@ -7,13 +7,9 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { useLanguage } from '@/lib/i18n';
 
-const LEVEL_OPTIONS = [
-  { value: 'Beginner', label: 'Beginner' },
-  { value: 'Intermediate', label: 'Intermediate' },
-  { value: 'Advanced', label: 'Advanced' },
-  { value: 'Expert', label: 'Expert' },
-];
+const LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
 
 const LEVEL_BADGE = {
   Beginner: 'slate',
@@ -23,9 +19,11 @@ const LEVEL_BADGE = {
 };
 
 export function SkillsStep({ data, onChange }) {
+  const { t } = useLanguage();
   const [name, setName] = useState('');
   const [level, setLevel] = useState('Intermediate');
 
+  const levelOptions = LEVELS.map((v) => ({ value: v, label: t(v) }));
 
   function addSkill() {
     if (!name.trim()) return;
@@ -40,14 +38,14 @@ export function SkillsStep({ data, onChange }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-warm-light">Skills</h2>
-      <p className="text-sm text-silver">Add your technical and soft skills.</p>
+      <h2 className="text-xl font-semibold text-warm-light">{t('Skills')}</h2>
+      <p className="text-sm text-silver">{t('Add your technical and soft skills.')}</p>
 
       <div className="flex gap-3 items-end">
         <div className="flex-1">
           <Input
-            label="Skill Name"
-            placeholder="e.g. React, Python, Leadership…"
+            label={t('Skill Name')}
+            placeholder={t('e.g. React, Python, Leadership…')}
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && addSkill()}
@@ -55,14 +53,14 @@ export function SkillsStep({ data, onChange }) {
         </div>
         <div className="w-40">
           <Select
-            label="Level"
-            options={LEVEL_OPTIONS}
+            label={t('Level')}
+            options={levelOptions}
             value={level}
             onChange={(e) => setLevel(e.target.value)}
           />
         </div>
         <Button onClick={addSkill} leftIcon={<Plus size={15} />} className="shrink-0">
-          Add
+          {t('Add')}
         </Button>
       </div>
 
@@ -77,7 +75,7 @@ export function SkillsStep({ data, onChange }) {
               className="flex items-center gap-1.5 bg-surface-2 border border-brand/20 rounded-full px-3 py-1.5 text-sm"
             >
               <span className="font-medium text-warm">{skill.name}</span>
-              <Badge variant={LEVEL_BADGE[skill.level]}>{skill.level}</Badge>
+              <Badge variant={LEVEL_BADGE[skill.level]}>{t(skill.level)}</Badge>
               <button
                 onClick={() => removeSkill(skill.id)}
                 className="ml-1 text-silver hover:text-red-500 transition-colors"
@@ -88,7 +86,7 @@ export function SkillsStep({ data, onChange }) {
           ))}
         </AnimatePresence>
         {data.length === 0 && (
-          <p className="text-silver text-sm self-center">No skills added yet.</p>
+          <p className="text-silver text-sm self-center">{t('No skills added yet.')}</p>
         )}
       </div>
     </div>

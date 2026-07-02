@@ -7,9 +7,8 @@ import { Select } from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { JOB_TITLES, OTHER_VALUE, toOptions } from '@/lib/formOptions';
-
-const JOB_TITLE_OPTIONS = toOptions(JOB_TITLES);
+import { JOB_TITLES, OTHER_VALUE } from '@/lib/formOptions';
+import { useLanguage } from '@/lib/i18n';
 
 function newEntry() {
   return {
@@ -25,6 +24,11 @@ function newEntry() {
 }
 
 export function WorkExperienceStep({ data, onChange }) {
+  const { t } = useLanguage();
+  const jobTitleOptions = [
+    ...JOB_TITLES.map((v) => ({ value: v, label: t(v) })),
+    { value: OTHER_VALUE, label: t('Other (type your own)') },
+  ];
 
   function addEntry() {
     const entry = newEntry();
@@ -49,8 +53,8 @@ export function WorkExperienceStep({ data, onChange }) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl font-semibold text-warm-light">Work Experience</h2>
-      <p className="text-sm text-silver">List your professional experience, most recent first.</p>
+      <h2 className="text-xl font-semibold text-warm-light">{t('Work Experience')}</h2>
+      <p className="text-sm text-silver">{t('List your professional experience, most recent first.')}</p>
 
       <AnimatePresence initial={false}>
         {data.map((entry, i) => (
@@ -65,7 +69,7 @@ export function WorkExperienceStep({ data, onChange }) {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2 text-sm font-medium text-silver">
                   <Briefcase size={16} className="text-brand" />
-                  Position {i + 1}
+                  {t('Position')} {i + 1}
                 </div>
                 <button
                   onClick={() => removeEntry(entry.id)}
@@ -77,37 +81,37 @@ export function WorkExperienceStep({ data, onChange }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
-                  label="Company"
-                  placeholder="Company name"
+                  label={t('Company')}
+                  placeholder={t('Company name')}
                   value={entry.company}
                   onChange={(e) => updateEntry(entry.id, 'company', e.target.value)}
                 />
                 <div className="space-y-2">
                   <Select
-                    label="Position / Title"
-                    placeholder="Select position…"
-                    options={JOB_TITLE_OPTIONS}
+                    label={t('Position / Title')}
+                    placeholder={t('Select position…')}
+                    options={jobTitleOptions}
                     value={entry.positionOther ? OTHER_VALUE : entry.position}
                     onChange={(e) => selectPosition(entry.id, e.target.value)}
                   />
                   {entry.positionOther && (
                     <Input
-                      placeholder="Type your position / title"
+                      placeholder={t('Type your position / title')}
                       value={entry.position}
                       onChange={(e) => updateEntry(entry.id, 'position', e.target.value)}
                     />
                   )}
                 </div>
                 <Input
-                  label="Start Date"
-                  placeholder="MM/YYYY"
+                  label={t('Start Date')}
+                  placeholder={t('MM/YYYY')}
                   value={entry.startDate}
                   onChange={(e) => updateEntry(entry.id, 'startDate', e.target.value)}
                 />
                 {!entry.current && (
                   <Input
-                    label="End Date"
-                    placeholder="MM/YYYY"
+                    label={t('End Date')}
+                    placeholder={t('MM/YYYY')}
                     value={entry.endDate}
                     onChange={(e) => updateEntry(entry.id, 'endDate', e.target.value)}
                   />
@@ -121,13 +125,13 @@ export function WorkExperienceStep({ data, onChange }) {
                   onChange={(e) => updateEntry(entry.id, 'current', e.target.checked)}
                   className="w-4 h-4 rounded accent-brand"
                 />
-                I currently work here
+                {t('I currently work here')}
               </label>
 
               <div className="mt-4">
                 <Textarea
-                  label="Description"
-                  placeholder="Describe your responsibilities and achievements…"
+                  label={t('Description')}
+                  placeholder={t('Describe your responsibilities and achievements…')}
                   value={entry.description}
                   onChange={(e) => updateEntry(entry.id, 'description', e.target.value)}
                   showCount
@@ -141,12 +145,12 @@ export function WorkExperienceStep({ data, onChange }) {
 
       {data.length === 0 && (
         <div className="text-center py-8 text-silver text-sm border-2 border-dashed border-surface-2 rounded-xl">
-          No experience added yet.
+          {t('No experience added yet.')}
         </div>
       )}
 
       <Button variant="outline" size="sm" onClick={addEntry} leftIcon={<Plus size={15} />}>
-        Add Experience
+        {t('Add Experience')}
       </Button>
     </div>
   );

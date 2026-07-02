@@ -14,11 +14,13 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { saveCV } from '@/lib/storage';
 import { parseFile } from '@/lib/cvParser';
+import { useLanguage } from '@/lib/i18n';
 
 const EMPTY_INFO = { fullName: '', email: '', phone: '', location: '' };
 
 export default function UploadCVPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [pageState, setPageState] = useState('upload');
   const [parsedInfo, setParsedInfo] = useState(EMPTY_INFO);
   const [parseError, setParseError] = useState(null);
@@ -63,9 +65,9 @@ export default function UploadCVPage() {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-5">
             <Upload size={26} className="text-white" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-warm-light mb-3">Upload Your CV</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-warm-light mb-3">{t('Upload Your CV')}</h1>
           <p className="text-silver text-lg max-w-lg mx-auto">
-            Upload your CV in PDF format and we'll extract your information automatically.
+            {t("Upload your CV in PDF format and we'll extract your information automatically.")}
           </p>
         </motion.div>
 
@@ -87,8 +89,8 @@ export default function UploadCVPage() {
               className="flex flex-col items-center gap-4 py-20"
             >
               <div className="w-14 h-14 border-4 border-brand border-t-transparent rounded-full animate-spin" />
-              <p className="text-warm font-medium">Reading your CV…</p>
-              <p className="text-silver text-sm">Extracting your information</p>
+              <p className="text-warm font-medium">{t('Reading your CV…')}</p>
+              <p className="text-silver text-sm">{t('Extracting your information')}</p>
             </motion.div>
           )}
 
@@ -107,36 +109,36 @@ export default function UploadCVPage() {
                     <div className="flex items-start gap-3 mb-5 p-3 bg-amber-50 border border-amber-100 rounded-xl">
                       <AlertCircle size={16} className="text-amber-500 shrink-0 mt-0.5" />
                       <p className="text-sm text-amber-700">
-                        Couldn't auto-detect all fields. Please fill them in manually below.
+                        {t("Couldn't auto-detect all fields. Please fill them in manually below.")}
                       </p>
                     </div>
                   ) : (
                     <div className="flex items-start gap-3 mb-5 p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
                       <CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" />
                       <p className="text-sm text-emerald-700">
-                        Information extracted! Review and correct if needed, then continue.
+                        {t('Information extracted! Review and correct if needed, then continue.')}
                       </p>
                     </div>
                   )}
 
                   <div className="space-y-4">
                     <Input
-                      label="Full Name"
+                      label={t('Full Name')}
                       value={parsedInfo.fullName}
                       onChange={(e) => setParsedInfo((p) => ({ ...p, fullName: e.target.value }))}
                       leftElement={<User size={15} />}
-                      placeholder="Your full name"
+                      placeholder={t('Your full name')}
                     />
                     <Input
-                      label="Email Address"
+                      label={t('Email Address')}
                       type="email"
                       value={parsedInfo.email}
                       onChange={(e) => setParsedInfo((p) => ({ ...p, email: e.target.value }))}
                       leftElement={<Mail size={15} />}
-                      placeholder="you@example.com"
+                      placeholder={t('alex@example.com')}
                     />
                     <Input
-                      label="Phone Number"
+                      label={t('Phone Number')}
                       type="tel"
                       value={parsedInfo.phone}
                       onChange={(e) => setParsedInfo((p) => ({ ...p, phone: e.target.value }))}
@@ -144,20 +146,20 @@ export default function UploadCVPage() {
                       placeholder="+1 555 000 0000"
                     />
                     <Input
-                      label="Location"
+                      label={t('Location')}
                       value={parsedInfo.location}
                       onChange={(e) => setParsedInfo((p) => ({ ...p, location: e.target.value }))}
                       leftElement={<MapPin size={15} />}
-                      placeholder="City, Country"
+                      placeholder={t('City, Country')}
                     />
                   </div>
 
                   <div className="flex gap-3 mt-6">
                     <Button fullWidth onClick={saveAndContinue} rightIcon={<ArrowRight size={16} />}>
-                      Save & Go to Assessment
+                      {t('Save & Go to Assessment')}
                     </Button>
                     <Button variant="ghost" size="sm" onClick={() => setPageState('upload')}>
-                      Re-upload
+                      {t('Re-upload')}
                     </Button>
                   </div>
                 </Card>

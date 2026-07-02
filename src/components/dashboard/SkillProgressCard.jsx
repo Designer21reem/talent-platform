@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { ProgressBar } from '@/components/ui/ProgressBar';
+import { useLanguage } from '@/lib/i18n';
 
 const EMOJI_MAP = {
   Communication: '💬',
@@ -13,6 +14,7 @@ const EMOJI_MAP = {
 };
 
 export function SkillProgressCard({ skill, delay = 0 }) {
+  const { t } = useLanguage();
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -22,7 +24,7 @@ export function SkillProgressCard({ skill, delay = 0 }) {
     >
       <div className="flex items-center gap-3 mb-4">
         <span className="text-2xl">{EMOJI_MAP[skill.category] ?? '📊'}</span>
-        <h3 className="font-semibold text-white">{skill.category}</h3>
+        <h3 className="font-semibold text-white">{t(skill.category)}</h3>
       </div>
       <ProgressBar value={skill.score} showValue size="md" animated />
     </motion.div>

@@ -1,6 +1,7 @@
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { LanguageProvider } from '@/lib/i18n';
 
 export const metadata = {
   title: "THE VALUE's GOT TALENT",
@@ -15,9 +16,11 @@ export default function RootLayout({ children }) {
         <link rel="icon" type="image/png" href="/icon.png" />
       </head>
       <body className="min-h-screen flex flex-col bg-dark antialiased">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <LanguageProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </LanguageProvider>
       </body>
     </html>
   );
