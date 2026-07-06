@@ -6,8 +6,18 @@ A modern, fully responsive web platform built for **THE VALUE** that allows cand
 
 [talent-platform-xi.vercel.app](https://talent-platform-xi.vercel.app)
 
----
+## Recent Updates
 
+Version 0.1.1 includes:
+
+- Added English/Arabic language toggle across the app
+- Improved landing page hero visuals and stat bubbles
+- Added leaderboard experience and related UI components
+- Added auth gate and local sign-in flow for preview/testing
+- Added consent and Turnstile-related upload UI improvements
+- Refined CV upload, CV parser, and overall page polish
+
+---
 
 ## Pages
 
