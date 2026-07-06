@@ -17,29 +17,14 @@ Version 0.1.1 includes:
 - Added consent and Turnstile-related upload UI improvements
 - Refined CV upload, CV parser, and overall page polish
 
-> **Note:** the items below (Google Sign-In gate, leaderboard, consent
-> checkboxes, Turnstile bot-check) are implemented on the **frontend only**.
-> They are not yet wired up to a real backend — see
-> [Backend Status](#backend-status-frontend-only-for-now) for what each one
-> still needs.
-
 ---
 
-## Backend Status (frontend-only, for now)
+## Backend Status
 
-Everything below runs entirely in the browser. There is no server, database,
-or API behind any of it yet — it's built so the UI/UX is ready to plug a real
-backend in later.
-
-| Feature | Current state | Still needed for production |
-|---|---|---|
-| **Google Sign-In** ([src/lib/auth.jsx](src/lib/auth.jsx), [src/components/layout/AuthGate.jsx](src/components/layout/AuthGate.jsx)) | The whole site is gated behind Google Sign-In. The Google `id_token` is decoded **client-side only** to read name/email/picture and is kept in `localStorage`. A "Skip sign-in (dev preview only)" bypass exists for local development (disabled in production builds). | Send the `id_token` to a backend and verify it with Google before trusting the identity; issue a real session (cookie/JWT) instead of trusting `localStorage`. |
-| **Leaderboard** ([src/lib/leaderboardApi.js](src/lib/leaderboardApi.js)) | Candidate rankings are **generated mock data** (deterministic per sector, reshuffled every minute) — no real candidates or scores. | Replace with real endpoints, e.g. `GET /api/sectors/:sector/top` and `GET /api/sectors/:sector/leaderboard`. |
-| **Consent checkboxes** ([src/components/upload/ConsentCheckboxes.jsx](src/components/upload/ConsentCheckboxes.jsx)) | Captures consent (terms, recruiter visibility, leaderboard visibility) in local component state only. | Persist consent choices server-side against the candidate's record. |
-| **Turnstile bot-check** ([src/components/ui/Turnstile.jsx](src/components/ui/Turnstile.jsx)) | Uses Cloudflare's public **test site key** (always passes) — verification is not real yet. | Swap in a real Turnstile site key and verify the token server-side before accepting the submission. |
-
-All four are marked with `TODO(backend)` / `TODO(client)` comments in the
-source so they're easy to find when backend work starts.
+- **Google Sign-In** ([src/lib/auth.jsx](src/lib/auth.jsx)) — gates the site; frontend-only for now, no backend yet.
+- **Leaderboard** ([src/lib/leaderboardApi.js](src/lib/leaderboardApi.js)) — mock data; frontend-only for now, no backend yet.
+- **Consent checkboxes** ([src/components/upload/ConsentCheckboxes.jsx](src/components/upload/ConsentCheckboxes.jsx)) — frontend-only for now, no backend yet.
+- **Turnstile bot-check** ([src/components/ui/Turnstile.jsx](src/components/ui/Turnstile.jsx)) — frontend-only for now, no backend yet.
 
 ---
 
@@ -93,7 +78,7 @@ source so they're easy to find when backend work starts.
 
 ## Assumptions Made
 
-- **No backend yet** — The brief did not specify a server, so all data is persisted in `localStorage`. A Google Sign-In gate now exists (see [Backend Status](#backend-status-frontend-only-for-now)), but it only decodes the identity token in the browser — there is no server to verify it or issue real sessions yet. A real product would add a backend, database, and server-side auth verification.
+- **No backend yet** — The brief did not specify a server, so all data is persisted in `localStorage`. A Google Sign-In gate now exists (see [Backend Status](#backend-status)), but it only decodes the identity token in the browser — there is no server to verify it or issue real sessions yet. A real product would add a backend, database, and server-side auth verification.
 - **CV parsing is best-effort** — PDF and DOCX text extraction relies on pattern matching (regex) for name, email, and phone. It works well on standard CV formats but may miss fields in heavily styled or scanned documents. The user is always shown the parsed result and can edit before saving.
 - **Assessment questions are static** — The 6 skill questions are hardcoded. The assumption is that a fixed question set is sufficient for a candidate-facing demo; a production system would pull questions from an API.
 - **Phone number is the identity key** — The assessment gate uses the phone number as the sole identifier. This was the simplest unique-enough value available without requiring sign-up.
