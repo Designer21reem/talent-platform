@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UploadCloud, FileText, CheckCircle2, XCircle, X } from 'lucide-react';
+import { UploadCloud, FileText, ShieldCheck, CheckCircle2, XCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { cn } from '@/lib/utils';
@@ -42,7 +42,7 @@ function simulateUpload(onProgress, onComplete) {
   }, 120);
 }
 
-export function FileUploader({ onFile }) {
+export function FileUploader({ onFile, onValidateContent }) {
   const { t } = useLanguage();
   const inputRef = useRef(null);
   const [dragging, setDragging] = useState(false);
@@ -53,15 +53,25 @@ export function FileUploader({ onFile }) {
     errorMessage: null,
   });
 
-  function handleFile(file) {
-
+  async function handleFile(file) {
     const error = validateFile(file);
     if (error) {
       setState({ status: 'error', fileName: file.name, progress: 0, errorMessage: error });
       return;
     }
 
-    setState({ status: 'uploading', fileName: file.name, progress: 0, errorMessage: null });
+    // Confirm the file actually contains CV-like data before running the
+    // upload animation — no point animating a progress bar for a file
+    // we're about to reject.
+    setState({ status: 'confirming', fileName: file.name, progress: 0, errorMessage: null });
+
+    const contentError = onValidateContent ? await onValidateContent(file) : null;
+    if (contentError) {
+      setState({ status: 'invalid', fileName: file.name, progress: 0, errorMessage: contentError });
+      return;
+    }
+
+    setState((prev) => ({ ...prev, status: 'uploading' }));
 
     simulateUpload(
       (p) => {
@@ -103,13 +113,13 @@ export function FileUploader({ onFile }) {
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
-        onClick={() => status === 'idle' || status === 'error' ? inputRef.current?.click() : undefined}
+        onClick={() => status === 'idle' || status === 'error' || status === 'invalid' ? inputRef.current?.click() : undefined}
         className={cn(
           'relative border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-200',
           'cursor-pointer select-none',
           dragging
             ? 'border-brand bg-brand/10 scale-[1.01]'
-            : status === 'error'
+            : status === 'error' || status === 'invalid'
             ? 'border-red-500 bg-red-500/10'
             : status === 'success'
             ? 'border-emerald-400 bg-emerald-400/10 cursor-default'
@@ -143,6 +153,26 @@ export function FileUploader({ onFile }) {
                   <span className="text-brand underline underline-offset-2">{t('browse')}</span>
                 </p>
                 <p className="text-silver text-sm mt-1">{t('PDF, DOCX, JPG, JPEG, PNG supported · Max 10 MB')}</p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Confirming — quick content check before the upload animation */}
+          {status === 'confirming' && (
+            <motion.div
+              key="confirming"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className="flex flex-col items-center gap-4"
+            >
+              <div className="w-14 h-14 rounded-xl bg-brand/20 flex items-center justify-center">
+                <ShieldCheck size={26} className="text-brand" />
+              </div>
+              <p className="font-medium text-warm text-sm truncate max-w-xs">{fileName}</p>
+              <div className="flex items-center gap-2 text-xs text-silver">
+                <span className="w-3.5 h-3.5 border-2 border-brand border-t-transparent rounded-full animate-spin shrink-0" />
+                {t('Confirming your information…')}
               </div>
             </motion.div>
           )}
@@ -194,7 +224,7 @@ export function FileUploader({ onFile }) {
             </motion.div>
           )}
 
-          {/* Error */}
+          {/* Error — wrong file type/size, caught instantly on selection */}
           {status === 'error' && (
             <motion.div
               key="error"
@@ -208,6 +238,28 @@ export function FileUploader({ onFile }) {
               </div>
               <div>
                 <p className="font-semibold text-red-700">{t('Upload failed')}</p>
+                <p className="text-sm text-red-500 mt-0.5">{t(errorMessage)}</p>
+              </div>
+              <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); reset(); }}>
+                {t('Try again')}
+              </Button>
+            </motion.div>
+          )}
+
+          {/* Invalid — right file type, but content doesn't look like a CV */}
+          {status === 'invalid' && (
+            <motion.div
+              key="invalid"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col items-center gap-4"
+            >
+              <div className="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center">
+                <XCircle size={28} className="text-red-500" />
+              </div>
+              <div>
+                <p className="font-semibold text-red-700">{t("This doesn't look like a CV")}</p>
                 <p className="text-sm text-red-500 mt-0.5">{t(errorMessage)}</p>
               </div>
               <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); reset(); }}>

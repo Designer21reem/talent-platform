@@ -298,9 +298,11 @@ export default function LandingPage() {
   useEffect(() => {
     const t1 = setTimeout(() => setStage(1), 1200);
     const t2 = setTimeout(() => setStage(2), 1800);
+    const t3 = setTimeout(() => setStage(3), 2400);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
+      clearTimeout(t3);
     };
   }, []);
 
@@ -392,11 +394,18 @@ export default function LandingPage() {
               </motion.div>
             )}
 
-            <div className="inline-flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-surface-2 border-t border-b border-surface-2">
-              {STATS.map((stat, i) => (
-                <StatBubble key={stat.label} {...stat} delay={i * 0.15} />
-              ))}
-            </div>
+            {stage >= 3 && (
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="inline-flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-surface-2 border-t border-b border-surface-2"
+              >
+                {STATS.map((stat, i) => (
+                  <StatBubble key={stat.label} {...stat} delay={i * 0.15} />
+                ))}
+              </motion.div>
+            )}
           </div>
         </Container>
       </section>

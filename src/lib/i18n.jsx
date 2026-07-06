@@ -78,6 +78,7 @@ export const AR_DICT = {
     'ارفع سيرتك الذاتية بصيغة PDF وسنقوم باستخراج بياناتك تلقائياً.',
   "Upload your CV and we'll take care of the rest.": 'ارفع سيرتك الذاتية وسنتكفّل بالباقي.',
   'Reading your CV…': 'جارٍ قراءة سيرتك الذاتية…',
+  'Confirming your information…': 'جارٍ التحقق من بياناتك…',
   'Uploading your CV…': 'جارٍ رفع سيرتك الذاتية…',
   'Extracting your information': 'جارٍ استخراج بياناتك',
   "Couldn't auto-detect all fields. Please fill them in manually below.":
@@ -117,6 +118,8 @@ export const AR_DICT = {
   "This doesn't look like a CV": 'هذا الملف لا يبدو سيرة ذاتية',
   "We couldn't find a name, email, or phone number in this file. Please upload your actual CV or resume and try again.":
     'لم نتمكن من العثور على اسم أو بريد إلكتروني أو رقم هاتف في هذا الملف. يرجى رفع سيرتك الذاتية الفعلية والمحاولة مرة أخرى.',
+  'This looks like a regular photo, not a scanned CV or document. Please upload a clear photo or scan of your actual CV.':
+    'هذه الصورة تبدو صورة عادية وليست مسحاً لسيرة ذاتية أو مستند. يرجى رفع صورة أو مسح واضح لسيرتك الذاتية الفعلية.',
   'Uploading…': 'جارٍ الرفع…',
   'Upload successful!': 'تم الرفع بنجاح!',
   'Upload a different file': 'رفع ملف آخر',
