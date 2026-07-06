@@ -5,7 +5,14 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 // TODO(backend): the id_token is only decoded client-side here to gate the
 // UI and show basic profile info. A real deployment must send this token
 // to the backend and verify it there before trusting the identity.
-export const GOOGLE_CLIENT_ID = '670447319421-l63joridhuamj4jg15uqupj7emthrnv2.apps.googleusercontent.com';
+export const GOOGLE_CLIENT_ID =
+  process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
+  '670447319421-l63joridhuamj4jg15uqupj7emthrnv2.apps.googleusercontent.com';
+
+// Toggle via the NEXT_PUBLIC_ALLOW_SKIP_SIGNIN env var (set on Vercel).
+// Lets people in without Google sign-in while the OAuth consent screen
+// isn't verified yet. Turn it off once Google sign-in is fully working.
+export const ALLOW_SKIP_SIGNIN = process.env.NEXT_PUBLIC_ALLOW_SKIP_SIGNIN === 'true';
 
 const STORAGE_KEY = 'talent_google_user';
 const AuthContext = createContext(null);
@@ -53,15 +60,15 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(STORAGE_KEY);
   }, []);
 
-  // Dev-only escape hatch: the Google button only renders on origins that
-  // are registered in Google Cloud Console for GOOGLE_CLIENT_ID. Localhost
-  // isn't registered there yet, so without this the sign-in gate would
-  // lock everyone out of `next dev`. Never available in a production build.
+  // Escape hatch for origins where the Google button won't work yet (e.g.
+  // localhost, or a Vercel domain not yet registered in Google Cloud Console
+  // for GOOGLE_CLIENT_ID). Only active when ALLOW_SKIP_SIGNIN is on.
   const devBypass = useCallback(() => {
-    if (process.env.NODE_ENV === 'production') return;
-    const nextUser = { name: 'Local Preview', email: 'dev@localhost', picture: null };
-    setUser(nextUser);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
+    if (process.env.NODE_ENV !== 'production' || ALLOW_SKIP_SIGNIN) {
+      const nextUser = { name: 'Local Preview', email: 'dev@localhost', picture: null };
+      setUser(nextUser);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
+    }
   }, []);
 
   return (

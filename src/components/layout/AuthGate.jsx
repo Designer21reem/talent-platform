@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useAuth, GOOGLE_CLIENT_ID } from '@/lib/auth';
+import { useAuth, GOOGLE_CLIENT_ID, ALLOW_SKIP_SIGNIN } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
 
 const SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
@@ -71,12 +71,12 @@ export function AuthGate({ children }) {
           </p>
           <div className="flex justify-center" ref={buttonRef} />
 
-          {process.env.NODE_ENV !== 'production' && (
+          {(process.env.NODE_ENV !== 'production' || ALLOW_SKIP_SIGNIN) && (
             <button
               onClick={devBypass}
               className="mt-6 text-xs text-silver hover:text-warm underline underline-offset-2 transition-colors"
             >
-              {t('Skip sign-in (dev preview only)')}
+              {t('Skip sign-in')}
             </button>
           )}
         </div>
