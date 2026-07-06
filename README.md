@@ -6,25 +6,12 @@ A modern, fully responsive web platform built for **THE VALUE** that allows cand
 
 [talent-platform-xi.vercel.app](https://talent-platform-xi.vercel.app)
 
-## Recent Updates
-
-Version 0.1.1 includes:
-
-- Added English/Arabic language toggle across the app
-- Improved landing page hero visuals and stat bubbles
-- Added leaderboard experience and related UI components
-- Added auth gate and local sign-in flow for preview/testing
-- Added consent and Turnstile-related upload UI improvements
-- Refined CV upload, CV parser, and overall page polish
-
----
-
 ## Backend Status
 
-- **Google Sign-In** ([src/lib/auth.jsx](src/lib/auth.jsx)) — gates the site; frontend-only for now, no backend yet.
-- **Leaderboard** ([src/lib/leaderboardApi.js](src/lib/leaderboardApi.js)) — mock data; frontend-only for now, no backend yet.
-- **Consent checkboxes** ([src/components/upload/ConsentCheckboxes.jsx](src/components/upload/ConsentCheckboxes.jsx)) — frontend-only for now, no backend yet.
-- **Turnstile bot-check** ([src/components/ui/Turnstile.jsx](src/components/ui/Turnstile.jsx)) — frontend-only for now, no backend yet.
+- **Google Sign-In** (`src/lib/auth.jsx`) — gates the site; frontend-only for now, no backend yet.
+- **Leaderboard** (`src/lib/leaderboardApi.js`) — mock data; frontend-only for now, no backend yet.
+- **Consent checkboxes** (`src/components/upload/ConsentCheckboxes.jsx`) — frontend-only for now, no backend yet.
+- **Turnstile bot-check** (`src/components/ui/Turnstile.jsx`) — frontend-only for now, no backend yet.
 
 ---
 
@@ -35,7 +22,7 @@ Version 0.1.1 includes:
 | **Landing** | Hero section, features overview, stats, and call-to-action |
 | **About** | THE VALUE organization info, mission, vision, and founder profile |
 | **Upload CV** | Drag-and-drop PDF upload with automatic text extraction — name, email, and phone are parsed from the file and saved directly to the profile |
-| **Build CV** | 7-step wizard (Personal Info → Education → Experience → Skills → Languages → Certifications → Projects) with live preview and one-click PDF download |
+| **Build CV** | 4-step wizard (Personal Info → Education & Certifications → Experience & Projects → Skills & Languages) with live preview and one-click PDF download |
 | **Assessment** | Phone-gated skill assessment with 6 questions — each question must be answered before moving to the next, dot navigation is locked for unanswered questions |
 | **Dashboard** | Personalized skills report with overall score, skill breakdown, strengths, and areas for improvement |
 
