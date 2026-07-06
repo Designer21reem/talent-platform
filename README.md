@@ -8,10 +8,10 @@ A modern, fully responsive web platform built for **THE VALUE** that allows cand
 
 ## Backend Status
 
-- **Google Sign-In** (`src/lib/auth.jsx`) — gates the site; frontend-only for now, no backend yet.
-- **Leaderboard** (`src/lib/leaderboardApi.js`) — mock data; frontend-only for now, no backend yet.
-- **Consent checkboxes** (`src/components/upload/ConsentCheckboxes.jsx`) — frontend-only for now, no backend yet.
-- **Turnstile bot-check** (`src/components/ui/Turnstile.jsx`) — frontend-only for now, no backend yet.
+- **Google Sign-In** — signs candidates in with their Google account and gates the whole site behind it. Frontend-only for now, no backend yet — instead of a real server session, the identity is read from Google's token directly in the browser and kept in `localStorage`.
+- **Leaderboard** — ranks candidates by assessment score per sector. Frontend-only for now, no backend yet — the rankings shown are generated mock data, not real candidates.
+- **Consent checkboxes** — captures a candidate's consent (terms, recruiter visibility, leaderboard visibility). Frontend-only for now, no backend yet — the choices are only kept in the page's local state, not saved anywhere.
+- **Turnstile bot-check** — verifies a real person is submitting the form, not a bot. Frontend-only for now, no backend yet — it runs with Cloudflare's public test key, which always passes, since there's no server yet to verify it for real.
 
 ---
 
