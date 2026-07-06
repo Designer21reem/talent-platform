@@ -1,6 +1,13 @@
+const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png'];
+
 export async function parseFile(file) {
   const ext = file.name.split('.').pop()?.toLowerCase();
   if (ext === 'docx') return parseDOCX(file);
+  // Image uploads (scanned CVs) have no text layer to extract — skip
+  // straight to manual entry instead of feeding a non-PDF into pdf.js.
+  if (IMAGE_EXTENSIONS.includes(ext ?? '')) {
+    return { fullName: '', email: '', phone: '', location: '' };
+  }
   return parsePDF(file);
 }
 

@@ -9,12 +9,14 @@ import { Container } from './Container';
 import { LanguageToggle } from './LanguageToggle';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/lib/i18n';
+import { useAuth } from '@/lib/auth';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/upload-cv', label: 'Upload CV' },
   { href: '/build-cv', label: 'CV Builder' },
   { href: '/assessment', label: 'Assessment' },
+  { href: '/leaderboard', label: 'Leaderboard' },
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/about', label: 'About' },
 ];
@@ -23,6 +25,7 @@ export function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useLanguage();
+  const { user, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 bg-dark/95 backdrop-blur-md border-b border-brand/20 shadow-sm">
@@ -35,7 +38,7 @@ export function Header() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden xl:flex items-center gap-1">
             {NAV_LINKS.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -55,13 +58,29 @@ export function Header() {
             })}
           </nav>
 
-          <div className="hidden md:block">
+          <div className="hidden xl:flex items-center gap-3">
             <LanguageToggle />
+            {user && (
+              <button
+                onClick={signOut}
+                className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-surface-2 hover:border-brand/40 transition-colors"
+                title={t('Sign out')}
+              >
+                {user.picture ? (
+                  <img src={user.picture} alt={user.name} className="w-6 h-6 rounded-full" referrerPolicy="no-referrer" />
+                ) : (
+                  <span className="w-6 h-6 rounded-full bg-brand/20 text-brand text-[10px] font-semibold flex items-center justify-center">
+                    {user.name?.[0]}
+                  </span>
+                )}
+                <span className="text-xs font-medium text-warm">{t('Sign out')}</span>
+              </button>
+            )}
           </div>
 
           {/* Mobile toggle */}
           <button
-            className="md:hidden p-2 rounded-lg text-warm hover:bg-surface-2"
+            className="xl:hidden p-2 rounded-lg text-warm hover:bg-surface-2"
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Toggle menu"
           >
@@ -76,7 +95,7 @@ export function Header() {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
-          className="md:hidden border-t border-brand/20 bg-dark"
+          className="xl:hidden border-t border-brand/20 bg-dark"
         >
           <Container>
             <nav className="py-3 flex flex-col gap-1">
@@ -98,8 +117,16 @@ export function Header() {
                   </Link>
                 );
               })}
-              <div className="px-3 pt-2">
+              <div className="px-3 pt-2 flex items-center gap-3">
                 <LanguageToggle />
+                {user && (
+                  <button
+                    onClick={signOut}
+                    className="text-xs font-medium text-warm hover:text-white transition-colors"
+                  >
+                    {t('Sign out')}
+                  </button>
+                )}
               </div>
             </nav>
           </Container>

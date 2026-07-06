@@ -1,7 +1,9 @@
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { AuthGate } from '@/components/layout/AuthGate';
 import { LanguageProvider } from '@/lib/i18n';
+import { AuthProvider } from '@/lib/auth';
 
 export const metadata = {
   title: "THE VALUE's GOT TALENT",
@@ -17,9 +19,13 @@ export default function RootLayout({ children }) {
       </head>
       <body className="min-h-screen flex flex-col bg-dark antialiased">
         <LanguageProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <AuthProvider>
+            <AuthGate>
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </AuthGate>
+          </AuthProvider>
         </LanguageProvider>
       </body>
     </html>

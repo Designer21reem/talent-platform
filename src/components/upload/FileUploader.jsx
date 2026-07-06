@@ -8,13 +8,19 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/lib/i18n';
 
-const ACCEPTED_TYPES = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-const ACCEPTED_EXTENSIONS = ['.pdf', '.docx'];
+const ACCEPTED_TYPES = [
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'image/jpeg',
+  'image/png',
+];
+const ACCEPTED_EXTENSIONS = ['.pdf', '.docx', '.jpg', '.jpeg', '.png'];
+const ACCEPTED_FILE_EXTS = ['pdf', 'docx', 'jpg', 'jpeg', 'png'];
 
 function validateFile(file) {
   const ext = file.name.split('.').pop()?.toLowerCase();
-  if (!ACCEPTED_TYPES.includes(file.type) && !['pdf', 'docx'].includes(ext ?? '')) {
-    return `Invalid file type. Only PDF and DOCX are accepted.`;
+  if (!ACCEPTED_TYPES.includes(file.type) && !ACCEPTED_FILE_EXTS.includes(ext ?? '')) {
+    return `Invalid file type. Only PDF, DOCX, JPG, JPEG, and PNG are accepted.`;
   }
   if (file.size > 10 * 1024 * 1024) {
     return 'File size exceeds 10 MB limit.';
@@ -136,7 +142,7 @@ export function FileUploader({ onFile }) {
                   {t('Drop your CV here or')}{' '}
                   <span className="text-brand underline underline-offset-2">{t('browse')}</span>
                 </p>
-                <p className="text-silver text-sm mt-1">{t('PDF and DOCX supported · Max 10 MB')}</p>
+                <p className="text-silver text-sm mt-1">{t('PDF, DOCX, JPG, JPEG, PNG supported · Max 10 MB')}</p>
               </div>
             </motion.div>
           )}
@@ -224,7 +230,7 @@ export function FileUploader({ onFile }) {
 
       {/* Accepted formats note */}
       <p className="text-center text-xs text-silver mt-3">
-        {t('Accepted formats: PDF, DOCX')} &nbsp;·&nbsp; {t('Maximum file size: 10 MB')}
+        {t('Accepted formats: PDF, DOCX, JPG, JPEG, PNG')} &nbsp;·&nbsp; {t('Maximum file size: 10 MB')}
       </p>
     </div>
   );
