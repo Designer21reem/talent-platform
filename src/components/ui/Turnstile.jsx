@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { cn } from '@/lib/utils';
+import { useLanguage } from '@/lib/i18n';
 
 // TODO(client): replace with the real Cloudflare Turnstile site key from
 // dash.cloudflare.com -> Turnstile once issued. This is Cloudflare's
@@ -36,8 +38,10 @@ function loadTurnstileScript() {
 // upload/submit action is allowed to proceed. Call sites should keep the
 // verified token in state and disable their submit button until it's set.
 export function Turnstile({ onVerify, onExpire, className }) {
+  const { t } = useLanguage();
   const containerRef = useRef(null);
   const widgetIdRef = useRef(null);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -50,6 +54,7 @@ export function Turnstile({ onVerify, onExpire, className }) {
         'expired-callback': () => onExpire?.(),
         'error-callback': () => onExpire?.(),
       });
+      setReady(true);
     });
 
     return () => {
@@ -61,5 +66,17 @@ export function Turnstile({ onVerify, onExpire, className }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div ref={containerRef} className={className} />;
+  return (
+    <div className={cn('relative', className)}>
+      {/* Shown while the Cloudflare script + widget are still loading, so
+          the gap doesn't read as the site being broken. */}
+      {!ready && (
+        <div className="flex items-center gap-2 text-xs text-silver py-2">
+          <span className="w-3.5 h-3.5 border-2 border-brand border-t-transparent rounded-full animate-spin shrink-0" />
+          {t('Preparing verification…')}
+        </div>
+      )}
+      <div ref={containerRef} className={ready ? '' : 'hidden'} />
+    </div>
+  );
 }

@@ -12,7 +12,7 @@ const Select = forwardRef(({ label, error, options, placeholder, className, id, 
       {label && (
         <label htmlFor={selectId} className="tv-label">
           {label}
-          {props.required && <span className="text-red-500 ml-1">*</span>}
+          {props.required && <span className="text-red-500 ms-1">*</span>}
         </label>
       )}
       <div className="relative">
@@ -20,7 +20,7 @@ const Select = forwardRef(({ label, error, options, placeholder, className, id, 
           ref={ref}
           id={selectId}
           className={cn(
-            'tv-field w-full appearance-none rounded-lg border px-4 py-2.5 pr-10 text-sm',
+            'tv-field w-full appearance-none rounded-lg border px-4 py-2.5 pe-10 text-sm',
             'transition-all duration-150',
             error && 'tv-field-error',
             className
@@ -40,7 +40,7 @@ const Select = forwardRef(({ label, error, options, placeholder, className, id, 
         </select>
         <ChevronDown
           size={16}
-          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-silver"
+          className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-silver"
         />
       </div>
       {error && <p className="text-xs text-red-500">{error}</p>}

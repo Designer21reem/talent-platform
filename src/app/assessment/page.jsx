@@ -171,7 +171,7 @@ export default function AssessmentPage() {
               <span>{t('~10 minutes')}</span>
             </div>
 
-            <Button fullWidth size="lg" onClick={startAssessment} rightIcon={<ChevronRight size={18} />}>
+            <Button fullWidth size="lg" onClick={startAssessment} rightIcon={<ChevronRight size={18} className="rtl:-scale-x-100" />}>
               {t('Start Assessment')}
             </Button>
           </motion.div>
@@ -273,13 +273,13 @@ export default function AssessmentPage() {
             size="sm"
             onClick={goBack}
             disabled={currentQ === 0}
-            leftIcon={<ChevronLeft size={16} />}
+            leftIcon={<ChevronLeft size={16} className="rtl:-scale-x-100" />}
           >
             {t('Back')}
           </Button>
 
           {currentQ < ASSESSMENT_QUESTIONS.length - 1 ? (
-            <Button size="sm" onClick={goNext} rightIcon={<ChevronRight size={16} />}>
+            <Button size="sm" onClick={goNext} rightIcon={<ChevronRight size={16} className="rtl:-scale-x-100" />}>
               {t('Next')}
             </Button>
           ) : (

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import {
-  Upload, CheckCircle2, FileEdit, ArrowRight, RotateCcw,
+  Upload, CheckCircle2, FileEdit, ArrowRight, RotateCcw, XCircle,
 } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
 import { FileUploader } from '@/components/upload/FileUploader';
@@ -13,7 +13,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Turnstile } from '@/components/ui/Turnstile';
 import { saveCV } from '@/lib/storage';
-import { parseFile } from '@/lib/cvParser';
+import { parseFile, IMAGE_EXTENSIONS } from '@/lib/cvParser';
 import { useLanguage } from '@/lib/i18n';
 import Link from 'next/link';
 
@@ -36,11 +36,21 @@ export default function UploadCVPage() {
       // profile. We still run the local parse so we have something to
       // hand off, but no longer show it for manual correction.
       const info = await parseFile(file);
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      // Scanned images have no text layer, so an empty result is expected
+      // there. For PDF/DOCX, finding nothing at all means this probably
+      // isn't a CV — flag it instead of silently continuing.
+      const looksLikeCV = IMAGE_EXTENSIONS.includes(ext ?? '') || !!(info.fullName || info.email || info.phone);
+      if (!looksLikeCV) {
+        setParsedInfo(EMPTY_INFO);
+        setPageState('not-a-cv');
+        return;
+      }
       setParsedInfo(info);
+      setPageState('uploaded');
     } catch {
       setParsedInfo(EMPTY_INFO);
-    } finally {
-      setPageState('uploaded');
+      setPageState('not-a-cv');
     }
   }
 
@@ -112,6 +122,30 @@ export default function UploadCVPage() {
             </motion.div>
           )}
 
+          {/* Not a CV — extraction found nothing usable in a PDF/DOCX */}
+          {pageState === 'not-a-cv' && (
+            <motion.div
+              key="not-a-cv"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="max-w-xl mx-auto"
+            >
+              <Card padding="lg" className="text-center">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-red-100 mb-5">
+                  <XCircle size={26} className="text-red-500" />
+                </div>
+                <p className="font-semibold text-red-700 text-lg mb-2">{t("This doesn't look like a CV")}</p>
+                <p className="text-silver text-sm mb-6 leading-relaxed">
+                  {t("We couldn't find a name, email, or phone number in this file. Please upload your actual CV or resume and try again.")}
+                </p>
+                <Button onClick={() => setPageState('upload')} leftIcon={<RotateCcw size={15} />}>
+                  {t('Try again')}
+                </Button>
+              </Card>
+            </motion.div>
+          )}
+
           {/* Uploaded — consent, verification, and the go-to-assessment CTA */}
           {pageState === 'uploaded' && (
             <motion.div
@@ -144,7 +178,7 @@ export default function UploadCVPage() {
                   size="lg"
                   onClick={handleSubmit}
                   disabled={!canSubmit}
-                  rightIcon={<ArrowRight size={16} />}
+                  rightIcon={<ArrowRight size={16} className="rtl:-scale-x-100" />}
                 >
                   {submitting ? t('Processing…') : t('Upload & Go to Assessment')}
                 </Button>

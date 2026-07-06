@@ -40,7 +40,7 @@ export function QuestionCard({ question, answer, questionIndex, total, onChange 
                   onChange(option.id);
                 }}
                 className={cn(
-                  'w-full text-left px-4 py-3.5 rounded-xl border-2 text-sm transition-all duration-150',
+                  'w-full text-start px-4 py-3.5 rounded-xl border-2 text-sm transition-all duration-150',
                   'flex items-center gap-3',
                   selected
                     ? 'border-brand bg-brand/10 text-white'
@@ -57,7 +57,7 @@ export function QuestionCard({ question, answer, questionIndex, total, onChange 
                     <span className="w-2 h-2 rounded-full bg-white" />
                   )}
                 </span>
-                <span className="font-medium text-xs text-silver mr-1">{option.id.toUpperCase()}.</span>
+                <span className="font-medium text-xs text-silver me-1">{option.id.toUpperCase()}.</span>
                 {t(option.label)}
               </button>
             );

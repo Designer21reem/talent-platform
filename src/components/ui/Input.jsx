@@ -11,12 +11,12 @@ const Input = forwardRef(({ label, error, hint, leftElement, className, id, ...p
       {label && (
         <label htmlFor={inputId} className="tv-label">
           {label}
-          {props.required && <span className="text-red-500 ml-1">*</span>}
+          {props.required && <span className="text-red-500 ms-1">*</span>}
         </label>
       )}
       <div className="relative">
         {leftElement && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-silver">
+          <div className="absolute start-3 top-1/2 -translate-y-1/2 text-silver">
             {leftElement}
           </div>
         )}
@@ -26,7 +26,7 @@ const Input = forwardRef(({ label, error, hint, leftElement, className, id, ...p
           className={cn(
             'tv-field w-full rounded-lg border px-4 py-2.5 text-sm transition-all duration-150',
             error && 'tv-field-error',
-            leftElement && 'pl-10',
+            leftElement && 'ps-10',
             className
           )}
           {...props}

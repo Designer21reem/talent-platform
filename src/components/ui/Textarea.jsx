@@ -12,7 +12,7 @@ const Textarea = forwardRef(({ label, error, hint, showCount, maxLength, classNa
       {label && (
         <label htmlFor={textareaId} className="tv-label">
           {label}
-          {props.required && <span className="text-red-500 ml-1">*</span>}
+          {props.required && <span className="text-red-500 ms-1">*</span>}
         </label>
       )}
       <textarea

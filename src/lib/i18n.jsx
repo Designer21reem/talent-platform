@@ -114,6 +114,9 @@ export const AR_DICT = {
   'browse': 'تصفّح',
   'PDF and DOCX supported · Max 10 MB': 'صيغ PDF وDOCX مدعومة · الحد الأقصى 10 ميجابايت',
   'PDF, DOCX, JPG, JPEG, PNG supported · Max 10 MB': 'صيغ PDF وDOCX وJPG وJPEG وPNG مدعومة · الحد الأقصى 10 ميجابايت',
+  "This doesn't look like a CV": 'هذا الملف لا يبدو سيرة ذاتية',
+  "We couldn't find a name, email, or phone number in this file. Please upload your actual CV or resume and try again.":
+    'لم نتمكن من العثور على اسم أو بريد إلكتروني أو رقم هاتف في هذا الملف. يرجى رفع سيرتك الذاتية الفعلية والمحاولة مرة أخرى.',
   'Uploading…': 'جارٍ الرفع…',
   'Upload successful!': 'تم الرفع بنجاح!',
   'Upload a different file': 'رفع ملف آخر',
@@ -143,6 +146,9 @@ export const AR_DICT = {
     'سجّل الدخول عبر Google لاستخدام THE VALUE — ارفع سيرتك الذاتية، أكمل التقييمات، وتابع ترتيبك.',
   'Skip sign-in (dev preview only)': 'تخطي تسجيل الدخول (للمعاينة أثناء التطوير فقط)',
   'Sign out': 'تسجيل الخروج',
+
+  // ── Turnstile ─────────────────────────────────────────────────
+  'Preparing verification…': 'جارٍ تجهيز التحقق…',
 
   // ── CV Builder shell ──────────────────────────────────────────
   'Personal': 'البيانات الشخصية',
@@ -184,6 +190,7 @@ export const AR_DICT = {
   'Required to start the assessment later': 'مطلوب لبدء التقييم لاحقاً',
   'Country': 'الدولة',
   'Code': 'المفتاح',
+  'digits': 'أرقام',
   '770 123 4567': '770 123 4567',
 
   // ── Education step ────────────────────────────────────────────

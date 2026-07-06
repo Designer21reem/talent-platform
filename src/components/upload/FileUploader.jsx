@@ -221,7 +221,7 @@ export function FileUploader({ onFile }) {
         {status === 'uploading' && (
           <button
             onClick={(e) => { e.stopPropagation(); reset(); }}
-            className="absolute top-3 right-3 p-1 rounded-full text-silver hover:text-warm hover:bg-surface transition-colors"
+            className="absolute top-3 end-3 p-1 rounded-full text-silver hover:text-warm hover:bg-surface transition-colors"
           >
             <X size={16} />
           </button>

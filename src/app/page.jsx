@@ -79,7 +79,7 @@ function TypewriterText({ text, className, startDelay = 0, speed = 18, onDone })
   return (
     <p className={className}>
       {text.slice(0, count)}
-      {!done && <span className="inline-block w-0.5 h-[1em] align-middle bg-brand ml-0.5 animate-pulse" />}
+      {!done && <span className="inline-block w-0.5 h-[1em] align-middle bg-brand ms-0.5 animate-pulse" />}
     </p>
   );
 }

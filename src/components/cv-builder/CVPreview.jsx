@@ -22,7 +22,7 @@ function Bullets({ text }) {
   const lines = (text || '').split('\n').map((l) => l.trim()).filter(Boolean);
   if (lines.length === 0) return null;
   return (
-    <ul className="list-disc pl-5 mt-1 space-y-0.5">
+    <ul className="list-disc ps-5 mt-1 space-y-0.5">
       {lines.map((line, i) => (
         <li key={i} className="text-[12.5px] leading-snug text-black">{line}</li>
       ))}
@@ -94,7 +94,7 @@ export function CVPreview({ data }) {
             {certifications.length > 0 && (
               <div className={education.length > 0 ? 'pt-2' : ''}>
                 <p className="font-bold text-[13px] mb-1">{t('Certifications')}</p>
-                <ul className="pl-5 list-disc space-y-0.5">
+                <ul className="ps-5 list-disc space-y-0.5">
                   {certifications.map((c) => (
                     <li key={c.id} className="text-[12.5px] leading-snug flex justify-between gap-4">
                       <span>

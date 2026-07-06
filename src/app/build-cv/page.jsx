@@ -17,6 +17,7 @@ import { CVPreview } from '@/components/cv-builder/CVPreview';
 import { ConsentCheckboxes, EMPTY_CONSENT } from '@/components/upload/ConsentCheckboxes';
 import { Turnstile } from '@/components/ui/Turnstile';
 import { saveCV } from '@/lib/storage';
+import { isValidPhoneForCountry } from '@/lib/formOptions';
 import { useLanguage } from '@/lib/i18n';
 
 const STEPS = [
@@ -43,7 +44,7 @@ function validateStep(step, cv) {
     if (!email.trim()) return 'Email address is required.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return 'Please enter a valid email address.';
     if (!phone.trim()) return 'Phone number is required.';
-    if (!/^\+?[\d\s\-().]{7,}$/.test(phone.trim())) return 'Please enter a valid phone number.';
+    if (!isValidPhoneForCountry(phone)) return 'Please enter a valid phone number.';
   }
   if (step === 2) {
     for (const entry of cv.education) {
@@ -294,7 +295,7 @@ export default function BuildCVPage() {
                   size="sm"
                   onClick={goBack}
                   disabled={currentStep === 1}
-                  leftIcon={<ChevronLeft size={16} />}
+                  leftIcon={<ChevronLeft size={16} className="rtl:-scale-x-100" />}
                 >
                   {t('Back')}
                 </Button>
@@ -304,7 +305,7 @@ export default function BuildCVPage() {
                 </div>
 
                 {currentStep < STEPS.length ? (
-                  <Button size="sm" onClick={goNext} rightIcon={<ChevronRight size={16} />}>
+                  <Button size="sm" onClick={goNext} rightIcon={<ChevronRight size={16} className="rtl:-scale-x-100" />}>
                     {t('Continue')}
                   </Button>
                 ) : (

@@ -78,7 +78,7 @@ export function SkillsStep({ data, onChange }) {
               <Badge variant={LEVEL_BADGE[skill.level]}>{t(skill.level)}</Badge>
               <button
                 onClick={() => removeSkill(skill.id)}
-                className="ml-1 text-silver hover:text-red-500 transition-colors"
+                className="ms-1 text-silver hover:text-red-500 transition-colors"
               >
                 <X size={12} />
               </button>

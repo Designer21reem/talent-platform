@@ -78,7 +78,7 @@ export function LanguagesStep({ data, onChange }) {
               <Badge variant={PROFICIENCY_BADGE[lang.proficiency]}>{t(lang.proficiency)}</Badge>
               <button
                 onClick={() => removeLanguage(lang.id)}
-                className="ml-1 text-silver hover:text-red-500 transition-colors"
+                className="ms-1 text-silver hover:text-red-500 transition-colors"
               >
                 <X size={12} />
               </button>

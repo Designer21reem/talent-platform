@@ -48,9 +48,11 @@ export function PersonalInfoStep({ data, onChange }) {
 
   function handleCountryChange(e) {
     const idx = Number(e.target.value);
+    const nextDigits = phoneDigits.slice(0, COUNTRIES[idx].phoneLength);
     setCountryIdx(idx);
     setCityIdx(0);
-    emit({ nextCountryIdx: idx, nextCityIdx: 0 });
+    setPhoneDigits(nextDigits);
+    emit({ nextCountryIdx: idx, nextCityIdx: 0, nextDigits });
   }
 
   function handleCityChange(e) {
@@ -60,7 +62,7 @@ export function PersonalInfoStep({ data, onChange }) {
   }
 
   function handlePhoneChange(e) {
-    const digits = e.target.value.replace(/\D/g, '');
+    const digits = e.target.value.replace(/\D/g, '').slice(0, country.phoneLength);
     setPhoneDigits(digits);
     emit({ nextDigits: digits });
   }
@@ -102,10 +104,11 @@ export function PersonalInfoStep({ data, onChange }) {
           placeholder={t('770 123 4567')}
           value={phoneDigits}
           onChange={handlePhoneChange}
+          maxLength={country.phoneLength}
           required
-          hint={t('Required to start the assessment later')}
+          hint={`${t('Required to start the assessment later')} · ${country.phoneLength} ${t('digits')}`}
           leftElement={<span dir="ltr" className="text-warm text-sm font-medium">{country.dial}</span>}
-          className="pl-16"
+          className="ps-16"
         />
         <Select
           label={t('Location')}

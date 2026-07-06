@@ -1,17 +1,30 @@
 export const OTHER_VALUE = '__other__';
 
+// phoneLength = digits expected after the dial code (national mobile number,
+// no leading trunk 0), e.g. Iraq: +964 770 123 4567 -> 10 digits.
 export const COUNTRIES = [
-  { code: 'IQ', name: 'Iraq', dial: '+964', cities: ['Baghdad', 'Basra', 'Erbil'] },
-  { code: 'SA', name: 'Saudi Arabia', dial: '+966', cities: ['Riyadh', 'Jeddah', 'Dammam'] },
-  { code: 'AE', name: 'United Arab Emirates', dial: '+971', cities: ['Dubai', 'Abu Dhabi', 'Sharjah'] },
-  { code: 'JO', name: 'Jordan', dial: '+962', cities: ['Amman', 'Zarqa', 'Irbid'] },
-  { code: 'EG', name: 'Egypt', dial: '+20', cities: ['Cairo', 'Alexandria', 'Giza'] },
-  { code: 'TR', name: 'Turkey', dial: '+90', cities: ['Istanbul', 'Ankara', 'Izmir'] },
-  { code: 'US', name: 'United States', dial: '+1', cities: ['New York', 'Los Angeles', 'Chicago'] },
-  { code: 'GB', name: 'United Kingdom', dial: '+44', cities: ['London', 'Manchester', 'Birmingham'] },
-  { code: 'DE', name: 'Germany', dial: '+49', cities: ['Berlin', 'Munich', 'Hamburg'] },
-  { code: 'IN', name: 'India', dial: '+91', cities: ['Mumbai', 'Delhi', 'Bangalore'] },
+  { code: 'IQ', name: 'Iraq', dial: '+964', phoneLength: 10, cities: ['Baghdad', 'Basra', 'Erbil'] },
+  { code: 'SA', name: 'Saudi Arabia', dial: '+966', phoneLength: 9, cities: ['Riyadh', 'Jeddah', 'Dammam'] },
+  { code: 'AE', name: 'United Arab Emirates', dial: '+971', phoneLength: 9, cities: ['Dubai', 'Abu Dhabi', 'Sharjah'] },
+  { code: 'JO', name: 'Jordan', dial: '+962', phoneLength: 9, cities: ['Amman', 'Zarqa', 'Irbid'] },
+  { code: 'EG', name: 'Egypt', dial: '+20', phoneLength: 10, cities: ['Cairo', 'Alexandria', 'Giza'] },
+  { code: 'TR', name: 'Turkey', dial: '+90', phoneLength: 10, cities: ['Istanbul', 'Ankara', 'Izmir'] },
+  { code: 'US', name: 'United States', dial: '+1', phoneLength: 10, cities: ['New York', 'Los Angeles', 'Chicago'] },
+  { code: 'GB', name: 'United Kingdom', dial: '+44', phoneLength: 10, cities: ['London', 'Manchester', 'Birmingham'] },
+  { code: 'DE', name: 'Germany', dial: '+49', phoneLength: 10, cities: ['Berlin', 'Munich', 'Hamburg'] },
+  { code: 'IN', name: 'India', dial: '+91', phoneLength: 10, cities: ['Mumbai', 'Delhi', 'Bangalore'] },
 ];
+
+// `phone` is expected as "<dial> <digits>" (as produced by PersonalInfoStep).
+// Returns true only when the digit count matches that country's phoneLength
+// exactly — too short or too long both fail.
+export function isValidPhoneForCountry(phone) {
+  const trimmed = (phone || '').trim();
+  const country = COUNTRIES.find((c) => trimmed.startsWith(c.dial));
+  if (!country) return false;
+  const digits = trimmed.slice(country.dial.length).replace(/\D/g, '');
+  return digits.length === country.phoneLength;
+}
 
 export const UNIVERSITIES = [
   'University of Baghdad',

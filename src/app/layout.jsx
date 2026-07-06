@@ -16,6 +16,10 @@ export default function RootLayout({ children }) {
     <html lang="en" className="h-full">
       <head>
         <link rel="icon" type="image/png" href="/icon.png" />
+        {/* Warms the connection ahead of time so the Turnstile / Google
+            Sign-In widgets don't eat a fresh DNS+TLS handshake on first use. */}
+        <link rel="preconnect" href="https://challenges.cloudflare.com" />
+        <link rel="preconnect" href="https://accounts.google.com" />
       </head>
       <body className="min-h-screen flex flex-col bg-dark antialiased">
         <LanguageProvider>

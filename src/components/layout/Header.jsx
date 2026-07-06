@@ -63,7 +63,7 @@ export function Header() {
             {user && (
               <button
                 onClick={signOut}
-                className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-surface-2 hover:border-brand/40 transition-colors"
+                className="flex items-center gap-2 ps-1 pe-3 py-1 rounded-full border border-surface-2 hover:border-brand/40 transition-colors"
                 title={t('Sign out')}
               >
                 {user.picture ? (

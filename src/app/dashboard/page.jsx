@@ -94,7 +94,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <Link href="/assessment">
-            <Button variant="secondary" size="sm" rightIcon={<ArrowRight size={14} />}>
+            <Button variant="secondary" size="sm" rightIcon={<ArrowRight size={14} className="rtl:-scale-x-100" />}>
               {t('Retake Assessment')}
             </Button>
           </Link>

@@ -1,4 +1,4 @@
-const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png'];
+export const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png'];
 
 export async function parseFile(file) {
   const ext = file.name.split('.').pop()?.toLowerCase();
