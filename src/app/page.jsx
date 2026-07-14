@@ -48,17 +48,17 @@ function StatsBar({ visible }) {
       transition={{ duration: 0.6, ease: 'easeOut' }}
       className="relative mx-auto mt-14 sm:mt-16 max-w-3xl rounded-2xl border border-brand/30 bg-surface/60 backdrop-blur-sm px-4 py-6 sm:px-10 sm:py-8 shadow-lg shadow-black/20"
     >
-      <div className="grid grid-cols-3 divide-x divide-brand/15 rtl:divide-x-reverse">
+      <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-brand/15 rtl:sm:divide-x-reverse">
         {STATS.map((stat, i) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 10 }}
             animate={visible ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.15 + i * 0.12, duration: 0.5 }}
-            className="text-center px-2"
+            className="text-center px-2 py-3 sm:py-0 first:pt-0 last:pb-0"
           >
             <p className="text-2xl sm:text-4xl font-extrabold text-brand tracking-tight">{stat.value}</p>
-            <p className="mt-1 text-[11px] sm:text-sm text-silver whitespace-nowrap">{t(stat.label)}</p>
+            <p className="mt-1 text-xs sm:text-sm text-silver">{t(stat.label)}</p>
           </motion.div>
         ))}
       </div>
@@ -73,12 +73,22 @@ function StatsBar({ visible }) {
 // (typing it in, holding, deleting it, moving to the next) — the sentence
 // itself never re-types.
 function PrefixRotatingTypewriter({ prefix, words, active, className }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const fullPrefix = t(prefix);
   const [prefixTyped, setPrefixTyped] = useState('');
   const [wordIndex, setWordIndex] = useState(0);
   const [word, setWord] = useState('');
   const [deleting, setDeleting] = useState(false);
+
+  // Restart the whole line (prefix included) whenever the language changes —
+  // otherwise the already-typed prefix stays in the old language while only
+  // the rotating word picks up the new one.
+  useEffect(() => {
+    setPrefixTyped('');
+    setWord('');
+    setDeleting(false);
+    setWordIndex(0);
+  }, [lang]);
 
   useEffect(() => {
     if (!active) return undefined;
