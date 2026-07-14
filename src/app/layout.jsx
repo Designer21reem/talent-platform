@@ -2,6 +2,7 @@ import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { AuthGate } from '@/components/layout/AuthGate';
+import { SettingsButton } from '@/components/layout/SettingsButton';
 import { LanguageProvider } from '@/lib/i18n';
 import { AuthProvider } from '@/lib/auth';
 
@@ -16,9 +17,8 @@ export default function RootLayout({ children }) {
     <html lang="en" className="h-full">
       <head>
         <link rel="icon" type="image/png" href="/icon.png" />
-        {/* Warms the connection ahead of time so the Turnstile / Google
-            Sign-In widgets don't eat a fresh DNS+TLS handshake on first use. */}
-        <link rel="preconnect" href="https://challenges.cloudflare.com" />
+        {/* Warms the connection ahead of time so the Google Sign-In widget
+            doesn't eat a fresh DNS+TLS handshake on first use. */}
         <link rel="preconnect" href="https://accounts.google.com" />
       </head>
       <body className="min-h-screen flex flex-col bg-dark antialiased">
@@ -28,6 +28,7 @@ export default function RootLayout({ children }) {
               <Header />
               <main className="flex-1">{children}</main>
               <Footer />
+              <SettingsButton />
             </AuthGate>
           </AuthProvider>
         </LanguageProvider>

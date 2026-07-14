@@ -95,7 +95,7 @@ function buildSummaryAr(overall, strengthsAr, gapsAr) {
 
 // ─── Main Factory ─────────────────────────────────────────────────────────────
 
-export function buildDashboard(answers, candidateName, phoneNumber) {
+export function buildDashboard(answers, candidateName, phoneNumber, candidateEmail) {
 
   const categoryMap = new Map();
 
@@ -125,6 +125,7 @@ export function buildDashboard(answers, candidateName, phoneNumber) {
   const dashboard = {
     candidateName,
     phoneNumber,
+    candidateEmail,
     skills,
     strengths,
     areasForImprovement,
@@ -141,6 +142,7 @@ export function buildDashboard(answers, candidateName, phoneNumber) {
 export const MOCK_DASHBOARD = {
   candidateName: 'Alex Johnson',
   phoneNumber: '+1 555 000 0000',
+  candidateEmail: 'alex.johnson@example.com',
   overallScore: 78,
   skills: [
     { category: 'Communication', score: 85, label: '85%' },

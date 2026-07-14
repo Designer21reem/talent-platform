@@ -1,10 +1,13 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuth, GOOGLE_CLIENT_ID, ALLOW_SKIP_SIGNIN } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
+import { HeroBackground } from '@/components/layout/HeroBackground';
 
-const SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
+// hl=en keeps Google's own button/popup text in English regardless of site
+// language — avoids the Arabic label overflowing the button's fixed width.
+const SCRIPT_SRC = 'https://accounts.google.com/gsi/client?hl=en';
 let scriptLoadPromise = null;
 
 function loadGoogleScript() {
@@ -35,21 +38,38 @@ export function AuthGate({ children }) {
   const { user, ready, signIn, devBypass } = useAuth();
   const { t } = useLanguage();
   const buttonRef = useRef(null);
+  const [signInError, setSignInError] = useState(false);
+  const [signingIn, setSigningIn] = useState(false);
 
   useEffect(() => {
     if (user || !ready) return;
     let cancelled = false;
 
+    console.log('[AuthGate] Loading Google Identity Services script…');
     loadGoogleScript().then(() => {
       if (cancelled || !window.google?.accounts?.id || !buttonRef.current) return;
+      console.log('[AuthGate] Google script ready, rendering sign-in button. client_id =', GOOGLE_CLIENT_ID);
       window.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
-        callback: (response) => signIn(response.credential),
+        callback: async (response) => {
+          console.log('[AuthGate] Google button callback fired — got an ID token.');
+          setSigningIn(true);
+          setSignInError(false);
+          const ok = await signIn(response.credential);
+          setSigningIn(false);
+          if (!ok) {
+            console.error('[AuthGate] signIn() failed — see the [Auth] logs above for the backend response.');
+            setSignInError(true);
+          }
+        },
       });
       window.google.accounts.id.renderButton(buttonRef.current, {
         theme: 'filled_black',
         size: 'large',
         shape: 'pill',
+        text: 'signin_with',
+        logo_alignment: 'left',
+        width: 300,
       });
     });
 
@@ -62,14 +82,26 @@ export function AuthGate({ children }) {
 
   if (!user) {
     return (
-      <div className="fixed inset-0 z-100 flex items-center justify-center bg-dark px-4">
-        <div className="max-w-sm w-full text-center">
-          <img src="/Logo (1).png" alt="THE VALUE" className="h-12 w-auto object-contain mx-auto mb-6" />
-          <h1 className="text-2xl font-bold text-white mb-2">{t('Sign in to continue')}</h1>
+      <div className="fixed inset-0 z-100 flex items-center justify-center bg-dark px-4 overflow-hidden">
+        <HeroBackground variant="authgate" />
+        <div className="relative z-10 max-w-sm w-full text-center">
+          <img src="/Logo (1).png" alt="THE VALUE" className="h-14 w-auto object-contain mx-auto mb-4" />
+          <p className="text-brand font-bold text-lg tracking-widest mb-1">THE VALUE</p>
+          <h1 className="text-2xl font-bold text-white mb-2">{t('Welcome — sign in to get started')}</h1>
           <p className="text-silver text-sm mb-8 leading-relaxed">
             {t('Sign in with Google to use THE VALUE — upload your CV, take assessments, and track your ranking.')}
           </p>
           <div className="flex justify-center" ref={buttonRef} />
+
+          {signingIn && (
+            <p className="mt-4 text-xs text-silver">{t('Signing in…')}</p>
+          )}
+
+          {signInError && (
+            <p className="mt-4 text-xs text-red-400">
+              {t('Sign-in failed — the backend rejected the request. Check the browser console for details.')}
+            </p>
+          )}
 
           {(process.env.NODE_ENV !== 'production' || ALLOW_SKIP_SIGNIN) && (
             <button

@@ -3,20 +3,17 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { Container } from './Container';
-import { LanguageToggle } from './LanguageToggle';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/lib/i18n';
-import { useAuth } from '@/lib/auth';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/upload-cv', label: 'Upload CV' },
   { href: '/build-cv', label: 'CV Builder' },
   { href: '/assessment', label: 'Assessment' },
-  { href: '/leaderboard', label: 'Leaderboard' },
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/about', label: 'About' },
 ];
@@ -25,7 +22,6 @@ export function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useLanguage();
-  const { user, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 bg-dark/95 backdrop-blur-md border-b border-brand/20 shadow-sm">
@@ -58,24 +54,11 @@ export function Header() {
             })}
           </nav>
 
-          <div className="hidden xl:flex items-center gap-3">
-            <LanguageToggle />
-            {user && (
-              <button
-                onClick={signOut}
-                className="flex items-center gap-2 ps-1 pe-3 py-1 rounded-full border border-surface-2 hover:border-brand/40 transition-colors"
-                title={t('Sign out')}
-              >
-                {user.picture ? (
-                  <img src={user.picture} alt={user.name} className="w-6 h-6 rounded-full" referrerPolicy="no-referrer" />
-                ) : (
-                  <span className="w-6 h-6 rounded-full bg-brand/20 text-brand text-[10px] font-semibold flex items-center justify-center">
-                    {user.name?.[0]}
-                  </span>
-                )}
-                <span className="text-xs font-medium text-warm">{t('Sign out')}</span>
-              </button>
-            )}
+          <div className="hidden xl:flex items-center gap-4">
+            <span className="flex items-center gap-1.5 text-xs font-medium text-silver whitespace-nowrap">
+              {t('Trusted by HR teams across Iraq')}
+              <ShieldCheck size={15} className="text-brand shrink-0" />
+            </span>
           </div>
 
           {/* Mobile toggle */}
@@ -117,16 +100,11 @@ export function Header() {
                   </Link>
                 );
               })}
-              <div className="px-3 pt-2 flex items-center gap-3">
-                <LanguageToggle />
-                {user && (
-                  <button
-                    onClick={signOut}
-                    className="text-xs font-medium text-warm hover:text-white transition-colors"
-                  >
-                    {t('Sign out')}
-                  </button>
-                )}
+              <div className="px-3 pt-2">
+                <span className="flex items-center gap-1.5 text-xs font-medium text-silver">
+                  {t('Trusted by HR teams across Iraq')}
+                  <ShieldCheck size={15} className="text-brand shrink-0" />
+                </span>
               </div>
             </nav>
           </Container>

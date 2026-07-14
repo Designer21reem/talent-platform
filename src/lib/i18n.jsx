@@ -10,6 +10,9 @@ const STORAGE_KEY = 'tv_lang';
 // without ever breaking the UI.
 export const AR_DICT = {
   // ── Nav / Footer ──────────────────────────────────────────────
+  'Trusted by HR teams across Iraq': 'موثوق من قبل فرق الموارد البشرية بالعراق',
+  'Settings': 'الإعدادات',
+  'Close': 'إغلاق',
   'Home': 'الرئيسية',
   'Upload CV': 'رفع السيرة الذاتية',
   'CV Builder': 'منشئ السيرة الذاتية',
@@ -20,8 +23,10 @@ export const AR_DICT = {
 
   // ── Home ──────────────────────────────────────────────────────
   'GOT TALENT': 'عندها مواهب',
-  'Upload or build a professional CV, complete a skill assessment, and get a personal skills dashboard — all in one place, no sign-up required.':
-    'ارفع أو أنشئ سيرة ذاتية احترافية، أكمل تقييم المهارات، واحصل على لوحة مهارات شخصية — كل ذلك في مكان واحد، دون الحاجة لإنشاء حساب.',
+  'One place to show what you can do. Start with ': 'مكان واحد لإظهار قدراتك. ابدأ بـ ',
+  'our CV Builder': 'منشئ السيرة الذاتية',
+  'a Skill Assessment': 'تقييم المهارات',
+  'a CV Upload': 'رفع سيرتك الذاتية',
   'Start Assessment': 'بدء التقييم',
   'Candidates placed': 'مرشح تم توظيفه',
   'Skill categories tracked': 'فئات مهارات متابَعة',
@@ -41,6 +46,25 @@ export const AR_DICT = {
   'Marketing Specialist': 'أخصائي تسويق',
   'DevOps Engineer': 'مهندس DevOps',
   'UX Researcher': 'باحث تجربة مستخدم',
+
+  // ── Terms & Conditions ──────────────────────────────────────────
+  'Terms & Conditions': 'الشروط والأحكام',
+  'Please read these terms before submitting your information.': 'يرجى قراءة هذه الشروط قبل إرسال بياناتك.',
+  'Use of the Platform': 'استخدام المنصة',
+  'THE VALUE provides CV building, CV upload, and skill assessment tools free of charge to candidates. By using the platform you agree to provide accurate, truthful information about yourself.':
+    'توفر THE VALUE أدوات بناء السيرة الذاتية ورفعها وتقييم المهارات مجاناً للمتقدمين. باستخدامك المنصة فإنك توافق على تقديم معلومات دقيقة وصحيحة عن نفسك.',
+  'Your Data': 'بياناتك',
+  'Information you submit — your CV, assessment answers, and contact details — is stored to build your candidate profile and, where you opt in, shared with partner recruiter teams for hiring purposes only.':
+    'يتم تخزين المعلومات التي تقدمها — سيرتك الذاتية وإجابات التقييم وبيانات التواصل — لبناء ملفك كمرشح، وتتم مشاركتها مع فرق التوظيف الشريكة لأغراض التوظيف فقط في حال موافقتك.',
+  'Consent & Communication': 'الموافقة والتواصل',
+  'By accepting these terms you consent to THE VALUE and its partner organizations contacting you regarding relevant job opportunities based on the information you provide.':
+    'بقبولك هذه الشروط، فإنك توافق على تواصل THE VALUE والمؤسسات الشريكة معك بخصوص فرص العمل المناسبة بناءً على المعلومات التي تقدمها.',
+  'Accuracy of Information': 'دقة المعلومات',
+  'You are responsible for the accuracy of the CV content, certifications, and experience you submit. Misrepresenting qualifications may result in your profile being removed from consideration.':
+    'أنت مسؤول عن دقة محتوى سيرتك الذاتية والشهادات والخبرات التي تقدمها. تقديم معلومات غير صحيحة عن مؤهلاتك قد يؤدي إلى استبعاد ملفك من الاعتبار.',
+  'Changes': 'التعديلات',
+  'These terms may be updated from time to time. Continued use of the platform after changes are posted constitutes acceptance of the revised terms.':
+    'قد يتم تحديث هذه الشروط من وقت لآخر. استمرارك باستخدام المنصة بعد نشر أي تعديلات يُعد قبولاً بالشروط المحدّثة.',
 
   // ── About ─────────────────────────────────────────────────────
   'About THE VALUE': 'من نحن — THE VALUE',
@@ -77,18 +101,10 @@ export const AR_DICT = {
   "Upload your CV in PDF format and we'll extract your information automatically.":
     'ارفع سيرتك الذاتية بصيغة PDF وسنقوم باستخراج بياناتك تلقائياً.',
   "Upload your CV and we'll take care of the rest.": 'ارفع سيرتك الذاتية وسنتكفّل بالباقي.',
-  'Reading your CV…': 'جارٍ قراءة سيرتك الذاتية…',
-  'Confirming your information…': 'جارٍ التحقق من بياناتك…',
-  'Uploading your CV…': 'جارٍ رفع سيرتك الذاتية…',
-  'Extracting your information': 'جارٍ استخراج بياناتك',
-  "Couldn't auto-detect all fields. Please fill them in manually below.":
-    'تعذّر اكتشاف جميع الحقول تلقائياً. يرجى تعبئتها يدوياً بالأسفل.',
-  'Information extracted! Review and correct if needed, then continue.':
-    'تم استخراج البيانات! راجعها وصحّحها إذا لزم الأمر، ثم تابع.',
   "Your CV has been uploaded! We're extracting your information in the background.":
     'تم رفع سيرتك الذاتية! نقوم باستخراج بياناتك في الخلفية.',
-  'Completing the assessment increases your opportunities to receive job offers and improves your visibility on the platform’s leaderboard.':
-    'إكمال التقييم يزيد من فرصك بالحصول على عروض عمل ويحسّن ظهورك بلوحة صدارة المنصة.',
+  'Completing the skill assessment gives employers a clearer picture of your abilities and significantly increases your chances of receiving job offers.':
+    'إكمال تقييم المهارات يعطي أصحاب العمل صورة أوضح عن قدراتك ويزيد بشكل كبير من فرصك بالحصول على عروض عمل.',
   'Processing…': 'جارٍ المعالجة…',
   'Upload & Go to Assessment': 'الرفع والانتقال للتقييم',
   'Try CV Builder': 'جرّب منشئ السيرة الذاتية',
@@ -102,56 +118,35 @@ export const AR_DICT = {
   'Re-upload': 'إعادة الرفع',
 
   // ── Consent checkboxes (Upload CV + CV Builder) ────────────────
-  'I accept the terms and conditions.': 'أوافق على الشروط والأحكام.',
+  'I accept the': 'أوافق على',
+  'terms & conditions': 'الشروط والأحكام',
   "Show my CV to my organization's recruiter team.": 'أظهر سيرتي الذاتية لفريق التوظيف في مؤسستي.',
-  'Show me on the Leaderboard page.': 'أظهرني في صفحة لوحة الصدارة.',
 
   // ── File uploader ─────────────────────────────────────────────
-  'Invalid file type. Only PDF and DOCX are accepted.': 'نوع الملف غير مدعوم. يُقبل فقط PDF وDOCX.',
   'Invalid file type. Only PDF, DOCX, JPG, JPEG, and PNG are accepted.':
     'نوع الملف غير مدعوم. يُقبل فقط PDF وDOCX وJPG وJPEG وPNG.',
-  'File size exceeds 10 MB limit.': 'حجم الملف يتجاوز الحد الأقصى 10 ميجابايت.',
+  'File size exceeds 5 MB limit.': 'حجم الملف يتجاوز الحد الأقصى 5 ميجابايت.',
   'Drop your CV here or': 'أفلت سيرتك الذاتية هنا أو',
   'browse': 'تصفّح',
-  'PDF and DOCX supported · Max 10 MB': 'صيغ PDF وDOCX مدعومة · الحد الأقصى 10 ميجابايت',
-  'PDF, DOCX, JPG, JPEG, PNG supported · Max 10 MB': 'صيغ PDF وDOCX وJPG وJPEG وPNG مدعومة · الحد الأقصى 10 ميجابايت',
-  "This doesn't look like a CV": 'هذا الملف لا يبدو سيرة ذاتية',
-  "We couldn't find a name, email, or phone number in this file. Please upload your actual CV or resume and try again.":
-    'لم نتمكن من العثور على اسم أو بريد إلكتروني أو رقم هاتف في هذا الملف. يرجى رفع سيرتك الذاتية الفعلية والمحاولة مرة أخرى.',
-  'This looks like a regular photo, not a scanned CV or document. Please upload a clear photo or scan of your actual CV.':
-    'هذه الصورة تبدو صورة عادية وليست مسحاً لسيرة ذاتية أو مستند. يرجى رفع صورة أو مسح واضح لسيرتك الذاتية الفعلية.',
+  'PDF, DOCX, JPG, JPEG, PNG supported · Max 5 MB': 'صيغ PDF وDOCX وJPG وJPEG وPNG مدعومة · الحد الأقصى 5 ميجابايت',
   'Uploading…': 'جارٍ الرفع…',
   'Upload successful!': 'تم الرفع بنجاح!',
   'Upload a different file': 'رفع ملف آخر',
   'Upload failed': 'فشل الرفع',
   'Try again': 'إعادة المحاولة',
-  'Accepted formats: PDF, DOCX': 'الصيغ المقبولة: PDF, DOCX',
   'Accepted formats: PDF, DOCX, JPG, JPEG, PNG': 'الصيغ المقبولة: PDF, DOCX, JPG, JPEG, PNG',
-  'Maximum file size: 10 MB': 'الحد الأقصى لحجم الملف: 10 ميجابايت',
-
-  // ── Leaderboard ───────────────────────────────────────────────
-  'Leaderboard': 'لوحة الصدارة',
-  'Top 25 candidates ranked by assessment score, per sector.': 'أفضل 25 مرشح مرتبين حسب درجة التقييم، لكل قطاع.',
-  'Sector': 'القطاع',
-  'Top match': 'أفضل توافق',
-
-  // ── Sectors (home top-5 cards + leaderboard filter) ────────────
-  'Frontend Development': 'تطوير الواجهات الأمامية',
-  'Backend Development': 'تطوير الخلفية',
-  'Data Analysis': 'تحليل البيانات',
-  'Product Design': 'تصميم المنتجات',
-  'DevOps': 'DevOps',
-  'UX Research': 'أبحاث تجربة المستخدم',
+  'Maximum file size: 5 MB': 'الحد الأقصى لحجم الملف: 5 ميجابايت',
 
   // ── Google Sign-In gate ─────────────────────────────────────────
   'Sign in to continue': 'سجّل الدخول للمتابعة',
+  'Welcome — sign in to get started': 'أهلاً بك — سجّل الدخول للبدء',
   'Sign in with Google to use THE VALUE — upload your CV, take assessments, and track your ranking.':
     'سجّل الدخول عبر Google لاستخدام THE VALUE — ارفع سيرتك الذاتية، أكمل التقييمات، وتابع ترتيبك.',
-  'Skip sign-in (dev preview only)': 'تخطي تسجيل الدخول (للمعاينة أثناء التطوير فقط)',
+  'Skip sign-in': 'تخطي تسجيل الدخول',
   'Sign out': 'تسجيل الخروج',
-
-  // ── Turnstile ─────────────────────────────────────────────────
-  'Preparing verification…': 'جارٍ تجهيز التحقق…',
+  'Signing in…': 'جارٍ تسجيل الدخول…',
+  'Sign-in failed — the backend rejected the request. Check the browser console for details.':
+    'فشل تسجيل الدخول — الخادم رفض الطلب. راجع الكونسول لمعرفة التفاصيل.',
 
   // ── CV Builder shell ──────────────────────────────────────────
   'Personal': 'البيانات الشخصية',
@@ -181,9 +176,44 @@ export const AR_DICT = {
   'Step': 'خطوة',
   'of': 'من',
   'Live Preview': 'معاينة مباشرة',
-  'Show': 'إظهار',
-  'Hide': 'إخفاء',
-  'Click to see your CV preview': 'اضغط لمعاينة سيرتك الذاتية',
+
+  // ── Education / Institution autocomplete ───────────────────────
+  'Type to search institutions…': 'اكتب للبحث عن مؤسسة تعليمية…',
+
+  // ── Work Experience ──────────────────────────────────────────────
+  'Select company…': 'اختر الشركة…',
+  'Type the company name': 'اكتب اسم الشركة',
+  'Repository / Project Link (optional)': 'رابط المستودع / المشروع (اختياري)',
+  'Key Achievements & Responsibilities': 'أبرز الإنجازات والمهام',
+
+  // ── Date picker ───────────────────────────────────────────────────
+  'Select…': 'اختر…',
+
+  // ── Certifications ────────────────────────────────────────────────
+  'Category': 'الفئة',
+  'Select category…': 'اختر الفئة…',
+  'Technical': 'تقنية',
+  'Business': 'أعمال',
+  'Health & Safety': 'الصحة والسلامة',
+  'Other': 'أخرى',
+  'Year Obtained': 'سنة الحصول عليها',
+  'Expiry Year (optional)': 'سنة الانتهاء (اختياري)',
+  'No expiry': 'لا تنتهي',
+  'Expired': 'منتهية',
+  'Expiring this year': 'تنتهي هذا العام',
+  'Valid': 'سارية',
+  'expired': 'منتهية',
+  'valid until': 'سارية حتى',
+
+  // ── Projects / Technologies ────────────────────────────────────────
+  'Select a technology…': 'اختر تقنية…',
+  'Type technology name': 'اكتب اسم التقنية',
+
+  // ── Skills / Languages dropdowns ───────────────────────────────────
+  'Select a skill…': 'اختر مهارة…',
+  'Custom Skill': 'مهارة مخصصة',
+  'Select a language…': 'اختر لغة…',
+  'Custom Language': 'لغة مخصصة',
 
   // ── Personal Info step ────────────────────────────────────────
   'Personal Information': 'البيانات الشخصية',
@@ -234,7 +264,7 @@ export const AR_DICT = {
   'Skills': 'المهارات',
   'Add your technical and soft skills.': 'أضف مهاراتك التقنية والشخصية.',
   'Skill Name': 'اسم المهارة',
-  'e.g. React, Python, Leadership…': 'مثال: React، Python، القيادة…',
+  'e.g. Leadership': 'مثال: القيادة',
   'Level': 'المستوى',
   'Add': 'إضافة',
   'No skills added yet.': 'لا توجد مهارات مضافة بعد.',
@@ -247,7 +277,7 @@ export const AR_DICT = {
   'Languages': 'اللغات',
   'List languages you speak and your proficiency level.': 'أضف اللغات التي تتحدثها ومستوى إتقانك لكل منها.',
   'Language': 'اللغة',
-  'e.g. English, Arabic, French…': 'مثال: الإنجليزية، العربية، الفرنسية…',
+  'e.g. Italian': 'مثال: الإيطالية',
   'Proficiency': 'مستوى الإتقان',
   'No languages added yet.': 'لا توجد لغات مضافة بعد.',
   'Basic': 'أساسي',
@@ -291,6 +321,8 @@ export const AR_DICT = {
   // ── Assessment ────────────────────────────────────────────────
   'Skill Assessment': 'تقييم المهارات',
   'This optional assessment evaluates your key professional skills.': 'هذا التقييم الاختياري يقيّم مهاراتك المهنية الأساسية.',
+  'Candidates who complete this assessment stand out to employers and get matched with job opportunities faster. It only takes about 10 minutes — a small step that can make a big difference in how quickly you land your next role.':
+    'المرشحون الذين يكملون هذا التقييم يبرزون أمام أصحاب العمل ويتم ترشيحهم لفرص العمل بشكل أسرع. يستغرق الأمر حوالي 10 دقائق فقط — خطوة صغيرة قد تُحدث فرقاً كبيراً في سرعة حصولك على وظيفتك القادمة.',
   'Phone number found': 'تم العثور على رقم الهاتف',
   'ready to start!': 'جاهز للبدء!',
   'Your Phone Number': 'رقم هاتفك',

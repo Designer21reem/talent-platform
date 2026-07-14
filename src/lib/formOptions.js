@@ -63,6 +63,23 @@ export const FIELDS_OF_STUDY = [
   'Data Science',
 ];
 
+export const STUDY_CATEGORIES = ['Technical', 'Business', 'Creative', 'Health', 'Other'];
+
+export const COMPANIES = [
+  // ── Global ──
+  'Google', 'Microsoft', 'Amazon', 'Apple', 'Meta', 'IBM', 'Oracle', 'SAP',
+  'Accenture', 'Deloitte', 'PwC', 'EY', 'KPMG', 'McKinsey & Company',
+  'Samsung', 'Huawei', 'Cisco', 'Dell', 'HP', 'Intel',
+  // ── Iraqi banks & finance ──
+  'Al-Rafidain Bank', 'Al-Rasheed Bank', 'National Bank of Iraq', 'Trade Bank of Iraq (TBI)',
+  'Bank of Baghdad', 'Ashur International Bank', 'Cihan Bank', 'International Islamic Bank of Iraq',
+  'Iraq National Bank',
+  // ── Iraqi telecom, aviation & other ──
+  'Zain Iraq', 'Asiacell', 'Korek Telecom', 'Earthlink Telecommunication', 'Iraqi Airways',
+  'DHL Iraq', 'Emaar Iraq', 'Al-Kifah Holding', 'Hutchison Ports Iraq', 'Baghdad Soft',
+  'Alsalt Oil', 'Iraq Telecom', 'Ibis Baghdad', 'Al-Mansour Group',
+];
+
 export const JOB_TITLES = [
   'Software Engineer',
   'Frontend Developer',
@@ -81,3 +98,72 @@ export const JOB_TITLES = [
   'HR Specialist',
   'Business Analyst',
 ];
+
+export const SKILLS = [
+  'JavaScript',
+  'TypeScript',
+  'React',
+  'Next.js',
+  'Node.js',
+  'Python',
+  'SQL',
+  'AWS',
+  'Azure',
+  'Docker',
+  'Kubernetes',
+  'HTML',
+  'CSS',
+  'Tailwind CSS',
+  'Figma',
+  'UI/UX Design',
+  'Data Analysis',
+  'Power BI',
+  'Tableau',
+  'Machine Learning',
+  'Cybersecurity',
+  'DevOps',
+  'Project Management',
+  'Agile',
+  'Scrum',
+  'Digital Marketing',
+  'SEO',
+  'Content Writing',
+  'Sales',
+  'Customer Service',
+];
+
+export const LANGUAGES = ['Arabic', 'English', 'Kurdish', 'French', 'Turkish', 'German', 'Spanish', 'Persian', 'Urdu', 'Chinese'];
+
+export const TECHNOLOGIES = [
+  'JavaScript', 'TypeScript', 'React', 'Next.js', 'Vue.js', 'Angular', 'Node.js',
+  'Python', 'Django', 'Flask', 'Java', 'Spring Boot', 'C#', '.NET', 'PHP', 'Laravel',
+  'Ruby on Rails', 'Go', 'Rust', 'Swift', 'Kotlin', 'SQL', 'PostgreSQL', 'MySQL',
+  'MongoDB', 'Redis', 'AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes',
+  'GraphQL', 'REST API', 'Tailwind CSS', 'HTML', 'CSS',
+];
+
+export const CERTIFICATION_CATEGORIES = ['Technical', 'Business', 'Language', 'Health & Safety', 'Other'];
+
+// Best-effort typical renewal cycles for well-known certifications, used only
+// to suggest an expiry year — the candidate can always override it. `null`
+// means the certification does not expire once earned.
+export const CERT_VALIDITY_YEARS = [
+  { match: /ccna|ccnp|ccie/i, years: 3 },
+  { match: /aws certified/i, years: 3 },
+  { match: /\baz-\d|azure/i, years: 1 },
+  { match: /\bpmp\b/i, years: 3 },
+  { match: /pmi-acp/i, years: 3 },
+  { match: /comptia|security\+|network\+|\ba\+/i, years: 3 },
+  { match: /cissp/i, years: 3 },
+  { match: /cisa|cism|isaca/i, years: 3 },
+  { match: /scrum master|\bcsm\b/i, years: 2 },
+  { match: /salesforce/i, years: 1 },
+  { match: /itil/i, years: null },
+  { match: /six sigma/i, years: null },
+  { match: /\bgoogle\b/i, years: null },
+];
+
+export function suggestCertExpiryYears(name) {
+  const found = CERT_VALIDITY_YEARS.find((entry) => entry.match.test(name || ''));
+  return found ? found.years : undefined;
+}

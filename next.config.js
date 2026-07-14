@@ -5,6 +5,9 @@ const nextConfig = {
   output: 'export',
   basePath: isGithubPages ? '/talent-platform' : '',
   images: { unoptimized: true },
+  turbopack: {
+    root: process.cwd(),
+  },
 };
 
 export default nextConfig;

@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import {
-  ClipboardCheck, Phone, CheckCircle2, AlertTriangle, ChevronLeft, ChevronRight, Send,
+  ClipboardCheck, Phone, CheckCircle2, AlertTriangle, ChevronLeft, ChevronRight, Send, Zap,
 } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
+import { HeroBackground } from '@/components/layout/HeroBackground';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { ProgressBar } from '@/components/ui/ProgressBar';
@@ -14,10 +15,12 @@ import { QuestionCard } from '@/components/assessment/QuestionCard';
 import { ASSESSMENT_QUESTIONS } from '@/lib/assessmentQuestions';
 import { saveAssessment, loadCV } from '@/lib/storage';
 import { useLanguage } from '@/lib/i18n';
+import { useAuth } from '@/lib/auth';
 
 export default function AssessmentPage() {
   const router = useRouter();
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [pageState, setPageState] = useState('gate');
   const [phoneInput, setPhoneInput] = useState('');
   const [phoneError, setPhoneError] = useState(null);
@@ -25,6 +28,7 @@ export default function AssessmentPage() {
   const [answers, setAnswers] = useState({});
   const [submitError, setSubmitError] = useState(null);
   const [candidateName, setCandidateName] = useState('');
+  const [candidateEmail, setCandidateEmail] = useState('');
   const [resolvedPhone, setResolvedPhone] = useState('');
   const [cvPhone, setCvPhone] = useState(null);
 
@@ -34,12 +38,15 @@ export default function AssessmentPage() {
     if (cv) {
       const phone = cv.personalInfo.phone || '';
       setCandidateName(cv.personalInfo.fullName);
+      setCandidateEmail(cv.personalInfo.email || user?.email || '');
       if (phone) {
         setCvPhone(phone);
         setResolvedPhone(phone);
       }
+    } else if (user?.email) {
+      setCandidateEmail(user.email);
     }
-  }, []);
+  }, [user]);
 
   function startAssessment() {
 
@@ -101,10 +108,16 @@ export default function AssessmentPage() {
       answers: assessmentAnswers,
       submittedAt: new Date().toISOString(),
       candidateName,
+      candidateEmail,
       candidatePhone: resolvedPhone,
     };
 
     saveAssessment(data);
+    // TODO(backend): no endpoint exists yet for assessment results (only
+    // /auth/google, /auth/me, /generate-upload-url are live per the
+    // backend's /openapi.json) — logging the JSON payload so the shape is
+    // ready to POST the moment one exists.
+    console.log('[Assessment] Submission payload (not yet sent — endpoint pending):', data);
     setSubmitError(null);
     setPageState('submitted');
   }
@@ -115,19 +128,37 @@ export default function AssessmentPage() {
 
   if (pageState === 'gate') {
     return (
-      <div className="py-12 sm:py-20">
+      <div className="overflow-x-hidden">
+        <section className="relative bg-dark pt-14 pb-16 sm:pt-16 sm:pb-20 overflow-hidden">
+          <HeroBackground variant="waves" />
+          <Container maxWidth="sm">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="relative z-10 text-center"
+            >
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-4">
+                <ClipboardCheck size={26} className="text-white" />
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">{t('Skill Assessment')}</h1>
+              <p className="text-silver text-lg">
+                {t('This optional assessment evaluates your key professional skills.')}
+              </p>
+            </motion.div>
+          </Container>
+        </section>
+
+        <div className="py-12 sm:py-16">
         <Container maxWidth="sm">
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-10"
+            transition={{ delay: 0.08 }}
+            className="flex items-start gap-3 mb-6 p-4 rounded-xl border border-brand/30 bg-brand/10"
           >
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-4">
-              <ClipboardCheck size={26} className="text-dark" />
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">{t('Skill Assessment')}</h1>
-            <p className="text-silver text-lg">
-              {t('This optional assessment evaluates your key professional skills.')}
+            <Zap size={18} className="text-brand shrink-0 mt-0.5" />
+            <p className="text-sm text-warm leading-relaxed">
+              {t('Candidates who complete this assessment stand out to employers and get matched with job opportunities faster. It only takes about 10 minutes — a small step that can make a big difference in how quickly you land your next role.')}
             </p>
           </motion.div>
 
@@ -176,6 +207,7 @@ export default function AssessmentPage() {
             </Button>
           </motion.div>
         </Container>
+        </div>
       </div>
     );
   }

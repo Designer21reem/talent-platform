@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import {
-  BarChart3, User, Phone, TrendingUp, TrendingDown, Star,
+  BarChart3, User, Phone, Mail, TrendingUp, TrendingDown, Star,
   ClipboardCheck, ArrowRight, Info,
 } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
+import { HeroBackground } from '@/components/layout/HeroBackground';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -29,7 +30,8 @@ export default function DashboardPage() {
       const data = buildDashboard(
         assessment.answers,
         assessment.candidateName,
-        assessment.candidatePhone
+        assessment.candidatePhone,
+        assessment.candidateEmail
       );
       setDashboard(data);
       setUsingMock(false);
@@ -54,52 +56,60 @@ export default function DashboardPage() {
 
 
   return (
-    <div className="py-12 sm:py-16">
-      <Container maxWidth="xl">
-        {/* Mock data banner */}
-        {usingMock && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4"
-          >
-            <Info size={18} className="text-amber-500 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-amber-800">{t('Showing sample dashboard')}</p>
-              <p className="text-xs text-amber-600 mt-0.5">
-                {t('Complete the assessment to see your personalised skill results.')}
-              </p>
-            </div>
-            <Link href="/assessment">
-              <Button size="sm" variant="outline" className="border-amber-400 text-amber-700 hover:bg-amber-50 shrink-0">
-                {t('Take Assessment')}
-              </Button>
-            </Link>
-          </motion.div>
-        )}
+    <div className="overflow-x-hidden">
+      <section className="relative bg-dark pt-10 pb-8 sm:pt-12 sm:pb-10 overflow-hidden">
+        <HeroBackground variant="waves" />
+        <Container maxWidth="xl">
+          <div className="relative z-10">
+            {/* Mock data banner */}
+            {usingMock && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4"
+              >
+                <Info size={18} className="text-amber-500 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-amber-800">{t('Showing sample dashboard')}</p>
+                  <p className="text-xs text-amber-600 mt-0.5">
+                    {t('Complete the assessment to see your personalised skill results.')}
+                  </p>
+                </div>
+                <Link href="/assessment">
+                  <Button size="sm" variant="outline" className="border-amber-400 text-amber-700 hover:bg-amber-50 shrink-0">
+                    {t('Take Assessment')}
+                  </Button>
+                </Link>
+              </motion.div>
+            )}
 
-        {/* Page header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-brand/20 flex items-center justify-center">
-              <BarChart3 size={22} className="text-brand" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white">{t('Skills Dashboard')}</h1>
-              <p className="text-silver text-sm">{t('Your personal skill assessment results')}</p>
-            </div>
+            {/* Page header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-brand/20 flex items-center justify-center">
+                  <BarChart3 size={22} className="text-brand" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-white">{t('Skills Dashboard')}</h1>
+                  <p className="text-silver text-sm">{t('Your personal skill assessment results')}</p>
+                </div>
+              </div>
+              <Link href="/assessment">
+                <Button variant="secondary" size="sm" rightIcon={<ArrowRight size={14} className="rtl:-scale-x-100" />}>
+                  {t('Retake Assessment')}
+                </Button>
+              </Link>
+            </motion.div>
           </div>
-          <Link href="/assessment">
-            <Button variant="secondary" size="sm" rightIcon={<ArrowRight size={14} className="rtl:-scale-x-100" />}>
-              {t('Retake Assessment')}
-            </Button>
-          </Link>
-        </motion.div>
+        </Container>
+      </section>
 
+      <div className="py-8 sm:py-10">
+      <Container maxWidth="xl">
         {/* Candidate info + Overall score */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Candidate card */}
@@ -110,9 +120,15 @@ export default function DashboardPage() {
             <div className="min-w-0">
               <p className="font-bold text-white text-lg truncate">{dashboard.candidateName || t('Candidate')}</p>
               <p className="flex items-center gap-1.5 text-sm text-silver mt-0.5">
-                <Phone size={13} />
+                <Phone size={13} className="shrink-0" />
                 <span dir="ltr">{dashboard.phoneNumber}</span>
               </p>
+              {dashboard.candidateEmail && (
+                <p className="flex items-center gap-1.5 text-sm text-silver mt-0.5 truncate">
+                  <Mail size={13} className="shrink-0" />
+                  <span dir="ltr" className="truncate">{dashboard.candidateEmail}</span>
+                </p>
+              )}
             </div>
           </Card>
 
@@ -223,6 +239,7 @@ export default function DashboardPage() {
           </Card>
         </motion.div>
       </Container>
+      </div>
     </div>
   );
 }

@@ -1,9 +1,14 @@
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
-@import "@fontsource/inter/600.css";
-@import "@fontsource/inter/700.css";
-@import "@fontsource/inter/800.css";
-@import "@fontsource/inter/900.css";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap');
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/montserrat/v31/JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
 @import "tailwindcss";
 
 /*
@@ -14,24 +19,32 @@
 */
 :root {
   /* ── Backgrounds ─────────────────────────────────────────────────────── */
-  --tv-bg:        #080808;    /* main page background */
-  --tv-surface:   #111111;    /* card / panel background */
-  --tv-surface-2: #1e1e1e;    /* elevated elements inside cards */
+  --bg: #030303;
+  --gold: #c99b25;
+  --gold2: #e4b638;
+  --text: #f2eee6;
+  --muted: #b8b3a8;
+  --line: rgba(201, 155, 37, 0.34);
+  --panel: rgba(13, 13, 13, 0.88);
+
+  --tv-bg:        var(--bg);
+  --tv-surface:   #111111;
+  --tv-surface-2: #1f1f1f;
 
   /* ── Brand / Gold ─────────────────────────────────────────────────────
      Change --tv-gold to update the accent color across the whole site
   ── */
-  --tv-gold:       #c99b25;   /* primary gold — buttons, borders, icons */
-  --tv-gold-light: #d4aa3a;   /* lighter gold — button hover state */
-  --tv-gold-dark:  #a67b18;   /* darker gold — button active/pressed state */
+  --tv-gold:       var(--gold);   /* primary gold — buttons, borders, icons */
+  --tv-gold-light: var(--gold2);   /* lighter gold — button hover state */
+  --tv-gold-dark:  #99791b;   /* darker gold — button active/pressed state */
 
   /* ── Typography ───────────────────────────────────────────────────────
      Text colors from brightest to most faded
   ── */
-  --tv-title:   #f2eee6;   /* main headings — h1 / h2 / h3 */
-  --tv-body:    #e2ddd5;   /* paragraphs and card body text */
-  --tv-muted:   #dddddd;   /* secondary text and labels */
-  --tv-subtle:  #9a9a9a;   /* captions, hints, timestamps */
+  --tv-title:   var(--text);   /* main headings — h1 / h2 / h3 */
+  --tv-body:    #e4dccf;   /* paragraphs and card body text */
+  --tv-muted:   var(--muted);   /* secondary text and labels */
+  --tv-subtle:  #9f9b8f;   /* captions, hints, timestamps */
 
   /* ── Form Fields ──────────────────────────────────────────────────────
      Input / Textarea / Select colors for every state
@@ -82,7 +95,7 @@ html {
 body {
   background-color: var(--tv-bg);
   color: var(--tv-body);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Montserrat', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -144,6 +157,27 @@ select:-webkit-autofill:focus {
   -webkit-text-fill-color: var(--tv-field-text) !important;
   caret-color: var(--tv-field-text);
   transition: background-color 9999s ease-in-out 0s;
+}
+
+/* ── Hero display font (GOT TALENT) ──────────────────────────────────────── */
+.tv-hero-font {
+  font-family: 'Playfair Display', 'Montserrat', serif;
+}
+
+/* ── Animated gold grid backdrop (home hero) ─────────────────────────────── */
+@keyframes tv-grid-pan {
+  from { background-position: 0 0; }
+  to { background-position: 48px 48px; }
+}
+.tv-grid-bg {
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: tv-grid-pan 16s linear infinite;
+  opacity: 0.4;
+  -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
+  mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
 }
 
 ::-webkit-scrollbar { width: 6px; }

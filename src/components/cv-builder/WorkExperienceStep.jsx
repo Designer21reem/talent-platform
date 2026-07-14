@@ -3,36 +3,34 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Briefcase } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
-import { Select } from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
+import { SelectWithOther } from '@/components/ui/SelectWithOther';
+import { DatePicker } from '@/components/ui/DatePicker';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { JOB_TITLES, OTHER_VALUE } from '@/lib/formOptions';
+import { COMPANIES, JOB_TITLES, OTHER_VALUE } from '@/lib/formOptions';
 import { useLanguage } from '@/lib/i18n';
 
 function newEntry() {
   return {
     id: crypto.randomUUID(),
     company: '',
+    companyOther: false,
     position: '',
     positionOther: false,
     startDate: '',
     endDate: '',
     current: false,
+    repoUrl: '',
     description: '',
   };
 }
 
 export function WorkExperienceStep({ data, onChange }) {
   const { t } = useLanguage();
-  const jobTitleOptions = [
-    ...JOB_TITLES.map((v) => ({ value: v, label: t(v) })),
-    { value: OTHER_VALUE, label: t('Other (type your own)') },
-  ];
 
   function addEntry() {
-    const entry = newEntry();
-    onChange([...data, entry]);
+    onChange([...data, newEntry()]);
   }
 
   function removeEntry(id) {
@@ -43,11 +41,11 @@ export function WorkExperienceStep({ data, onChange }) {
     onChange(data.map((e) => (e.id === id ? { ...e, [field]: value } : e)));
   }
 
-  function selectPosition(id, selected) {
+  function selectField(id, field, otherFlagField, selected) {
     if (selected === OTHER_VALUE) {
-      onChange(data.map((e) => (e.id === id ? { ...e, position: '', positionOther: true } : e)));
+      onChange(data.map((e) => (e.id === id ? { ...e, [field]: '', [otherFlagField]: true } : e)));
     } else {
-      onChange(data.map((e) => (e.id === id ? { ...e, position: selected, positionOther: false } : e)));
+      onChange(data.map((e) => (e.id === id ? { ...e, [field]: selected, [otherFlagField]: false } : e)));
     }
   }
 
@@ -80,40 +78,38 @@ export function WorkExperienceStep({ data, onChange }) {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input
+                <SelectWithOther
                   label={t('Company')}
-                  placeholder={t('Company name')}
+                  placeholder={t('Select company…')}
+                  otherPlaceholder={t('Type the company name')}
+                  list={COMPANIES}
+                  otherFlag={entry.companyOther}
                   value={entry.company}
-                  onChange={(e) => updateEntry(entry.id, 'company', e.target.value)}
+                  onSelect={(v) => selectField(entry.id, 'company', 'companyOther', v)}
+                  onCustomChange={(v) => updateEntry(entry.id, 'company', v)}
                 />
-                <div className="space-y-2">
-                  <Select
-                    label={t('Position / Title')}
-                    placeholder={t('Select position…')}
-                    options={jobTitleOptions}
-                    value={entry.positionOther ? OTHER_VALUE : entry.position}
-                    onChange={(e) => selectPosition(entry.id, e.target.value)}
-                  />
-                  {entry.positionOther && (
-                    <Input
-                      placeholder={t('Type your position / title')}
-                      value={entry.position}
-                      onChange={(e) => updateEntry(entry.id, 'position', e.target.value)}
-                    />
-                  )}
-                </div>
-                <Input
+                <SelectWithOther
+                  label={t('Position / Title')}
+                  placeholder={t('Select position…')}
+                  otherPlaceholder={t('Type your position / title')}
+                  list={JOB_TITLES}
+                  otherFlag={entry.positionOther}
+                  value={entry.position}
+                  onSelect={(v) => selectField(entry.id, 'position', 'positionOther', v)}
+                  onCustomChange={(v) => updateEntry(entry.id, 'position', v)}
+                />
+                <DatePicker
                   label={t('Start Date')}
-                  placeholder={t('MM/YYYY')}
+                  placeholder={t('Select…')}
                   value={entry.startDate}
-                  onChange={(e) => updateEntry(entry.id, 'startDate', e.target.value)}
+                  onChange={(v) => updateEntry(entry.id, 'startDate', v)}
                 />
                 {!entry.current && (
-                  <Input
+                  <DatePicker
                     label={t('End Date')}
-                    placeholder={t('MM/YYYY')}
+                    placeholder={t('Select…')}
                     value={entry.endDate}
-                    onChange={(e) => updateEntry(entry.id, 'endDate', e.target.value)}
+                    onChange={(v) => updateEntry(entry.id, 'endDate', v)}
                   />
                 )}
               </div>
@@ -128,9 +124,15 @@ export function WorkExperienceStep({ data, onChange }) {
                 {t('I currently work here')}
               </label>
 
-              <div className="mt-4">
+              <div className="mt-4 grid grid-cols-1 gap-4">
+                <Input
+                  label={t('Repository / Project Link (optional)')}
+                  placeholder="https://github.com/…"
+                  value={entry.repoUrl}
+                  onChange={(e) => updateEntry(entry.id, 'repoUrl', e.target.value)}
+                />
                 <Textarea
-                  label={t('Description')}
+                  label={t('Key Achievements & Responsibilities')}
                   placeholder={t('Describe your responsibilities and achievements…')}
                   value={entry.description}
                   onChange={(e) => updateEntry(entry.id, 'description', e.target.value)}

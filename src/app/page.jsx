@@ -2,23 +2,11 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Upload,
-  FileEdit,
-  ClipboardCheck,
-  Star,
-  Users,
-  Zap,
-  Quote,
-} from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Upload, FileEdit, ClipboardCheck, Star, Users, Zap } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
-import { Button } from '@/components/ui/Button';
+import { HeroBackground } from '@/components/layout/HeroBackground';
 import { useLanguage } from '@/lib/i18n';
-import { getHomeTopCandidates } from '@/lib/leaderboardApi';
-
-const TAGLINE =
-  'Upload or build a professional CV, complete a skill assessment, and get a personal skills dashboard — all in one place, no sign-up required.';
 
 const STATS = [
   { label: 'Candidates placed', value: '12,400+', icon: Users },
@@ -26,279 +14,153 @@ const STATS = [
   { label: 'Assessment completion rate', value: '94%', icon: Zap },
 ];
 
-const TESTIMONIALS = [
-  { name: 'Layla Hassan', role: 'Frontend Developer', quote: 'Built my CV in minutes and landed 3 interviews the same week.', score: '98% match' },
-  { name: 'Omar Al-Sabti', role: 'Data Analyst', quote: 'Uploaded my old CV and the skill report was spot on.', score: '95% match' },
-  { name: 'Farah Nasser', role: 'Product Designer', quote: 'The guided builder made my experience look so much more professional.', score: '97% match' },
-  { name: 'Yousif Kareem', role: 'Backend Engineer', quote: 'The assessment results helped me negotiate a better offer.', score: '96% match' },
-  { name: 'Dana Saleh', role: 'Marketing Specialist', quote: 'Clean CV, fast process, got noticed right away.', score: '94% match' },
-  { name: 'Ali Mahmoud', role: 'DevOps Engineer', quote: 'From upload to offer letter in two weeks flat.', score: '99% match' },
-  { name: 'Rana Fadel', role: 'UX Researcher', quote: 'Loved how simple the whole flow was, start to finish.', score: '95% match' },
+const ACTIONS = [
+  {
+    href: '/upload-cv',
+    icon: Upload,
+    title: 'UPLOAD CV',
+    description: 'Upload your CV and prepare it for matching, filtering, and future recruitment workflows.',
+  },
+  {
+    href: '/build-cv',
+    icon: FileEdit,
+    title: 'CV BUILDER',
+    description: 'Create a structured professional CV using guided sections for experience, education, and skills.',
+    featured: true,
+  },
+  {
+    href: '/assessment',
+    icon: ClipboardCheck,
+    title: 'SKILL CHECK',
+    description: 'Test practical skills with short assessments that can help validate your readiness.',
+  },
 ];
 
-const ROTATE_INTERVAL_MS = 90_000;
+const SUBTITLE_PREFIX = 'One place to show what you can do. Start with ';
+const SUBTITLE_WORDS = ['our CV Builder', 'a Skill Assessment', 'a CV Upload'];
 
-// Home page cards refresh on this interval per the "top 5" sector cards spec.
-const CANDIDATES_REFRESH_MS = 60_000;
-
-function initials(name) {
-  return name.split(' ').map((p) => p[0]).join('').slice(0, 2).toUpperCase();
+function StatsBar({ visible }) {
+  const { t } = useLanguage();
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={visible ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+      className="relative mx-auto mt-14 sm:mt-16 max-w-3xl rounded-2xl border border-brand/30 bg-surface/60 backdrop-blur-sm px-4 py-6 sm:px-10 sm:py-8 shadow-lg shadow-black/20"
+    >
+      <div className="grid grid-cols-3 divide-x divide-brand/15 rtl:divide-x-reverse">
+        {STATS.map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 10 }}
+            animate={visible ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.15 + i * 0.12, duration: 0.5 }}
+            className="text-center px-2"
+          >
+            <p className="text-2xl sm:text-4xl font-extrabold text-brand tracking-tight">{stat.value}</p>
+            <p className="mt-1 text-[11px] sm:text-sm text-silver whitespace-nowrap">{t(stat.label)}</p>
+          </motion.div>
+        ))}
+      </div>
+      <span className="absolute -bottom-1 start-6 w-1.5 h-1.5 rounded-full bg-brand/60" />
+      <span className="absolute -bottom-3 start-16 w-1 h-1 rounded-full bg-brand/40" />
+      <span className="absolute -bottom-1 end-10 w-1 h-1 rounded-full bg-brand/40" />
+    </motion.div>
+  );
 }
 
-function TypewriterText({ text, className, startDelay = 0, speed = 18, onDone }) {
-  const [count, setCount] = useState(0);
+// Types the fixed prefix once, then keeps cycling just the trailing word
+// (typing it in, holding, deleting it, moving to the next) — the sentence
+// itself never re-types.
+function PrefixRotatingTypewriter({ prefix, words, active, className }) {
+  const { t } = useLanguage();
+  const fullPrefix = t(prefix);
+  const [prefixTyped, setPrefixTyped] = useState('');
+  const [wordIndex, setWordIndex] = useState(0);
+  const [word, setWord] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    let interval;
-    const timeout = setTimeout(() => {
-      interval = setInterval(() => {
-        setCount((c) => {
-          if (c >= text.length) {
-            clearInterval(interval);
-            return c;
-          }
-          return c + 1;
-        });
-      }, speed);
-    }, startDelay);
-    return () => {
-      clearTimeout(timeout);
-      clearInterval(interval);
-    };
-  }, [text, startDelay, speed]);
+    if (!active) return undefined;
+    let timeout;
 
-  useEffect(() => {
-    if (count === text.length && text.length > 0) {
-      onDone?.();
+    if (prefixTyped.length < fullPrefix.length) {
+      timeout = setTimeout(() => setPrefixTyped(fullPrefix.slice(0, prefixTyped.length + 1)), 32);
+      return () => clearTimeout(timeout);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [count]);
 
-  const done = count >= text.length;
+    const current = t(words[wordIndex]);
+    if (!deleting && word.length < current.length) {
+      timeout = setTimeout(() => setWord(current.slice(0, word.length + 1)), 55);
+    } else if (!deleting && word.length === current.length) {
+      timeout = setTimeout(() => setDeleting(true), 1600);
+    } else if (deleting && word.length > 0) {
+      timeout = setTimeout(() => setWord(current.slice(0, word.length - 1)), 28);
+    } else {
+      timeout = setTimeout(() => {
+        setDeleting(false);
+        setWordIndex((i) => (i + 1) % words.length);
+      }, 350);
+    }
+    return () => clearTimeout(timeout);
+  }, [active, prefixTyped, fullPrefix, word, deleting, wordIndex, words, t]);
 
   return (
     <p className={className}>
-      {text.slice(0, count)}
-      {!done && <span className="inline-block w-0.5 h-[1em] align-middle bg-brand ms-0.5 animate-pulse" />}
+      {prefixTyped}
+      {word}
+      <span className="inline-block w-0.5 h-[1em] align-middle bg-brand ms-0.5 animate-pulse" />
     </p>
   );
 }
 
-function TestimonialCarousel() {
-  const [index, setIndex] = useState(0);
-  const { t } = useLanguage();
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setIndex((i) => (i + 1) % TESTIMONIALS.length);
-    }, ROTATE_INTERVAL_MS);
-    return () => clearInterval(id);
-  }, []);
-
-  const slots = [-2, -1, 0, 1, 2].map((offset) => {
-    const i = ((index + offset) % TESTIMONIALS.length + TESTIMONIALS.length) % TESTIMONIALS.length;
-    return { offset, item: TESTIMONIALS[i] };
-  });
-
-  return (
-    <div className="flex items-center justify-center gap-4">
-      <AnimatePresence mode="popLayout">
-        {slots.map(({ offset, item }) => (
-          <motion.div
-            key={`${index}-${offset}`}
-            initial={{ opacity: 0, x: offset > 0 ? 24 : offset < 0 ? -24 : 0, scale: 0.9 }}
-            animate={{
-              opacity: offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.7 : 0.4,
-              x: 0,
-              scale: offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.9 : 0.78,
-            }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-            className={[
-              'w-64 shrink-0 rounded-2xl border p-5 bg-surface',
-              offset === 0 ? 'border-brand/40 shadow-lg shadow-black/30 z-20' : 'border-surface-2 z-10',
-              Math.abs(offset) === 2 ? 'hidden lg:block' : '',
-              Math.abs(offset) === 1 ? 'hidden sm:block' : '',
-            ].join(' ')}
-          >
-            <Quote size={16} className="text-brand mb-2" />
-            <p className="text-sm text-warm leading-relaxed mb-4 line-clamp-3">{t(item.quote)}</p>
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-brand/15 text-brand text-xs font-semibold flex items-center justify-center shrink-0">
-                {initials(item.name)}
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-semibold text-white truncate">{item.name}</p>
-                <p className="text-[11px] text-silver truncate">{t(item.role)}</p>
-              </div>
-              <span className="ml-auto text-[10px] font-semibold text-brand shrink-0">{item.score.replace('match', t('match'))}</span>
-            </div>
-          </motion.div>
-        ))}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function StatBubble({ label, value, icon: Icon, delay }) {
+function ActionCard({ href, icon: Icon, title, description, featured, delay, visible }) {
   const { t } = useLanguage();
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.5 }}
-      className="flex items-center gap-3 px-6 py-3 sm:px-8"
-    >
-      <div className="w-9 h-9 rounded-lg bg-brand/15 flex items-center justify-center shrink-0">
-        <Icon size={16} className="text-brand" />
-      </div>
-      <div className="text-left leading-tight">
-        <p className="text-base font-bold text-white">{value}</p>
-        <p className="text-xs text-silver whitespace-nowrap">{t(label)}</p>
-      </div>
-    </motion.div>
-  );
-}
-
-function TopCandidateCard({ candidate, featured, align = 'left', delay }) {
-  const { t } = useLanguage();
-  const isRight = align === 'right';
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0, scale: featured ? 1.06 : 1 }}
-      transition={{ delay, duration: 0.5, layout: { duration: 0.6, ease: 'easeInOut' } }}
+      initial={{ opacity: 0, y: 24, scale: 0.95 }}
+      animate={visible ? { opacity: 1, y: 0, scale: featured ? 1.04 : 1 } : {}}
+      transition={{ delay, duration: 0.55, ease: 'easeOut' }}
+      whileHover={{ y: -6, scale: featured ? 1.06 : 1.02 }}
       className={[
-        'rounded-2xl border bg-surface/70 min-w-0',
-        isRight ? 'text-right' : 'text-left',
+        'group relative rounded-2xl border p-6 sm:p-7 text-left backdrop-blur-sm transition-colors',
         featured
-          ? 'border-brand/60 p-5 sm:p-6 shadow-lg shadow-black/30 z-10'
-          : 'border-brand/20 p-4 sm:p-5',
+          ? 'border-brand/60 bg-linear-to-b from-brand/10 to-surface/60 shadow-xl shadow-black/30 z-10'
+          : 'border-brand/20 bg-surface/50 hover:border-brand/40',
       ].join(' ')}
     >
-      <p className="text-[10px] sm:text-[11px] uppercase tracking-wide text-brand font-semibold mb-3 truncate">
-        {t(candidate.sector)}
-      </p>
-      <div className={['flex items-center gap-2.5 sm:gap-3', isRight ? 'flex-row-reverse' : ''].join(' ')}>
-        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand/15 text-brand text-xs sm:text-sm font-semibold flex items-center justify-center shrink-0">
-          {candidate.initials}
-        </div>
-        <div className="min-w-0">
-          <p className={['font-semibold text-white truncate', featured ? 'text-base' : 'text-sm'].join(' ')}>
-            {candidate.name}
-          </p>
-          <p className="text-[11px] text-silver">{t('Top match')}</p>
-        </div>
-      </div>
-      <p className={['mt-4 font-bold text-brand', featured ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'].join(' ')}>
-        {candidate.score}%
-      </p>
-    </motion.div>
-  );
-}
-
-// How often the featured (center) slot rotates to a different candidate —
-// a purely visual shuffle, independent of the 60s backend refetch below.
-const CARD_SHUFFLE_MS = 30_000;
-const FEATURED_SLOT = 2;
-
-// Below `lg` there isn't room for all 5 cards in a row, so instead of a
-// scrollable strip we show a static 3-card deck — center card prominent,
-// the previous/next ones peeking at reduced size on either side. No
-// scrollbar, no swipe required; the 30s shuffle is what cycles them.
-function TopCandidateCarousel({ candidates, index }) {
-  const slots = [-1, 0, 1].map((offset) => {
-    const i = ((index + offset) % candidates.length + candidates.length) % candidates.length;
-    return { offset, candidate: candidates[i] };
-  });
-
-  return (
-    <div className="lg:hidden overflow-hidden -mx-4 px-4">
-      <div className="flex items-center justify-center gap-3">
-        <AnimatePresence mode="popLayout" initial={false}>
-          {slots.map(({ offset, candidate }) => (
-            <motion.div
-              key={`${index}-${offset}-${candidate.sector}`}
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: offset === 0 ? 1 : 0.55, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.85 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
-              className={offset === 0 ? 'w-[58%] shrink-0 z-10' : 'w-[46%] shrink-0'}
-            >
-              <TopCandidateCard
-                candidate={candidate}
-                featured={offset === 0}
-                align={offset === -1 ? 'right' : 'left'}
-                delay={0}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-}
-
-// Top-5 sector cards for the home page — refetches every 60s so scores stay
-// current as more candidates complete assessments.
-function TopCandidateCards() {
-  const [candidates, setCandidates] = useState([]);
-  const [offset, setOffset] = useState(0);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      const data = await getHomeTopCandidates();
-      if (!cancelled) setCandidates(data);
-    }
-
-    load();
-    const id = setInterval(load, CANDIDATES_REFRESH_MS);
-    return () => {
-      cancelled = true;
-      clearInterval(id);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (candidates.length === 0) return;
-    const id = setInterval(() => {
-      setOffset((o) => (o + 1) % candidates.length);
-    }, CARD_SHUFFLE_MS);
-    return () => clearInterval(id);
-  }, [candidates.length]);
-
-  if (candidates.length === 0) return null;
-
-  const ordered = candidates.map((_, i) => candidates[(i + offset) % candidates.length]);
-
-  return (
-    <>
-      <TopCandidateCarousel candidates={candidates} index={offset} />
-      <div className="hidden lg:grid lg:grid-cols-5 gap-4">
-        {ordered.map((candidate, i) => (
-          <TopCandidateCard
-            key={candidate.sector}
-            candidate={candidate}
-            featured={i === FEATURED_SLOT}
-            delay={i * 0.08}
+      <Link href={href} className="block">
+        <div className="relative inline-flex items-center justify-center w-14 h-14 mb-5">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+            className="absolute -inset-1.5 rounded-full border-2 border-dashed border-brand opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           />
-        ))}
-      </div>
-    </>
+          <div
+            className={[
+              'relative inline-flex items-center justify-center w-14 h-14 rounded-full border-2 transition-transform duration-300 group-hover:scale-110',
+              featured ? 'border-brand text-brand shadow-[0_0_18px_rgba(201,155,37,0.45)]' : 'border-brand/50 text-brand',
+            ].join(' ')}
+          >
+            <Icon size={24} />
+          </div>
+        </div>
+        <h3 className={['text-lg font-bold tracking-wide mb-2', featured ? 'text-brand' : 'text-white'].join(' ')}>
+          {title}
+        </h3>
+        <p className="text-sm text-silver leading-relaxed">{t(description)}</p>
+      </Link>
+    </motion.div>
   );
 }
 
 export default function LandingPage() {
   const [stage, setStage] = useState(0);
-  const { t } = useLanguage();
 
   useEffect(() => {
-    const t1 = setTimeout(() => setStage(1), 1200);
-    const t2 = setTimeout(() => setStage(2), 1800);
-    const t3 = setTimeout(() => setStage(3), 2400);
+    const t1 = setTimeout(() => setStage(1), 300);
+    const t2 = setTimeout(() => setStage(2), 1000);
+    const t3 = setTimeout(() => setStage(3), 1600);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -308,104 +170,57 @@ export default function LandingPage() {
 
   return (
     <div className="overflow-x-hidden">
-      {/* ── Hero ── */}
-      <section className="relative bg-linear-to-br from-dark via-surface to-surface-2 text-white pt-10 pb-24 sm:pt-14 sm:pb-32 overflow-hidden">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-brand/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-brand-dark/30 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative bg-dark text-white pt-10 pb-24 sm:pt-14 sm:pb-32 overflow-hidden">
+        <HeroBackground variant="waves" />
 
         <Container maxWidth="lg">
           <div className="relative z-10 text-center">
             <motion.div
-              initial={{ opacity: 0, scale: 0.3, y: 0 }}
-              animate={{ opacity: [0, 1, 1], scale: [0.3, 1.35, 1], y: [0, 0, -6] }}
-              transition={{ duration: 1.5, times: [0, 0.55, 1], ease: 'easeOut' }}
-              className="mb-10 sm:mb-14"
+              initial={{ opacity: 0, y: 32 }}
+              animate={stage >= 1 ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6 }}
+              className="relative mb-4 flex items-center justify-center gap-3 sm:gap-6"
             >
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-wide text-brand">
-                GOT TALENT
-              </h1>
+              <motion.span
+                animate={{ opacity: [0.3, 1, 0.3], scaleX: [0.7, 1, 0.7] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                className="hidden sm:block h-px w-14 md:w-24 bg-linear-to-r from-transparent to-brand origin-right"
+              />
+
+              <div className="relative">
+                <motion.div
+                  animate={{ opacity: [0.3, 0.6, 0.3], scale: [0.9, 1.08, 0.9] }}
+                  transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+                  className="absolute inset-0 -z-10 bg-brand/40 blur-3xl rounded-full"
+                />
+                <h1 className="tv-hero-font text-5xl sm:text-6xl lg:text-7xl font-black tracking-wide text-white drop-shadow-[0_0_30px_rgba(201,155,37,0.45)]">
+                  GOT TALENT
+                </h1>
+              </div>
+
+              <motion.span
+                animate={{ opacity: [0.3, 1, 0.3], scaleX: [0.7, 1, 0.7] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+                className="hidden sm:block h-px w-14 md:w-24 bg-linear-to-l from-transparent to-brand origin-left"
+              />
             </motion.div>
 
-            {/*
-              Tagline disabled per feedback — left here in case it needs
-              to come back.
-              <TypewriterText
-                text={t(TAGLINE)}
-                startDelay={800}
-                className="max-w-2xl mx-auto text-lg sm:text-xl text-warm leading-relaxed mb-10 min-h-[3.5em] sm:min-h-[2.5em]"
+            <div className="mb-12 sm:mb-16 min-h-7">
+              <PrefixRotatingTypewriter
+                prefix={SUBTITLE_PREFIX}
+                words={SUBTITLE_WORDS}
+                active={stage >= 2}
+                className="text-base sm:text-lg text-silver max-w-xl mx-auto"
               />
-            */}
+            </div>
 
-            {/*
-              Testimonials disabled — not part of the approved home page
-              reference layout. Left here in case it needs to come back.
-              <div className="rounded-3xl border border-surface-2 bg-surface/60 backdrop-blur-sm px-6 py-10 sm:px-10 mb-12">
-                <TestimonialCarousel />
-              </div>
-            */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6 max-w-4xl mx-auto items-center">
+              {ACTIONS.map((action, i) => (
+                <ActionCard key={action.href} {...action} delay={i * 0.12} visible={stage >= 3} />
+              ))}
+            </div>
 
-            {stage >= 1 && (
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="mb-12"
-              >
-                <TopCandidateCards />
-              </motion.div>
-            )}
-
-            {stage >= 2 && (
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="mb-16 flex flex-col sm:flex-row gap-4 justify-center"
-              >
-                <Link href="/upload-cv">
-                  <Button
-                    size="lg"
-                    className="bg-brand hover:bg-brand-light text-dark font-semibold border-0 shadow-lg shadow-amber-900/30 w-full sm:w-auto"
-                    leftIcon={<Upload size={18} />}
-                  >
-                    {t('Upload CV')}
-                  </Button>
-                </Link>
-                <Link href="/build-cv">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-brand/40 text-brand hover:bg-brand/10 w-full sm:w-auto"
-                    leftIcon={<FileEdit size={18} />}
-                  >
-                    {t('CV Builder')}
-                  </Button>
-                </Link>
-                <Link href="/assessment">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-stone-500/40 text-warm hover:bg-stone-700/50 w-full sm:w-auto"
-                    leftIcon={<ClipboardCheck size={18} />}
-                  >
-                    {t('Start Assessment')}
-                  </Button>
-                </Link>
-              </motion.div>
-            )}
-
-            {stage >= 3 && (
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="inline-flex flex-col sm:flex-row items-center divide-y sm:divide-y-0 sm:divide-x divide-surface-2 border-t border-b border-surface-2"
-              >
-                {STATS.map((stat, i) => (
-                  <StatBubble key={stat.label} {...stat} delay={i * 0.15} />
-                ))}
-              </motion.div>
-            )}
+            <StatsBar visible={stage >= 3} />
           </div>
         </Container>
       </section>

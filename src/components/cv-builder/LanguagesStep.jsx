@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { LANGUAGES, OTHER_VALUE } from '@/lib/formOptions';
 import { useLanguage } from '@/lib/i18n';
 
 const PROFICIENCIES = ['Basic', 'Conversational', 'Fluent', 'Native'];
@@ -20,16 +21,23 @@ const PROFICIENCY_BADGE = {
 
 export function LanguagesStep({ data, onChange }) {
   const { t } = useLanguage();
-  const [name, setName] = useState('');
+  const [pick, setPick] = useState('');
+  const [custom, setCustom] = useState('');
   const [proficiency, setProficiency] = useState('Fluent');
 
   const proficiencyOptions = PROFICIENCIES.map((v) => ({ value: v, label: t(v) }));
+  const languageOptions = [
+    ...LANGUAGES.filter((l) => !data.some((d) => d.name === l)).map((v) => ({ value: v, label: t(v) })),
+    { value: OTHER_VALUE, label: t('Other (type your own)') },
+  ];
 
   function addLanguage() {
-    if (!name.trim()) return;
-    const lang = { id: crypto.randomUUID(), name: name.trim(), proficiency };
+    const name = pick === OTHER_VALUE ? custom.trim() : pick;
+    if (!name) return;
+    const lang = { id: crypto.randomUUID(), name, proficiency };
     onChange([...data, lang]);
-    setName('');
+    setPick('');
+    setCustom('');
   }
 
   function removeLanguage(id) {
@@ -41,16 +49,27 @@ export function LanguagesStep({ data, onChange }) {
       <h2 className="text-xl font-semibold text-warm-light">{t('Languages')}</h2>
       <p className="text-sm text-silver">{t('List languages you speak and your proficiency level.')}</p>
 
-      <div className="flex gap-3 items-end">
-        <div className="flex-1">
-          <Input
+      <div className="flex gap-3 items-end flex-wrap">
+        <div className="flex-1 min-w-40">
+          <Select
             label={t('Language')}
-            placeholder={t('e.g. English, Arabic, French…')}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && addLanguage()}
+            placeholder={t('Select a language…')}
+            options={languageOptions}
+            value={pick}
+            onChange={(e) => setPick(e.target.value)}
           />
         </div>
+        {pick === OTHER_VALUE && (
+          <div className="flex-1 min-w-40">
+            <Input
+              label={t('Custom Language')}
+              placeholder={t('e.g. Italian')}
+              value={custom}
+              onChange={(e) => setCustom(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && addLanguage()}
+            />
+          </div>
+        )}
         <div className="w-44">
           <Select
             label={t('Proficiency')}
@@ -64,7 +83,7 @@ export function LanguagesStep({ data, onChange }) {
         </Button>
       </div>
 
-      <div className="flex flex-wrap gap-2 min-h-[48px]">
+      <div className="flex flex-wrap gap-2 min-h-12">
         <AnimatePresence>
           {data.map((lang) => (
             <motion.div

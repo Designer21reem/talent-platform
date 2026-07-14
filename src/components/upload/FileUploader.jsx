@@ -2,12 +2,13 @@
 
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UploadCloud, FileText, ShieldCheck, CheckCircle2, XCircle, X } from 'lucide-react';
+import { UploadCloud, FileText, CheckCircle2, XCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/lib/i18n';
 
+const MAX_FILE_SIZE_MB = 5;
 const ACCEPTED_TYPES = [
   'application/pdf',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -22,27 +23,16 @@ function validateFile(file) {
   if (!ACCEPTED_TYPES.includes(file.type) && !ACCEPTED_FILE_EXTS.includes(ext ?? '')) {
     return `Invalid file type. Only PDF, DOCX, JPG, JPEG, and PNG are accepted.`;
   }
-  if (file.size > 10 * 1024 * 1024) {
-    return 'File size exceeds 10 MB limit.';
+  if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+    return `File size exceeds ${MAX_FILE_SIZE_MB} MB limit.`;
   }
   return null;
 }
 
-function simulateUpload(onProgress, onComplete) {
-  let progress = 0;
-  const interval = setInterval(() => {
-    progress += Math.random() * 18 + 7;
-    if (progress >= 100) {
-      clearInterval(interval);
-      onProgress(100);
-      setTimeout(onComplete, 300);
-    } else {
-      onProgress(Math.min(progress, 99));
-    }
-  }, 120);
-}
-
-export function FileUploader({ onFile, onValidateContent }) {
+// No client-side content parsing here — the file is only ever type/size
+// checked in the browser, then uploaded as-is. Any extraction of name,
+// email, etc. from the file happens server-side.
+export function FileUploader({ onFile, onUpload }) {
   const { t } = useLanguage();
   const inputRef = useRef(null);
   const [dragging, setDragging] = useState(false);
@@ -60,28 +50,21 @@ export function FileUploader({ onFile, onValidateContent }) {
       return;
     }
 
-    // Confirm the file actually contains CV-like data before running the
-    // upload animation — no point animating a progress bar for a file
-    // we're about to reject.
-    setState({ status: 'confirming', fileName: file.name, progress: 0, errorMessage: null });
+    setState({ status: 'uploading', fileName: file.name, progress: 5, errorMessage: null });
 
-    const contentError = onValidateContent ? await onValidateContent(file) : null;
-    if (contentError) {
-      setState({ status: 'invalid', fileName: file.name, progress: 0, errorMessage: contentError });
-      return;
+    try {
+      await onUpload?.(file, (p) => setState((prev) => ({ ...prev, progress: p })));
+      setState((prev) => ({ ...prev, status: 'success', progress: 100 }));
+      if (onFile) onFile(file);
+    } catch (err) {
+      console.error('[FileUploader] Upload failed:', err);
+      setState({
+        status: 'error',
+        fileName: file.name,
+        progress: 0,
+        errorMessage: err?.message || 'Upload failed. Please try again.',
+      });
     }
-
-    setState((prev) => ({ ...prev, status: 'uploading' }));
-
-    simulateUpload(
-      (p) => {
-        setState((prev) => ({ ...prev, progress: p }));
-      },
-      () => {
-        setState((prev) => ({ ...prev, status: 'success', progress: 100 }));
-        if (onFile) onFile(file);
-      }
-    );
   }
 
   function onInputChange(e) {
@@ -113,13 +96,13 @@ export function FileUploader({ onFile, onValidateContent }) {
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
-        onClick={() => status === 'idle' || status === 'error' || status === 'invalid' ? inputRef.current?.click() : undefined}
+        onClick={() => status === 'idle' || status === 'error' ? inputRef.current?.click() : undefined}
         className={cn(
           'relative border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-200',
           'cursor-pointer select-none',
           dragging
             ? 'border-brand bg-brand/10 scale-[1.01]'
-            : status === 'error' || status === 'invalid'
+            : status === 'error'
             ? 'border-red-500 bg-red-500/10'
             : status === 'success'
             ? 'border-emerald-400 bg-emerald-400/10 cursor-default'
@@ -152,27 +135,7 @@ export function FileUploader({ onFile, onValidateContent }) {
                   {t('Drop your CV here or')}{' '}
                   <span className="text-brand underline underline-offset-2">{t('browse')}</span>
                 </p>
-                <p className="text-silver text-sm mt-1">{t('PDF, DOCX, JPG, JPEG, PNG supported · Max 10 MB')}</p>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Confirming — quick content check before the upload animation */}
-          {status === 'confirming' && (
-            <motion.div
-              key="confirming"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="flex flex-col items-center gap-4"
-            >
-              <div className="w-14 h-14 rounded-xl bg-brand/20 flex items-center justify-center">
-                <ShieldCheck size={26} className="text-brand" />
-              </div>
-              <p className="font-medium text-warm text-sm truncate max-w-xs">{fileName}</p>
-              <div className="flex items-center gap-2 text-xs text-silver">
-                <span className="w-3.5 h-3.5 border-2 border-brand border-t-transparent rounded-full animate-spin shrink-0" />
-                {t('Confirming your information…')}
+                <p className="text-silver text-sm mt-1">{t('PDF, DOCX, JPG, JPEG, PNG supported · Max 5 MB')}</p>
               </div>
             </motion.div>
           )}
@@ -224,7 +187,7 @@ export function FileUploader({ onFile, onValidateContent }) {
             </motion.div>
           )}
 
-          {/* Error — wrong file type/size, caught instantly on selection */}
+          {/* Error — wrong file type/size, or the upload itself failed */}
           {status === 'error' && (
             <motion.div
               key="error"
@@ -238,28 +201,6 @@ export function FileUploader({ onFile, onValidateContent }) {
               </div>
               <div>
                 <p className="font-semibold text-red-700">{t('Upload failed')}</p>
-                <p className="text-sm text-red-500 mt-0.5">{t(errorMessage)}</p>
-              </div>
-              <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); reset(); }}>
-                {t('Try again')}
-              </Button>
-            </motion.div>
-          )}
-
-          {/* Invalid — right file type, but content doesn't look like a CV */}
-          {status === 'invalid' && (
-            <motion.div
-              key="invalid"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="flex flex-col items-center gap-4"
-            >
-              <div className="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center">
-                <XCircle size={28} className="text-red-500" />
-              </div>
-              <div>
-                <p className="font-semibold text-red-700">{t("This doesn't look like a CV")}</p>
                 <p className="text-sm text-red-500 mt-0.5">{t(errorMessage)}</p>
               </div>
               <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); reset(); }}>
@@ -282,7 +223,7 @@ export function FileUploader({ onFile, onValidateContent }) {
 
       {/* Accepted formats note */}
       <p className="text-center text-xs text-silver mt-3">
-        {t('Accepted formats: PDF, DOCX, JPG, JPEG, PNG')} &nbsp;·&nbsp; {t('Maximum file size: 10 MB')}
+        {t('Accepted formats: PDF, DOCX, JPG, JPEG, PNG')} &nbsp;·&nbsp; {t('Maximum file size: 5 MB')}
       </p>
     </div>
   );

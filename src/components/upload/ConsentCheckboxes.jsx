@@ -1,10 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { useLanguage } from '@/lib/i18n';
 
-// The 3 consent checkboxes required before an upload/CV-builder submission
-// goes through (spec 3.c, reused by CV Builder per spec 4.c).
 export function ConsentCheckboxes({ value, onChange }) {
   const { t } = useLanguage();
 
@@ -16,7 +15,20 @@ export function ConsentCheckboxes({ value, onChange }) {
     <div className="space-y-3">
       <Checkbox
         id="consent-terms"
-        label={t('I accept the terms and conditions.')}
+        label={
+          <span>
+            {t('I accept the')}{' '}
+            <Link
+              href="/terms"
+              target="_blank"
+              onClick={(e) => e.stopPropagation()}
+              className="text-brand underline underline-offset-2 hover:text-brand-light transition-colors"
+            >
+              {t('terms & conditions')}
+            </Link>
+            .
+          </span>
+        }
         checked={value.acceptTerms}
         onChange={() => toggle('acceptTerms')}
       />
@@ -26,12 +38,6 @@ export function ConsentCheckboxes({ value, onChange }) {
         checked={value.showToRecruiter}
         onChange={() => toggle('showToRecruiter')}
       />
-      <Checkbox
-        id="consent-leaderboard"
-        label={t('Show me on the Leaderboard page.')}
-        checked={value.showOnLeaderboard}
-        onChange={() => toggle('showOnLeaderboard')}
-      />
     </div>
   );
 }
@@ -39,5 +45,4 @@ export function ConsentCheckboxes({ value, onChange }) {
 export const EMPTY_CONSENT = {
   acceptTerms: false,
   showToRecruiter: false,
-  showOnLeaderboard: false,
 };

@@ -2,43 +2,18 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, GraduationCap } from 'lucide-react';
-import { Input } from '@/components/ui/Input';
-import { Select } from '@/components/ui/Select';
+import { Combobox } from '@/components/ui/Combobox';
+import { SelectWithOther } from '@/components/ui/SelectWithOther';
+import { DatePicker } from '@/components/ui/DatePicker';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { UNIVERSITIES, DEGREES, FIELDS_OF_STUDY, OTHER_VALUE } from '@/lib/formOptions';
 import { useLanguage } from '@/lib/i18n';
 
-function DropdownWithOther({ label, otherPlaceholder, list, otherFlag, value, onSelect, onCustomChange, placeholder, t }) {
-  const options = [
-    ...list.map((v) => ({ value: v, label: t(v) })),
-    { value: OTHER_VALUE, label: t('Other (type your own)') },
-  ];
-  return (
-    <div className="space-y-2">
-      <Select
-        label={label}
-        placeholder={placeholder}
-        options={options}
-        value={otherFlag ? OTHER_VALUE : value}
-        onChange={(e) => onSelect(e.target.value)}
-      />
-      {otherFlag && (
-        <Input
-          placeholder={otherPlaceholder}
-          value={value}
-          onChange={(e) => onCustomChange(e.target.value)}
-        />
-      )}
-    </div>
-  );
-}
-
 function newEntry() {
   return {
     id: crypto.randomUUID(),
     institution: '',
-    institutionOther: false,
     degree: '',
     degreeOther: false,
     field: '',
@@ -100,18 +75,14 @@ export function EducationStep({ data, onChange }) {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <DropdownWithOther
-                  t={t}
+                <Combobox
                   label={t('Institution')}
-                  placeholder={t('Select institution…')}
-                  otherPlaceholder={t('Type your institution')}
-                  list={UNIVERSITIES}
-                  otherFlag={entry.institutionOther}
+                  placeholder={t('Type to search institutions…')}
                   value={entry.institution}
-                  onSelect={(v) => selectField(entry.id, 'institution', 'institutionOther', v)}
-                  onCustomChange={(v) => updateEntry(entry.id, 'institution', v)}
+                  onChange={(v) => updateEntry(entry.id, 'institution', v)}
+                  options={UNIVERSITIES}
                 />
-                <DropdownWithOther
+                <SelectWithOther
                   t={t}
                   label={t('Degree')}
                   placeholder={t('Select degree…')}
@@ -122,7 +93,7 @@ export function EducationStep({ data, onChange }) {
                   onSelect={(v) => selectField(entry.id, 'degree', 'degreeOther', v)}
                   onCustomChange={(v) => updateEntry(entry.id, 'degree', v)}
                 />
-                <DropdownWithOther
+                <SelectWithOther
                   t={t}
                   label={t('Field of Study')}
                   placeholder={t('Select field of study…')}
@@ -134,17 +105,17 @@ export function EducationStep({ data, onChange }) {
                   onCustomChange={(v) => updateEntry(entry.id, 'field', v)}
                 />
                 <div className="grid grid-cols-2 gap-3">
-                  <Input
+                  <DatePicker
                     label={t('Start Date')}
-                    type="date"
+                    placeholder={t('Select…')}
                     value={entry.startYear}
-                    onChange={(e) => updateEntry(entry.id, 'startYear', e.target.value)}
+                    onChange={(v) => updateEntry(entry.id, 'startYear', v)}
                   />
-                  <Input
+                  <DatePicker
                     label={t('End Date')}
-                    type="date"
+                    placeholder={t('Select…')}
                     value={entry.endYear}
-                    onChange={(e) => updateEntry(entry.id, 'endYear', e.target.value)}
+                    onChange={(v) => updateEntry(entry.id, 'endYear', v)}
                   />
                 </div>
               </div>

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { SKILLS, OTHER_VALUE } from '@/lib/formOptions';
 import { useLanguage } from '@/lib/i18n';
 
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
@@ -20,16 +21,23 @@ const LEVEL_BADGE = {
 
 export function SkillsStep({ data, onChange }) {
   const { t } = useLanguage();
-  const [name, setName] = useState('');
+  const [pick, setPick] = useState('');
+  const [custom, setCustom] = useState('');
   const [level, setLevel] = useState('Intermediate');
 
   const levelOptions = LEVELS.map((v) => ({ value: v, label: t(v) }));
+  const skillOptions = [
+    ...SKILLS.filter((s) => !data.some((d) => d.name === s)).map((v) => ({ value: v, label: t(v) })),
+    { value: OTHER_VALUE, label: t('Other (type your own)') },
+  ];
 
   function addSkill() {
-    if (!name.trim()) return;
-    const skill = { id: crypto.randomUUID(), name: name.trim(), level };
+    const name = pick === OTHER_VALUE ? custom.trim() : pick;
+    if (!name) return;
+    const skill = { id: crypto.randomUUID(), name, level };
     onChange([...data, skill]);
-    setName('');
+    setPick('');
+    setCustom('');
   }
 
   function removeSkill(id) {
@@ -41,16 +49,27 @@ export function SkillsStep({ data, onChange }) {
       <h2 className="text-xl font-semibold text-warm-light">{t('Skills')}</h2>
       <p className="text-sm text-silver">{t('Add your technical and soft skills.')}</p>
 
-      <div className="flex gap-3 items-end">
-        <div className="flex-1">
-          <Input
+      <div className="flex gap-3 items-end flex-wrap">
+        <div className="flex-1 min-w-40">
+          <Select
             label={t('Skill Name')}
-            placeholder={t('e.g. React, Python, Leadership…')}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && addSkill()}
+            placeholder={t('Select a skill…')}
+            options={skillOptions}
+            value={pick}
+            onChange={(e) => setPick(e.target.value)}
           />
         </div>
+        {pick === OTHER_VALUE && (
+          <div className="flex-1 min-w-40">
+            <Input
+              label={t('Custom Skill')}
+              placeholder={t('e.g. Leadership')}
+              value={custom}
+              onChange={(e) => setCustom(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && addSkill()}
+            />
+          </div>
+        )}
         <div className="w-40">
           <Select
             label={t('Level')}
@@ -64,7 +83,7 @@ export function SkillsStep({ data, onChange }) {
         </Button>
       </div>
 
-      <div className="flex flex-wrap gap-2 min-h-[48px]">
+      <div className="flex flex-wrap gap-2 min-h-12">
         <AnimatePresence>
           {data.map((skill) => (
             <motion.div

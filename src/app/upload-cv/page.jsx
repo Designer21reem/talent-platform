@@ -7,55 +7,91 @@ import {
   Upload, CheckCircle2, FileEdit, ArrowRight, RotateCcw,
 } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
+import { HeroBackground } from '@/components/layout/HeroBackground';
 import { FileUploader } from '@/components/upload/FileUploader';
 import { ConsentCheckboxes, EMPTY_CONSENT } from '@/components/upload/ConsentCheckboxes';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Turnstile } from '@/components/ui/Turnstile';
 import { saveCV } from '@/lib/storage';
-import { parseFile, looksLikeDocumentImage, IMAGE_EXTENSIONS } from '@/lib/cvParser';
 import { useLanguage } from '@/lib/i18n';
+import { useAuth } from '@/lib/auth';
+import { BACKEND_URL } from '@/lib/api';
 import Link from 'next/link';
-
-const EMPTY_INFO = { fullName: '', email: '', phone: '', location: '' };
 
 export default function UploadCVPage() {
   const router = useRouter();
   const { t } = useLanguage();
+  const { token } = useAuth();
   const [pageState, setPageState] = useState('upload');
-  const [parsedInfo, setParsedInfo] = useState(EMPTY_INFO);
   const [consent, setConsent] = useState(EMPTY_CONSENT);
-  const [turnstileToken, setTurnstileToken] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [s3Key, setS3Key] = useState(null);
 
-  // Runs while FileUploader shows its "Confirming your information…" stage.
-  // Returns an error message to reject the file, or null to let the
-  // upload animation proceed. Extraction happens invisibly to the
-  // candidate — the backend process (triggered on submit below) owns
-  // turning this into a profile; we just use it here to sanity-check the
-  // file actually looks like a CV before accepting it.
-  async function validateContent(file) {
-    const ext = file.name.split('.').pop()?.toLowerCase();
-
-    if (IMAGE_EXTENSIONS.includes(ext ?? '')) {
-      const isDocument = await looksLikeDocumentImage(file);
-      if (!isDocument) {
-        return 'This looks like a regular photo, not a scanned CV or document. Please upload a clear photo or scan of your actual CV.';
-      }
-      setParsedInfo(EMPTY_INFO);
-      return null;
+  // Real upload: ask the backend for a presigned S3 URL, then PUT the file
+  // straight to S3 as-is — no client-side parsing of the file's contents.
+  // Every step is logged so a broken hookup (wrong BACKEND_URL, missing/
+  // expired JWT, CORS, S3 policy, …) shows up clearly in the console
+  // instead of failing silently.
+  async function uploadToS3(file, onProgress) {
+    if (!token) {
+      console.error('[Upload] No JWT available — sign in with Google (not "Skip sign-in") before uploading.');
+      throw new Error('You must be signed in with Google to upload a CV.');
     }
 
+    console.log('[Upload] Requesting a presigned URL for', file.name, file.type, file.size, 'bytes');
+    let urlRes;
     try {
-      const info = await parseFile(file);
-      if (!(info.fullName || info.email || info.phone)) {
-        return "We couldn't find a name, email, or phone number in this file. Please upload your actual CV or resume and try again.";
-      }
-      setParsedInfo(info);
-      return null;
-    } catch {
-      return "We couldn't find a name, email, or phone number in this file. Please upload your actual CV or resume and try again.";
+      urlRes = await fetch(`${BACKEND_URL}/generate-upload-url`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          file_name: file.name,
+          file_type: file.type,
+          file_size: file.size,
+        }),
+      });
+    } catch (err) {
+      console.error('[Upload] Network error calling /generate-upload-url:', err);
+      throw new Error('Could not reach the backend to start the upload.');
     }
+
+    console.log('[Upload] /generate-upload-url status:', urlRes.status);
+    const urlData = await urlRes.json().catch((err) => {
+      console.error('[Upload] /generate-upload-url response was not valid JSON:', err);
+      return null;
+    });
+    console.log('[Upload] /generate-upload-url response body:', urlData);
+
+    if (!urlRes.ok) {
+      throw new Error(urlData?.detail || 'The server refused to generate an upload URL.');
+    }
+
+    onProgress?.(35);
+    console.log('[Upload] Uploading directly to S3:', urlData.upload_url);
+
+    let s3Res;
+    try {
+      s3Res = await fetch(urlData.upload_url, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      });
+    } catch (err) {
+      console.error('[Upload] Network error during the S3 PUT:', err);
+      throw new Error('Uploading the file to storage failed.');
+    }
+
+    console.log('[Upload] S3 PUT status:', s3Res.status);
+    if (!s3Res.ok) {
+      throw new Error('Uploading the file to storage failed.');
+    }
+
+    onProgress?.(100);
+    setS3Key(urlData.s3_key);
+    console.log('[Upload] Upload complete. S3 key:', urlData.s3_key);
   }
 
   function handleFile() {
@@ -64,11 +100,13 @@ export default function UploadCVPage() {
 
   function handleSubmit() {
     setSubmitting(true);
-    // TODO(backend): POST the uploaded file + consent flags here and let
-    // the backend trigger CV data extraction; this local save is a stand-in
-    // until that endpoint exists.
+    // TODO(backend): the file itself is already in S3 (see s3Key below).
+    // Once there's an endpoint to trigger/receive CV extraction for that
+    // key (and to receive consent), POST this payload there instead of
+    // only saving locally.
+    console.log('[Upload] Submission payload (not yet sent — endpoint pending):', { s3Key, consent });
     saveCV({
-      personalInfo: parsedInfo,
+      personalInfo: { fullName: '', email: '', phone: '', location: '' },
       consent,
       education: [],
       workExperience: [],
@@ -82,37 +120,41 @@ export default function UploadCVPage() {
 
   function reset() {
     setPageState('upload');
-    setParsedInfo(EMPTY_INFO);
+    setS3Key(null);
     setConsent(EMPTY_CONSENT);
-    setTurnstileToken(null);
     setSubmitting(false);
   }
 
-  const canSubmit = consent.acceptTerms && !!turnstileToken && !submitting;
+  const canSubmit = consent.acceptTerms && !submitting;
 
   return (
-    <div className="py-12 sm:py-20">
-      <Container maxWidth="lg">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-5">
-            <Upload size={26} className="text-white" />
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-warm-light mb-3">{t('Upload Your CV')}</h1>
-          <p className="text-silver text-lg max-w-lg mx-auto">
-            {t("Upload your CV and we'll take care of the rest.")}
-          </p>
-        </motion.div>
+    <div className="overflow-x-hidden">
+      <section className="relative bg-dark pt-14 pb-16 sm:pt-16 sm:pb-20 overflow-hidden">
+        <HeroBackground variant="waves" />
+        <Container maxWidth="lg">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative z-10 text-center"
+          >
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-5">
+              <Upload size={26} className="text-white" />
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-warm-light mb-3">{t('Upload Your CV')}</h1>
+            <p className="text-silver text-lg max-w-lg mx-auto">
+              {t("Upload your CV and we'll take care of the rest.")}
+            </p>
+          </motion.div>
+        </Container>
+      </section>
 
+      <div className="py-12 sm:py-16">
+      <Container maxWidth="lg">
         <AnimatePresence mode="wait">
           {/* Upload */}
           {pageState === 'upload' && (
             <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <FileUploader onFile={handleFile} onValidateContent={validateContent} />
+              <FileUploader onFile={handleFile} onUpload={uploadToS3} />
             </motion.div>
           )}
 
@@ -135,12 +177,8 @@ export default function UploadCVPage() {
 
                 <ConsentCheckboxes value={consent} onChange={setConsent} />
 
-                <div className="my-6">
-                  <Turnstile onVerify={setTurnstileToken} onExpire={() => setTurnstileToken(null)} />
-                </div>
-
-                <p className="text-xs text-silver mb-4 leading-relaxed">
-                  {t('Completing the assessment increases your opportunities to receive job offers and improves your visibility on the platform’s leaderboard.')}
+                <p className="text-xs text-silver mb-4 mt-5 leading-relaxed">
+                  {t('Completing the skill assessment gives employers a clearer picture of your abilities and significantly increases your chances of receiving job offers.')}
                 </p>
 
                 <Button
@@ -168,6 +206,7 @@ export default function UploadCVPage() {
           )}
         </AnimatePresence>
       </Container>
+      </div>
     </div>
   );
 }
