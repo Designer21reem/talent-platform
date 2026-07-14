@@ -127,67 +127,6 @@ function ScanlineSweep() {
   );
 }
 
-// Sign-in screen — two beams sweep toward each other from opposite edges;
-// since both cover the same distance in the same linear-eased duration,
-// they meet at the midpoint exactly halfway through each cycle, which is
-// when CrossBurst below is timed to scatter.
-const CROSS_CYCLE = 6;
-
-function CrossingScanlines() {
-  return (
-    <>
-      <motion.div
-        className="absolute inset-y-0 w-28 -skew-x-12 pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(201,155,37,0.2), transparent)' }}
-        animate={{ left: ['-15%', '115%'] }}
-        transition={{ duration: CROSS_CYCLE, repeat: Infinity, ease: 'linear' }}
-      />
-      <motion.div
-        className="absolute inset-y-0 w-28 skew-x-12 pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(228,182,56,0.2), transparent)' }}
-        animate={{ left: ['115%', '-15%'] }}
-        transition={{ duration: CROSS_CYCLE, repeat: Infinity, ease: 'linear' }}
-      />
-    </>
-  );
-}
-
-const BURST_PARTICLES = seeded(12, (i) => {
-  const angle = (i / 12) * Math.PI * 2;
-  const distance = 70 + (i % 3) * 30;
-  return {
-    id: i,
-    dx: Math.cos(angle) * distance,
-    dy: Math.sin(angle) * distance,
-    size: 3 + (i % 3),
-  };
-});
-
-// Fires a ring of particles from the center, timed to the moment the two
-// scanlines above cross — scatters outward and fades, then waits for the
-// next crossing.
-function CrossBurst() {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {BURST_PARTICLES.map((p) => (
-        <motion.span
-          key={p.id}
-          className="absolute rounded-full bg-brand-light"
-          style={{ left: '50%', top: '50%', width: p.size, height: p.size }}
-          animate={{ x: [0, p.dx], y: [0, p.dy], opacity: [0, 1, 0], scale: [0.4, 1, 0.3] }}
-          transition={{
-            duration: 1.3,
-            delay: CROSS_CYCLE / 2,
-            repeat: Infinity,
-            repeatDelay: CROSS_CYCLE - 1.3,
-            ease: 'easeOut',
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 // Soft diagonal gold ribbons with a shimmer of light traveling down each —
 // the "luxurious" backdrop feel, built from our own palette.
 const RIBBONS = [
@@ -253,7 +192,6 @@ function AuthGateParticles() {
       <LuxuryRibbons />
       <RisingBubbles />
       <SparkleTwinkles />
-      <CrossBurst />
     </>
   );
 }
@@ -335,7 +273,7 @@ const VARIANT_PARTICLES = {
 // `relative overflow-hidden` section; this fills it via `absolute inset-0`.
 export function HeroBackground({ variant = 'default' }) {
   const Particles = VARIANT_PARTICLES[variant] ?? RisingBubbles;
-  const Scanline = variant === 'authgate' ? CrossingScanlines : variant === 'waves' ? null : ScanlineSweep;
+  const Scanline = variant === 'authgate' || variant === 'waves' ? null : ScanlineSweep;
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
