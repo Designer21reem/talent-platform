@@ -1,69 +1,47 @@
-export const ASSESSMENT_QUESTIONS = [
-  {
-    id: 'q1',
-    category: 'Communication',
-    type: 'multiple-choice',
-    question: 'How do you prefer to communicate complex ideas to a non-technical audience?',
-    options: [
-      { id: 'a', label: 'Use analogies and simple language' },
-      { id: 'b', label: 'Provide detailed technical documentation' },
-      { id: 'c', label: 'Use visual aids and diagrams' },
-      { id: 'd', label: 'Avoid technical topics with non-technical people' },
-    ],
-  },
-  {
-    id: 'q2',
-    category: 'Problem Solving',
-    type: 'multiple-choice',
-    question: 'When faced with a difficult problem you have never encountered before, what is your first step?',
-    options: [
-      { id: 'a', label: 'Research and gather information about the problem' },
-      { id: 'b', label: 'Immediately try different solutions until one works' },
-      { id: 'c', label: 'Ask a colleague for help right away' },
-      { id: 'd', label: 'Escalate it to management' },
-    ],
-  },
-  {
-    id: 'q3',
-    category: 'Technical Knowledge',
-    type: 'multiple-choice',
-    question: 'Which statement best describes your approach to learning new technologies?',
-    options: [
-      { id: 'a', label: 'I proactively learn new tools and frameworks' },
-      { id: 'b', label: 'I learn only what is required for my current role' },
-      { id: 'c', label: 'I prefer to stick with technologies I already know' },
-      { id: 'd', label: 'I rely on my team to introduce new technologies' },
-    ],
-  },
-  {
-    id: 'q4',
-    category: 'Teamwork',
-    type: 'multiple-choice',
-    question: 'When a team member is struggling with their work, what do you typically do?',
-    options: [
-      { id: 'a', label: 'Offer help while ensuring my own tasks are completed' },
-      { id: 'b', label: 'Focus on my own work to meet my deadlines' },
-      { id: 'c', label: 'Report to the manager immediately' },
-      { id: 'd', label: 'Take over their work to fix it faster' },
-    ],
-  },
-  {
-    id: 'q5',
-    category: 'Leadership',
-    type: 'multiple-choice',
-    question: 'How do you handle situations where you disagree with a team decision?',
-    options: [
-      { id: 'a', label: 'Voice my opinion respectfully, then commit to the team decision' },
-      { id: 'b', label: 'Stay silent and go along with whatever is decided' },
-      { id: 'c', label: 'Refuse to participate until my view is heard' },
-      { id: 'd', label: 'Work on my own approach in parallel' },
-    ],
-  },
-  {
-    id: 'q6',
-    category: 'English Language',
-    type: 'textarea',
-    question:
-      'Please write a brief paragraph (3–5 sentences) describing your greatest professional achievement and what you learned from it.',
-  },
+// Personal Style Inventory — 24 forced-choice sets of four words/phrases.
+// Source: David Merrill & Roger Reid, "Personal Styles and Effective Performance".
+// Column position within each set is the scoring key: 1st option = Driver,
+// 2nd = Expressive, 3rd = Amiable, 4th = Analytic (see STYLE_INVENTORY_INSTRUCTIONS
+// on the source sheet: "Tally Box: 1 Driver / 2 Expressive / 3 Amiable / 4 Analytic").
+// styleAssessment.js tallies these `style` tags to score the assessment.
+const RAW_SETS = [
+  ['Competitive', 'Joyful', 'Considerate', 'Harmonious'],
+  ['Tries new ideas', 'Optimistic', 'Wants to please', 'Respectful'],
+  ['Will power', 'Open-minded', 'Cheerful', 'Obliging'],
+  ['Daring', 'Expressive', 'Satisfied', 'Diplomatic'],
+  ['Powerful', 'Good mixer', 'Easy on others', 'Organized'],
+  ['Restless', 'Popular', 'Neighborly', 'Abides by rules'],
+  ['Unconquerable', 'Playful', 'Obedient', 'Fussy'],
+  ['Self-reliant', 'Fun-loving', 'Patient', 'Soft-Spoken'],
+  ['Bold', 'Charming', 'Loyal', 'Easily led'],
+  ['Outspoken', 'Companionable', 'Restrained', 'Accurate'],
+  ['Brave', 'Inspiring', 'Submissive', 'Timid'],
+  ['Nervy', 'Jovial', 'Even-tempered', 'Precise'],
+  ['Stubborn', 'Attractive', 'Sweet', 'Avoids'],
+  ['Decisive', 'Talkative', 'Controlled', 'Conventional'],
+  ['Positive', 'Trusting', 'Contented', 'Peaceful'],
+  ['Takes risks', 'Warm', 'Willing to help', 'Not extreme'],
+  ['Argumentative', 'Light-hearted', 'Nonchalant', 'Adaptable'],
+  ['Original', 'Persuasive', 'Gentle', 'Humble'],
+  ['Determined', 'Convincing', 'Good-natured', 'Cautious'],
+  ['Persistent', 'Lively', 'Generous', 'Well-disciplined'],
+  ['Forceful', 'Admirable', 'Kind', 'Non-resisting'],
+  ['Assertive', 'Confident', 'Sympathetic', 'Tolerant'],
+  ['Aggressive', 'Life-of-the-party', 'Easily fooled', 'Uncertain'],
+  ['Eager', 'High-spirited', 'Willing', 'Agreeable'],
 ];
+
+const STYLE_ORDER = ['driver', 'expressive', 'amiable', 'analytic'];
+const OPTION_IDS = ['a', 'b', 'c', 'd'];
+
+export const ASSESSMENT_QUESTIONS = RAW_SETS.map((words, index) => ({
+  id: `q${index + 1}`,
+  category: 'Personal Style',
+  type: 'style-choice',
+  question: 'Check the word or phrase in this set that is most like you.',
+  options: words.map((label, i) => ({
+    id: OPTION_IDS[i],
+    label,
+    style: STYLE_ORDER[i],
+  })),
+}));

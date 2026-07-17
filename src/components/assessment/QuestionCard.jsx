@@ -28,8 +28,8 @@ export function QuestionCard({ question, answer, questionIndex, total, onChange 
         </span>
       </div>
 
-      {/* Multiple choice */}
-      {question.type === 'multiple-choice' && question.options && (
+      {/* Multiple choice / style choice (both render as a single-select option list) */}
+      {(question.type === 'multiple-choice' || question.type === 'style-choice') && question.options && (
         <div className="space-y-2.5">
           {question.options.map((option) => {
             const selected = answer === option.id;

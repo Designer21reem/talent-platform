@@ -23,6 +23,9 @@ export const AR_DICT = {
 
   // ── Home ──────────────────────────────────────────────────────
   'GOT TALENT': 'عندها مواهب',
+  'Upload your CV and prepare it for matching, filtering, and future recruitment workflows.': 'ارفع سيرتك الذاتية وجهّزها للمطابقة والفرز وعمليات التوظيف المستقبلية.',
+  'Create a structured professional CV using guided sections for experience, education, and skills.': 'أنشئ سيرة ذاتية احترافية منظّمة باستخدام أقسام موجّهة للخبرة والتعليم والمهارات.',
+  'Test practical skills with short assessments that can help validate your readiness.': 'اختبر مهاراتك العملية من خلال تقييمات قصيرة تساعد في إثبات جاهزيتك.',
   'One place to show what you can do. Start with ': 'مكان واحد لإظهار قدراتك. ابدأ بـ ',
   'our CV Builder': 'منشئ السيرة الذاتية',
   'a Skill Assessment': 'تقييم المهارات',

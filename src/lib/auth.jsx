@@ -16,6 +16,24 @@ const USER_STORAGE_KEY = 'talent_google_user';
 const TOKEN_STORAGE_KEY = 'talent_jwt';
 const AuthContext = createContext(null);
 
+// Decodes a JWT's payload without verifying the signature — good enough to
+// inspect `aud`/`exp` client-side while diagnosing why a backend rejected
+// the token (signature verification only happens server-side, on purpose).
+function decodeJwtPayload(token) {
+  try {
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const json = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + c.charCodeAt(0).toString(16).padStart(2, '0'))
+        .join('')
+    );
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
@@ -39,7 +57,38 @@ export function AuthProvider({ children }) {
   // call, e.g. the S3 upload flow) plus the user profile it returns.
   // Logs every step so a failed hookup is easy to diagnose from devtools.
   const signIn = useCallback(async (credential) => {
-    console.log('[Auth] Google sign-in: credential received, contacting backend…', `${BACKEND_URL}/auth/google`);
+    console.log('[Auth] Step 1/5 — Google sign-in: ID token received from Google.');
+
+    // Inspect the token client-side (no signature check — that's the
+    // backend's job) so a rejection can be diagnosed without leaving the
+    // console: does the audience match what we think our client_id is,
+    // and is the token actually still within its validity window.
+    const payload = decodeJwtPayload(credential);
+    let audMatches = null;
+    if (payload) {
+      audMatches = payload.aud === GOOGLE_CLIENT_ID;
+      const expiresAt = payload.exp ? new Date(payload.exp * 1000) : null;
+      const isExpired = expiresAt ? expiresAt.getTime() < Date.now() : null;
+      console.log('[Auth] Step 2/5 — Decoded ID token payload:', {
+        aud: payload.aud,
+        iss: payload.iss,
+        email: payload.email,
+        exp: expiresAt?.toISOString() ?? null,
+        expired: isExpired,
+      });
+      console.log(
+        audMatches
+          ? '[Auth] Step 3/5 — ✅ token audience (aud) matches our GOOGLE_CLIENT_ID.'
+          : `[Auth] Step 3/5 — ❌ token audience (aud) MISMATCH.\n    token.aud        = ${payload.aud}\n    our GOOGLE_CLIENT_ID = ${GOOGLE_CLIENT_ID}`
+      );
+      if (isExpired) {
+        console.warn('[Auth] Step 3/5 — ⚠️ the ID token is already expired — sign in again and retry immediately.');
+      }
+    } else {
+      console.warn('[Auth] Step 2/5 — Could not decode the ID token payload (unexpected token format).');
+    }
+
+    console.log('[Auth] Step 4/5 — contacting backend…', `${BACKEND_URL}/auth/google`);
 
     let res;
     try {
@@ -53,7 +102,7 @@ export function AuthProvider({ children }) {
       return false;
     }
 
-    console.log('[Auth] /auth/google responded with status:', res.status);
+    console.log('[Auth] Step 5/5 — /auth/google responded with status:', res.status);
 
     let data = null;
     try {
@@ -65,6 +114,20 @@ export function AuthProvider({ children }) {
 
     if (!res.ok) {
       console.error('[Auth] Backend rejected the Google sign-in:', data);
+      if (audMatches === true) {
+        console.error(
+          '[Auth] VERDICT: the token audience MATCHED our client_id, yet the backend still rejected it.\n' +
+          '  → The bug is on the BACKEND side (env var not actually applied on that server, wrong client secret, ' +
+          'broken/outdated verification code, or the backend is secretly pointed at a different Google Cloud project). ' +
+          'This is not fixable from this frontend repo — check the backend logs for the real exception.'
+        );
+      } else if (audMatches === false) {
+        console.error(
+          '[Auth] VERDICT: the token audience did NOT match our client_id.\n' +
+          '  → Frontend and backend are configured with two different Google OAuth Client IDs. Align NEXT_PUBLIC_GOOGLE_CLIENT_ID ' +
+          '(frontend) with whatever the backend actually validates against.'
+        );
+      }
       return false;
     }
 

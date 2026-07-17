@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/Input';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { QuestionCard } from '@/components/assessment/QuestionCard';
 import { ASSESSMENT_QUESTIONS } from '@/lib/assessmentQuestions';
+import { computeStyleResult, STYLE_INFO } from '@/lib/styleAssessment';
 import { saveAssessment, loadCV } from '@/lib/storage';
 import { useLanguage } from '@/lib/i18n';
 import { useAuth } from '@/lib/auth';
@@ -31,6 +32,7 @@ export default function AssessmentPage() {
   const [candidateEmail, setCandidateEmail] = useState('');
   const [resolvedPhone, setResolvedPhone] = useState('');
   const [cvPhone, setCvPhone] = useState(null);
+  const [styleResult, setStyleResult] = useState(null);
 
 
   useEffect(() => {
@@ -104,8 +106,11 @@ export default function AssessmentPage() {
       category: q.category,
     }));
 
+    const result = computeStyleResult(answers);
+
     const data = {
       answers: assessmentAnswers,
+      styleResult: result,
       submittedAt: new Date().toISOString(),
       candidateName,
       candidateEmail,
@@ -118,6 +123,7 @@ export default function AssessmentPage() {
     // backend's /openapi.json) — logging the JSON payload so the shape is
     // ready to POST the moment one exists.
     console.log('[Assessment] Submission payload (not yet sent — endpoint pending):', data);
+    setStyleResult(result);
     setSubmitError(null);
     setPageState('submitted');
   }
@@ -237,6 +243,37 @@ export default function AssessmentPage() {
               {t('Thank you')}{candidateName ? `, ${candidateName.split(' ')[0]}` : ''}! {t('Your responses have been saved. Head to your dashboard to see your personalised skills report.')}
             </p>
 
+            {styleResult && (
+              <div className="bg-surface rounded-2xl border border-surface-2 shadow-sm p-6 sm:p-8 mb-8 text-start">
+                <p className="text-xs font-semibold text-brand uppercase tracking-wide mb-1">
+                  {t('Your Personal Style')}
+                </p>
+                <h3 className="text-2xl font-bold text-white mb-1">
+                  {STYLE_INFO[styleResult.predominant].name} — {t(STYLE_INFO[styleResult.predominant].title)}
+                </h3>
+                <p className="text-sm text-silver mb-4">
+                  {t('Backup style')}: {STYLE_INFO[styleResult.backup].name} — {t(STYLE_INFO[styleResult.backup].title)}
+                </p>
+                <div className="space-y-2 mb-4">
+                  {styleResult.ranked.map((key) => (
+                    <div key={key} className="flex items-center gap-3">
+                      <span className="w-20 shrink-0 text-xs font-medium text-warm">{STYLE_INFO[key].name}</span>
+                      <div className="flex-1 h-2 rounded-full bg-surface-2 overflow-hidden">
+                        <div
+                          className="h-full bg-brand rounded-full"
+                          style={{ width: `${(styleResult.counts[key] / (styleResult.total || 1)) * 100}%` }}
+                        />
+                      </div>
+                      <span className="w-6 shrink-0 text-xs text-silver text-end">{styleResult.counts[key]}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sm text-silver leading-relaxed">
+                  {STYLE_INFO[styleResult.predominant].traits.slice(0, 6).join(', ')}
+                </p>
+              </div>
+            )}
+
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button size="lg" onClick={() => router.push('/dashboard')}>
                 {t('View My Dashboard')}
@@ -247,6 +284,7 @@ export default function AssessmentPage() {
                 onClick={() => {
                   setAnswers({});
                   setCurrentQ(0);
+                  setStyleResult(null);
                   setPageState('gate');
                 }}
               >
