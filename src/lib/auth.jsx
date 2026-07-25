@@ -14,6 +14,7 @@ export const ALLOW_SKIP_SIGNIN = process.env.NEXT_PUBLIC_ALLOW_SKIP_SIGNIN === '
 
 const USER_STORAGE_KEY = 'talent_google_user';
 const TOKEN_STORAGE_KEY = 'talent_jwt';
+const USER_ID_STORAGE_KEY = 'talent_user_id';
 const AuthContext = createContext(null);
 
 // Decodes a JWT's payload without verifying the signature — good enough to
@@ -37,11 +38,13 @@ function decodeJwtPayload(token) {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const rawUser = typeof window !== 'undefined' ? localStorage.getItem(USER_STORAGE_KEY) : null;
     const rawToken = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_STORAGE_KEY) : null;
+    const rawUserId = typeof window !== 'undefined' ? localStorage.getItem(USER_ID_STORAGE_KEY) : null;
     if (rawUser) {
       try {
         setUser(JSON.parse(rawUser));
@@ -49,6 +52,7 @@ export function AuthProvider({ children }) {
       }
     }
     if (rawToken) setToken(rawToken);
+    if (rawUserId) setUserId(rawUserId);
     setReady(true);
   }, []);
 
@@ -136,20 +140,52 @@ export function AuthProvider({ children }) {
       email: data?.user?.email ?? null,
       picture: data?.user?.picture ?? null,
     };
+
+    // The numeric user_id used by user-scoped endpoints (e.g.
+    // /get_assessment/{user_id}) isn't consistently documented on every
+    // response, so check the /auth/google user object first, then fall back
+    // to decoding it out of the backend's own access_token (JWTs
+    // conventionally carry the subject's id in `sub`).
+    const accessTokenPayload = decodeJwtPayload(data.access_token);
+    const nextUserId =
+      data?.user?.id ??
+      data?.user?.user_id ??
+      accessTokenPayload?.user_id ??
+      accessTokenPayload?.sub ??
+      accessTokenPayload?.id ??
+      null;
+    console.log('[Auth] Resolved user_id for user-scoped API calls:', nextUserId, '(decoded access_token payload:', accessTokenPayload, ')');
+
     setUser(nextUser);
     setToken(data.access_token);
+    setUserId(nextUserId);
     localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(nextUser));
     localStorage.setItem(TOKEN_STORAGE_KEY, data.access_token);
+    if (nextUserId != null) {
+      localStorage.setItem(USER_ID_STORAGE_KEY, String(nextUserId));
+    } else {
+      localStorage.removeItem(USER_ID_STORAGE_KEY);
+    }
     console.log('[Auth] Signed in successfully as', nextUser.email, '— JWT stored for API calls.');
 
     // Sanity-check the JWT immediately against /auth/me — if this fails,
-    // the token itself is bad even though sign-in "succeeded".
+    // the token itself is bad even though sign-in "succeeded". Also doubles
+    // as a fallback source for user_id if none of the earlier lookups found one.
     try {
       const meRes = await fetch(`${BACKEND_URL}/auth/me`, {
         headers: { Authorization: `Bearer ${data.access_token}` },
       });
       const meData = await meRes.json().catch(() => null);
       console.log('[Auth] /auth/me verification — status:', meRes.status, 'body:', meData);
+
+      if (nextUserId == null && meRes.ok) {
+        const meUserId = meData?.id ?? meData?.user_id ?? meData?.user?.id ?? null;
+        if (meUserId != null) {
+          console.log('[Auth] Resolved user_id from /auth/me instead:', meUserId);
+          setUserId(meUserId);
+          localStorage.setItem(USER_ID_STORAGE_KEY, String(meUserId));
+        }
+      }
     } catch (err) {
       console.error('[Auth] /auth/me verification call failed:', err);
     }
@@ -161,8 +197,10 @@ export function AuthProvider({ children }) {
     console.log('[Auth] Signing out.');
     setUser(null);
     setToken(null);
+    setUserId(null);
     localStorage.removeItem(USER_STORAGE_KEY);
     localStorage.removeItem(TOKEN_STORAGE_KEY);
+    localStorage.removeItem(USER_ID_STORAGE_KEY);
   }, []);
 
   // Escape hatch for origins where the Google button won't work yet (e.g.
@@ -180,7 +218,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, ready, signIn, signOut, devBypass }}>
+    <AuthContext.Provider value={{ user, token, userId, ready, signIn, signOut, devBypass }}>
       {children}
     </AuthContext.Provider>
   );

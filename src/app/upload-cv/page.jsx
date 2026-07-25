@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/Button';
 import { saveCV } from '@/lib/storage';
 import { useLanguage } from '@/lib/i18n';
 import { useAuth } from '@/lib/auth';
-import { BACKEND_URL } from '@/lib/api';
+import { requestUploadUrl, uploadToS3 } from '@/lib/api';
 import Link from 'next/link';
 
 export default function UploadCVPage() {
@@ -39,53 +39,27 @@ export default function UploadCVPage() {
     }
 
     console.log('[Upload] Requesting a presigned URL for', file.name, file.type, file.size, 'bytes');
-    let urlRes;
+    let urlData;
     try {
-      urlRes = await fetch(`${BACKEND_URL}/generate-upload-url`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          file_name: file.name,
-          file_type: file.type,
-          file_size: file.size,
-        }),
+      urlData = await requestUploadUrl(token, {
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        frontendSelection: 'cv_upload_file',
       });
     } catch (err) {
-      console.error('[Upload] Network error calling /generate-upload-url:', err);
-      throw new Error('Could not reach the backend to start the upload.');
+      console.error('[Upload] /generate-upload-url failed:', err);
+      throw err;
     }
-
-    console.log('[Upload] /generate-upload-url status:', urlRes.status);
-    const urlData = await urlRes.json().catch((err) => {
-      console.error('[Upload] /generate-upload-url response was not valid JSON:', err);
-      return null;
-    });
     console.log('[Upload] /generate-upload-url response body:', urlData);
-
-    if (!urlRes.ok) {
-      throw new Error(urlData?.detail || 'The server refused to generate an upload URL.');
-    }
 
     onProgress?.(35);
     console.log('[Upload] Uploading directly to S3:', urlData.upload_url);
 
-    let s3Res;
     try {
-      s3Res = await fetch(urlData.upload_url, {
-        method: 'PUT',
-        headers: { 'Content-Type': file.type },
-        body: file,
-      });
+      await uploadToS3(urlData.upload_url, file, file.type, urlData);
     } catch (err) {
-      console.error('[Upload] Network error during the S3 PUT:', err);
-      throw new Error('Uploading the file to storage failed.');
-    }
-
-    console.log('[Upload] S3 PUT status:', s3Res.status);
-    if (!s3Res.ok) {
+      console.error('[Upload] S3 PUT failed:', err);
       throw new Error('Uploading the file to storage failed.');
     }
 

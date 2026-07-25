@@ -17,29 +17,83 @@ import { SkillProgressCard } from '@/components/dashboard/SkillProgressCard';
 import { loadAssessment } from '@/lib/storage';
 import { buildDashboard, MOCK_DASHBOARD } from '@/lib/mockDashboard';
 import { useLanguage } from '@/lib/i18n';
+import { useAuth } from '@/lib/auth';
+import { BACKEND_URL } from '@/lib/api';
+
+// /get_assessment/{user_id} returns whatever was uploaded as assessment_json
+// (candidate_assessment_raw is a straight dump of that upload), so the
+// record shape should match what assessment/page.jsx sends: an object (or
+// an array of them, most recent last) with { answers, candidateName,
+// candidateEmail, candidatePhone, ... }. Defensive here since the backend
+// doesn't publish a typed response model for this endpoint.
+function extractAssessmentRecord(data) {
+  if (!data) return null;
+  const record = Array.isArray(data) ? data[data.length - 1] : data;
+  if (!record || !Array.isArray(record.answers)) return null;
+  return record;
+}
 
 export default function DashboardPage() {
   const { t, lang } = useLanguage();
+  const { token, userId } = useAuth();
   const [dashboard, setDashboard] = useState(null);
   const [usingMock, setUsingMock] = useState(false);
 
   useEffect(() => {
-    const assessment = loadAssessment();
+    let cancelled = false;
 
-    if (assessment) {
-      const data = buildDashboard(
-        assessment.answers,
-        assessment.candidateName,
-        assessment.candidatePhone,
-        assessment.candidateEmail
-      );
-      setDashboard(data);
-      setUsingMock(false);
-    } else {
-      setDashboard(MOCK_DASHBOARD);
-      setUsingMock(true);
+    function loadFallback() {
+      const assessment = loadAssessment();
+      if (cancelled) return;
+      if (assessment) {
+        setDashboard(buildDashboard(
+          assessment.answers,
+          assessment.candidateName,
+          assessment.candidatePhone,
+          assessment.candidateEmail
+        ));
+        setUsingMock(false);
+      } else {
+        setDashboard(MOCK_DASHBOARD);
+        setUsingMock(true);
+      }
     }
-  }, []);
+
+    async function loadDashboardData() {
+      if (token && userId) {
+        try {
+          const res = await fetch(`${BACKEND_URL}/get_assessment/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (res.ok) {
+            const data = await res.json().catch(() => null);
+            console.log('[Dashboard] /get_assessment response:', data);
+            const record = extractAssessmentRecord(data);
+            if (record && !cancelled) {
+              setDashboard(buildDashboard(
+                record.answers,
+                record.candidateName,
+                record.candidatePhone,
+                record.candidateEmail
+              ));
+              setUsingMock(false);
+              return;
+            }
+          } else {
+            console.log('[Dashboard] /get_assessment status:', res.status, '— falling back to local data.');
+          }
+        } catch (err) {
+          console.error('[Dashboard] Failed to fetch assessment from backend:', err);
+        }
+      }
+      loadFallback();
+    }
+
+    loadDashboardData();
+    return () => {
+      cancelled = true;
+    };
+  }, [token, userId]);
 
   if (!dashboard) {
     return (

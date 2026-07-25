@@ -17,17 +17,19 @@ import { computeStyleResult, STYLE_INFO } from '@/lib/styleAssessment';
 import { saveAssessment, loadCV } from '@/lib/storage';
 import { useLanguage } from '@/lib/i18n';
 import { useAuth } from '@/lib/auth';
+import { requestUploadUrl, uploadToS3 } from '@/lib/api';
 
 export default function AssessmentPage() {
   const router = useRouter();
   const { t } = useLanguage();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [pageState, setPageState] = useState('gate');
   const [phoneInput, setPhoneInput] = useState('');
   const [phoneError, setPhoneError] = useState(null);
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState({});
   const [submitError, setSubmitError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
   const [candidateName, setCandidateName] = useState('');
   const [candidateEmail, setCandidateEmail] = useState('');
   const [resolvedPhone, setResolvedPhone] = useState('');
@@ -91,12 +93,17 @@ export default function AssessmentPage() {
     }
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const unanswered = ASSESSMENT_QUESTIONS.filter((q) => !answers[q.id]?.trim());
 
     if (unanswered.length > 0) {
       const msg = `${t('Please answer all questions before submitting. Missing:')} Q${unanswered.map((q) => ASSESSMENT_QUESTIONS.indexOf(q) + 1).join(', ')}.`;
       setSubmitError(msg);
+      return;
+    }
+
+    if (!token) {
+      setSubmitError(t('You must be signed in with Google to submit the assessment.'));
       return;
     }
 
@@ -117,15 +124,34 @@ export default function AssessmentPage() {
       candidatePhone: resolvedPhone,
     };
 
-    saveAssessment(data);
-    // TODO(backend): no endpoint exists yet for assessment results (only
-    // /auth/google, /auth/me, /generate-upload-url are live per the
-    // backend's /openapi.json) — logging the JSON payload so the shape is
-    // ready to POST the moment one exists.
-    console.log('[Assessment] Submission payload (not yet sent — endpoint pending):', data);
-    setStyleResult(result);
+    setSubmitting(true);
     setSubmitError(null);
-    setPageState('submitted');
+
+    try {
+      const fileName = 'assessment.json';
+      const jsonBody = JSON.stringify(data);
+      const urlData = await requestUploadUrl(token, {
+        fileName,
+        fileType: 'application/json',
+        fileSize: new Blob([jsonBody]).size,
+        frontendSelection: 'assessment_json',
+      });
+
+      // Every JSON upload must carry the user_id/email the backend resolved
+      // for this presigned URL, so the assessment record can be matched to
+      // the candidate once it's picked up from the S3 data lake.
+      const payload = { ...data, user_id: urlData.user_id, email: urlData.user_email };
+      await uploadToS3(urlData.upload_url, JSON.stringify(payload), 'application/json', urlData);
+
+      saveAssessment(data);
+      setStyleResult(result);
+      setPageState('submitted');
+    } catch (err) {
+      console.error('[Assessment] Submission failed:', err);
+      setSubmitError(err.message || t('Something went wrong submitting your assessment. Please try again.'));
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const progress = ((currentQ + 1) / ASSESSMENT_QUESTIONS.length) * 100;
@@ -353,8 +379,8 @@ export default function AssessmentPage() {
               {t('Next')}
             </Button>
           ) : (
-            <Button size="sm" onClick={handleSubmit} rightIcon={<Send size={15} />}>
-              {t('Submit Assessment')}
+            <Button size="sm" onClick={handleSubmit} disabled={submitting} rightIcon={<Send size={15} />}>
+              {submitting ? t('Submitting…') : t('Submit Assessment')}
             </Button>
           )}
         </div>

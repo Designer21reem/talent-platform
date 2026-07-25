@@ -33,7 +33,7 @@ export const AR_DICT = {
   'Start Assessment': 'بدء التقييم',
   'Candidates placed': 'مرشح تم توظيفه',
   'Skill categories tracked': 'فئات مهارات متابَعة',
-  'Assessment completion rate': 'نسبة إتمام التقييم',
+  'Total Candidates': 'إجمالي المرشحين',
   'match': 'توافق',
   'Built my CV in minutes and landed 3 interviews the same week.': 'بنيت سيرتي الذاتية خلال دقائق وحصلت على 3 مقابلات بنفس الأسبوع.',
   'Uploaded my old CV and the skill report was spot on.': 'رفعت سيرتي القديمة وكان تقرير المهارات دقيقاً جداً.',
@@ -176,6 +176,7 @@ export const AR_DICT = {
   'Back': 'رجوع',
   'Continue': 'متابعة',
   'Save CV': 'حفظ السيرة الذاتية',
+  'Saving…': 'جارٍ الحفظ…',
   'Step': 'خطوة',
   'of': 'من',
   'Live Preview': 'معاينة مباشرة',
@@ -345,6 +346,7 @@ export const AR_DICT = {
   'complete': 'مكتمل',
   'Next': 'التالي',
   'Submit Assessment': 'إرسال التقييم',
+  'Submitting…': 'جارٍ الإرسال…',
   'Write your answer here… (minimum 20 words recommended)': 'اكتب إجابتك هنا… (يُفضّل 20 كلمة على الأقل)',
 
   // ── Dashboard ─────────────────────────────────────────────────

@@ -20,6 +20,8 @@ import { saveCV } from '@/lib/storage';
 import { mapCVToExtractedData } from '@/lib/cvMapper';
 import { isValidPhoneForCountry } from '@/lib/formOptions';
 import { useLanguage } from '@/lib/i18n';
+import { useAuth } from '@/lib/auth';
+import { requestUploadUrl, uploadToS3 } from '@/lib/api';
 
 const STEPS = [
   { id: 1, label: 'Personal' },
@@ -64,10 +66,12 @@ function validateStep(step, cv) {
 
 export default function BuildCVPage() {
   const { t } = useLanguage();
+  const { token } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [cv, setCv] = useState(EMPTY_CV);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
   const [consent, setConsent] = useState(EMPTY_CONSENT);
   const canSubmit = consent.acceptTerms;
 
@@ -144,20 +148,47 @@ export default function BuildCVPage() {
     }
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const validationError = validateStep(currentStep, cv);
     if (validationError) {
       setError(validationError);
       return;
     }
     if (!canSubmit) return;
-    saveCV({ ...cv, consent });
-    // TODO(backend): no endpoint has been given yet to receive this JSON —
-    // logging it now so the shape (including consent, same payload/endpoint
-    // as the rest of the CV data) can be verified ahead of wiring the real
-    // POST call.
-    console.log('[CV Builder] Submission payload (not yet sent — endpoint pending):', mapCVToExtractedData(cv, consent));
-    setSubmitted(true);
+
+    if (!token) {
+      setError(t('You must be signed in with Google to save your CV.'));
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const fileName = 'cv_builder.json';
+      const extractedData = mapCVToExtractedData(cv, consent);
+      const jsonBody = JSON.stringify(extractedData);
+      const urlData = await requestUploadUrl(token, {
+        fileName,
+        fileType: 'application/json',
+        fileSize: new Blob([jsonBody]).size,
+        frontendSelection: 'cv_builder_json',
+      });
+
+      // Every JSON upload must carry the user_id/email the backend resolved
+      // for this presigned URL, so it can be matched to the candidate once
+      // it's picked up from the S3 data lake.
+      const payload = { ...extractedData, user_id: urlData.user_id, email: urlData.user_email };
+      await uploadToS3(urlData.upload_url, JSON.stringify(payload), 'application/json', urlData);
+
+      saveCV({ ...cv, consent });
+      setSubmitted(true);
+    } catch (err) {
+      console.error('[CV Builder] Submission failed:', err);
+      setError(err.message || t('Something went wrong saving your CV. Please try again.'));
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (submitted) {
@@ -309,8 +340,8 @@ export default function BuildCVPage() {
                     {t('Continue')}
                   </Button>
                 ) : (
-                  <Button size="sm" onClick={handleSubmit} disabled={!canSubmit} rightIcon={<CheckCircle2 size={16} />}>
-                    {t('Save CV')}
+                  <Button size="sm" onClick={handleSubmit} disabled={!canSubmit || submitting} rightIcon={<CheckCircle2 size={16} />}>
+                    {submitting ? t('Saving…') : t('Save CV')}
                   </Button>
                 )}
               </div>

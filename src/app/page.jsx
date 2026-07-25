@@ -7,12 +7,21 @@ import { Upload, FileEdit, ClipboardCheck, Star, Users, Zap } from 'lucide-react
 import { Container } from '@/components/layout/Container';
 import { HeroBackground } from '@/components/layout/HeroBackground';
 import { useLanguage } from '@/lib/i18n';
+import { useAuth } from '@/lib/auth';
+import { BACKEND_URL } from '@/lib/api';
 
-const STATS = [
+const BASE_STATS = [
   { label: 'Candidates placed', value: '12,400+', icon: Users },
   { label: 'Skill categories tracked', value: '6', icon: Star },
-  { label: 'Assessment completion rate', value: '94%', icon: Zap },
 ];
+
+// The backend response shape for /get_total_candidate isn't fully pinned
+// down yet, so this accepts a bare number or any of the likely key names.
+function extractTotalCandidates(data) {
+  if (typeof data === 'number') return data;
+  if (!data || typeof data !== 'object') return null;
+  return data.total_candidates ?? data.total_candidate ?? data.count ?? data.total ?? null;
+}
 
 const ACTIONS = [
   {
@@ -39,7 +48,7 @@ const ACTIONS = [
 const SUBTITLE_PREFIX = 'One place to show what you can do. Start with ';
 const SUBTITLE_WORDS = ['our CV Builder', 'a Skill Assessment', 'a CV Upload'];
 
-function StatsBar({ visible }) {
+function StatsBar({ visible, stats }) {
   const { t } = useLanguage();
   return (
     <motion.div
@@ -49,7 +58,7 @@ function StatsBar({ visible }) {
       className="relative mx-auto mt-14 sm:mt-16 max-w-3xl rounded-2xl border border-brand/30 bg-surface/60 backdrop-blur-sm px-4 py-6 sm:px-10 sm:py-8 shadow-lg shadow-black/20"
     >
       <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-brand/15 rtl:sm:divide-x-reverse">
-        {STATS.map((stat, i) => (
+        {stats.map((stat, i) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 10 }}
@@ -166,6 +175,8 @@ function ActionCard({ href, icon: Icon, title, description, featured, delay, vis
 
 export default function LandingPage() {
   const [stage, setStage] = useState(0);
+  const [totalCandidates, setTotalCandidates] = useState(null);
+  const { token } = useAuth();
 
   useEffect(() => {
     const t1 = setTimeout(() => setStage(1), 300);
@@ -177,6 +188,37 @@ export default function LandingPage() {
       clearTimeout(t3);
     };
   }, []);
+
+  // Replaces the old static "assessment completion rate" stat with a live
+  // candidate count from the backend's Got Talent tally.
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchTotalCandidates() {
+      try {
+        const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+        const res = await fetch(`${BACKEND_URL}/get_total_candidate`, { headers });
+        if (!res.ok) return;
+        const data = await res.json().catch(() => null);
+        const count = extractTotalCandidates(data);
+        if (!cancelled && count != null) setTotalCandidates(count);
+      } catch (err) {
+        console.error('[Landing] Failed to fetch total candidates:', err);
+      }
+    }
+    fetchTotalCandidates();
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
+
+  const stats = [
+    ...BASE_STATS,
+    {
+      label: 'Total Candidates',
+      value: totalCandidates != null ? totalCandidates.toLocaleString() : '—',
+      icon: Zap,
+    },
+  ];
 
   return (
     <div className="overflow-x-hidden">
@@ -230,7 +272,7 @@ export default function LandingPage() {
               ))}
             </div>
 
-            <StatsBar visible={stage >= 3} />
+            <StatsBar visible={stage >= 3} stats={stats} />
           </div>
         </Container>
       </section>
