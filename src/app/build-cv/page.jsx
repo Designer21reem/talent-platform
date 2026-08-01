@@ -168,18 +168,23 @@ export default function BuildCVPage() {
       const fileName = 'cv_builder.json';
       const extractedData = mapCVToExtractedData(cv, consent);
       const jsonBody = JSON.stringify(extractedData);
+
+      console.log('[CV Builder] Requesting a presigned URL for', fileName, 'application/json', jsonBody.length, 'bytes');
       const urlData = await requestUploadUrl(token, {
         fileName,
         fileType: 'application/json',
         fileSize: new Blob([jsonBody]).size,
         frontendSelection: 'cv_builder_json',
       });
+      console.log('[CV Builder] /generate-upload-url response body:', urlData);
 
       // Every JSON upload must carry the user_id/email the backend resolved
       // for this presigned URL, so it can be matched to the candidate once
       // it's picked up from the S3 data lake.
       const payload = { ...extractedData, user_id: urlData.user_id, email: urlData.user_email };
+      console.log('[CV Builder] Uploading directly to S3:', urlData.upload_url);
       await uploadToS3(urlData.upload_url, JSON.stringify(payload), 'application/json', urlData);
+      console.log('[CV Builder] Upload complete. S3 key:', urlData.s3_key);
 
       saveCV({ ...cv, consent });
       setSubmitted(true);

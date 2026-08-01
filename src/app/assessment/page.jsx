@@ -130,18 +130,23 @@ export default function AssessmentPage() {
     try {
       const fileName = 'assessment.json';
       const jsonBody = JSON.stringify(data);
+
+      console.log('[Assessment] Requesting a presigned URL for', fileName, 'application/json', jsonBody.length, 'bytes');
       const urlData = await requestUploadUrl(token, {
         fileName,
         fileType: 'application/json',
         fileSize: new Blob([jsonBody]).size,
         frontendSelection: 'assessment_json',
       });
+      console.log('[Assessment] /generate-upload-url response body:', urlData);
 
       // Every JSON upload must carry the user_id/email the backend resolved
       // for this presigned URL, so the assessment record can be matched to
       // the candidate once it's picked up from the S3 data lake.
       const payload = { ...data, user_id: urlData.user_id, email: urlData.user_email };
+      console.log('[Assessment] Uploading directly to S3:', urlData.upload_url);
       await uploadToS3(urlData.upload_url, JSON.stringify(payload), 'application/json', urlData);
+      console.log('[Assessment] Upload complete. S3 key:', urlData.s3_key);
 
       saveAssessment(data);
       setStyleResult(result);
