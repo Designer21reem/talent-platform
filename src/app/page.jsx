@@ -151,7 +151,7 @@ function ActionCard({ href, icon: Icon, title, description, featured, delay, vis
       transition={{ delay, duration: 0.55, ease: 'easeOut' }}
       whileHover={{ y: -6, scale: featured ? 1.06 : 1.02 }}
       className={[
-        'group relative rounded-2xl border p-6 sm:p-7 text-left backdrop-blur-sm transition-colors',
+        'group relative rounded-2xl border p-6 sm:p-7 text-start backdrop-blur-sm transition-colors',
         featured
           ? 'border-brand/60 bg-linear-to-b from-brand/10 to-surface/60 shadow-xl shadow-black/30 z-10'
           : 'border-brand/20 bg-surface/50 hover:border-brand/40',
@@ -186,7 +186,6 @@ export default function LandingPage() {
   const [stage, setStage] = useState(0);
   const [totalCandidates, setTotalCandidates] = useState(DEFAULT_TOTAL_CANDIDATES);
   const { token } = useAuth();
-  const { t } = useLanguage();
 
   useEffect(() => {
     const t1 = setTimeout(() => setStage(1), 300);
@@ -210,7 +209,9 @@ export default function LandingPage() {
         if (!res.ok) return;
         const data = await res.json().catch(() => null);
         const count = extractTotalCandidates(data);
-        if (!cancelled && count != null) setTotalCandidates(count);
+        // Keep the placeholder up until the backend actually has real
+        // candidates counted — swapping in a live "0" would look broken.
+        if (!cancelled && count != null && count > 0) setTotalCandidates(count);
       } catch (err) {
         console.error('[Landing] Failed to fetch total candidates:', err);
       }
@@ -251,7 +252,7 @@ export default function LandingPage() {
                   className="absolute inset-0 -z-10 bg-brand/40 blur-3xl rounded-full"
                 />
                 <h1 className="tv-hero-font text-5xl sm:text-6xl lg:text-7xl font-black tracking-wide text-white drop-shadow-[0_0_30px_rgba(201,155,37,0.45)]">
-                  {t('GOT TALENT')}
+                  GOT TALENT
                 </h1>
               </div>
 
