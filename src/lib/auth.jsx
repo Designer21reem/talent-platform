@@ -5,7 +5,7 @@ import { BACKEND_URL } from '@/lib/api';
 
 export const GOOGLE_CLIENT_ID =
   process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
-  '1004162755765-pma78u77c26ol0e3r7r2a72unu45jp65.apps.googleusercontent.com';
+  '670447319421-l63joridhuamj4jg15uqupj7emthrnv2.apps.googleusercontent.com';
 
 // Toggle via the NEXT_PUBLIC_ALLOW_SKIP_SIGNIN env var (set on Vercel).
 // Lets people in without Google sign-in while the OAuth consent screen
