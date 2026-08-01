@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { SkillProgressCard } from '@/components/dashboard/SkillProgressCard';
+import { DashboardSignIn } from '@/components/dashboard/DashboardSignIn';
 import { loadAssessment } from '@/lib/storage';
 import { buildDashboard, MOCK_DASHBOARD } from '@/lib/mockDashboard';
 import { useLanguage } from '@/lib/i18n';
@@ -115,6 +116,8 @@ export default function DashboardPage() {
         <HeroBackground variant="waves" />
         <Container maxWidth="xl">
           <div className="relative z-10">
+            <DashboardSignIn />
+
             {/* Mock data banner */}
             {usingMock && (
               <motion.div

@@ -1,19 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Upload, FileEdit, ClipboardCheck, Star, Users, Zap } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { motion, animate } from 'framer-motion';
+import { Upload, FileEdit, ClipboardCheck, Users } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
 import { HeroBackground } from '@/components/layout/HeroBackground';
 import { useLanguage } from '@/lib/i18n';
 import { useAuth } from '@/lib/auth';
 import { BACKEND_URL } from '@/lib/api';
 
-const BASE_STATS = [
-  { label: 'Candidates placed', value: '12,400+', icon: Users },
-  { label: 'Skill categories tracked', value: '6', icon: Star },
-];
+// Shown immediately so the hero never looks empty while the real backend
+// tally loads — swapped out for the live number the moment it arrives.
+const DEFAULT_TOTAL_CANDIDATES = 12400;
 
 // The backend response shape for /get_total_candidate isn't fully pinned
 // down yet, so this accepts a bare number or any of the likely key names.
@@ -48,32 +47,42 @@ const ACTIONS = [
 const SUBTITLE_PREFIX = 'One place to show what you can do. Start with ';
 const SUBTITLE_WORDS = ['our CV Builder', 'a Skill Assessment', 'a CV Upload'];
 
-function StatsBar({ visible, stats }) {
+// A single, live-updating stat badge sitting above the hero title — counts
+// up on first reveal, then smoothly re-counts whenever the real backend
+// total replaces the default placeholder.
+function TotalCandidatesBadge({ visible, value }) {
   const { t } = useLanguage();
+  const [display, setDisplay] = useState(0);
+  const prevValue = useRef(0);
+
+  useEffect(() => {
+    if (!visible) return undefined;
+    const controls = animate(prevValue.current, value, {
+      duration: 1.4,
+      ease: 'easeOut',
+      onUpdate: (v) => setDisplay(Math.round(v)),
+    });
+    prevValue.current = value;
+    return () => controls.stop();
+  }, [visible, value]);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={visible ? { opacity: 1, y: 0 } : {}}
+      initial={{ opacity: 0, y: -10, scale: 0.92 }}
+      animate={visible ? { opacity: 1, y: 0, scale: 1 } : {}}
       transition={{ duration: 0.6, ease: 'easeOut' }}
-      className="relative mx-auto mt-14 sm:mt-16 max-w-3xl rounded-2xl border border-brand/30 bg-surface/60 backdrop-blur-sm px-4 py-6 sm:px-10 sm:py-8 shadow-lg shadow-black/20"
+      className="relative inline-flex items-center gap-2.5 mb-7 sm:mb-8 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full border border-brand/40 bg-surface/70 backdrop-blur-sm shadow-[0_0_24px_rgba(201,155,37,0.18)]"
     >
-      <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-brand/15 rtl:sm:divide-x-reverse">
-        {stats.map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 10 }}
-            animate={visible ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.15 + i * 0.12, duration: 0.5 }}
-            className="text-center px-2 py-3 sm:py-0 first:pt-0 last:pb-0"
-          >
-            <p className="text-2xl sm:text-4xl font-extrabold text-brand tracking-tight">{stat.value}</p>
-            <p className="mt-1 text-xs sm:text-sm text-silver">{t(stat.label)}</p>
-          </motion.div>
-        ))}
-      </div>
-      <span className="absolute -bottom-1 start-6 w-1.5 h-1.5 rounded-full bg-brand/60" />
-      <span className="absolute -bottom-3 start-16 w-1 h-1 rounded-full bg-brand/40" />
-      <span className="absolute -bottom-1 end-10 w-1 h-1 rounded-full bg-brand/40" />
+      <motion.span
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"
+      />
+      <Users size={15} className="text-brand shrink-0" />
+      <span className="text-sm sm:text-base font-extrabold text-white tabular-nums">
+        {display.toLocaleString()}+
+      </span>
+      <span className="text-xs sm:text-sm text-silver">{t('Total Candidates')}</span>
     </motion.div>
   );
 }
@@ -165,7 +174,7 @@ function ActionCard({ href, icon: Icon, title, description, featured, delay, vis
           </div>
         </div>
         <h3 className={['text-lg font-bold tracking-wide mb-2', featured ? 'text-brand' : 'text-white'].join(' ')}>
-          {title}
+          {t(title)}
         </h3>
         <p className="text-sm text-silver leading-relaxed">{t(description)}</p>
       </Link>
@@ -175,8 +184,9 @@ function ActionCard({ href, icon: Icon, title, description, featured, delay, vis
 
 export default function LandingPage() {
   const [stage, setStage] = useState(0);
-  const [totalCandidates, setTotalCandidates] = useState(null);
+  const [totalCandidates, setTotalCandidates] = useState(DEFAULT_TOTAL_CANDIDATES);
   const { token } = useAuth();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const t1 = setTimeout(() => setStage(1), 300);
@@ -211,15 +221,6 @@ export default function LandingPage() {
     };
   }, [token]);
 
-  const stats = [
-    ...BASE_STATS,
-    {
-      label: 'Total Candidates',
-      value: totalCandidates != null ? totalCandidates.toLocaleString() : '—',
-      icon: Zap,
-    },
-  ];
-
   return (
     <div className="overflow-x-hidden">
       <section className="relative bg-dark text-white pt-10 pb-24 sm:pt-14 sm:pb-32 overflow-hidden">
@@ -227,6 +228,10 @@ export default function LandingPage() {
 
         <Container maxWidth="lg">
           <div className="relative z-10 text-center">
+            <div className="flex justify-center">
+              <TotalCandidatesBadge visible={stage >= 1} value={totalCandidates} />
+            </div>
+
             <motion.div
               initial={{ opacity: 0, y: 32 }}
               animate={stage >= 1 ? { opacity: 1, y: 0 } : {}}
@@ -246,7 +251,7 @@ export default function LandingPage() {
                   className="absolute inset-0 -z-10 bg-brand/40 blur-3xl rounded-full"
                 />
                 <h1 className="tv-hero-font text-5xl sm:text-6xl lg:text-7xl font-black tracking-wide text-white drop-shadow-[0_0_30px_rgba(201,155,37,0.45)]">
-                  GOT TALENT
+                  {t('GOT TALENT')}
                 </h1>
               </div>
 
@@ -271,8 +276,6 @@ export default function LandingPage() {
                 <ActionCard key={action.href} {...action} delay={i * 0.12} visible={stage >= 3} />
               ))}
             </div>
-
-            <StatsBar visible={stage >= 3} stats={stats} />
           </div>
         </Container>
       </section>

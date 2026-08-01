@@ -23,6 +23,9 @@ export const AR_DICT = {
 
   // ── Home ──────────────────────────────────────────────────────
   'GOT TALENT': 'عندها مواهب',
+  'UPLOAD CV': 'رفع السيرة الذاتية',
+  'CV BUILDER': 'منشئ السيرة الذاتية',
+  'SKILL CHECK': 'اختبار المهارات',
   'Upload your CV and prepare it for matching, filtering, and future recruitment workflows.': 'ارفع سيرتك الذاتية وجهّزها للمطابقة والفرز وعمليات التوظيف المستقبلية.',
   'Create a structured professional CV using guided sections for experience, education, and skills.': 'أنشئ سيرة ذاتية احترافية منظّمة باستخدام أقسام موجّهة للخبرة والتعليم والمهارات.',
   'Test practical skills with short assessments that can help validate your readiness.': 'اختبر مهاراتك العملية من خلال تقييمات قصيرة تساعد في إثبات جاهزيتك.',
@@ -350,6 +353,10 @@ export const AR_DICT = {
   'Write your answer here… (minimum 20 words recommended)': 'اكتب إجابتك هنا… (يُفضّل 20 كلمة على الأقل)',
 
   // ── Dashboard ─────────────────────────────────────────────────
+  'Sign in to see your real results': 'سجّل الدخول لعرض نتائجك الحقيقية',
+  "You're viewing sample data. Sign in with Google to load your saved assessment.":
+    'أنت تشاهد بيانات توضيحية. سجّل الدخول عبر جوجل لعرض تقييمك المحفوظ.',
+  'Sign-in failed. Check the console for details.': 'فشل تسجيل الدخول. راجع الكونسول لمزيد من التفاصيل.',
   'Loading your dashboard…': 'جارٍ تحميل لوحة التحكم…',
   'Showing sample dashboard': 'عرض لوحة تحكم توضيحية',
   'Complete the assessment to see your personalised skill results.': 'أكمل التقييم لمشاهدة نتائج مهاراتك الشخصية.',

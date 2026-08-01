@@ -10,7 +10,7 @@ import { HeroBackground } from '@/components/layout/HeroBackground';
 const SCRIPT_SRC = 'https://accounts.google.com/gsi/client?hl=en';
 let scriptLoadPromise = null;
 
-function loadGoogleScript() {
+export function loadGoogleScript() {
   if (typeof window === 'undefined') return Promise.resolve();
   if (window.google?.accounts?.id) return Promise.resolve();
   if (!scriptLoadPromise) {

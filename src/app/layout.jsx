@@ -2,7 +2,6 @@ import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { AuthGate } from '@/components/layout/AuthGate';
-import { SettingsButton } from '@/components/layout/SettingsButton';
 import { LanguageProvider } from '@/lib/i18n';
 import { AuthProvider } from '@/lib/auth';
 
@@ -20,6 +19,15 @@ export default function RootLayout({ children }) {
         {/* Warms the connection ahead of time so the Google Sign-In widget
             doesn't eat a fresh DNS+TLS handshake on first use. */}
         <link rel="preconnect" href="https://accounts.google.com" />
+        {/* Applies the saved language/direction before first paint — without
+            this, a returning Arabic user briefly sees an English/LTR flash
+            until LanguageProvider's effect runs post-hydration. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var l=localStorage.getItem('tv_lang');if(l==='ar'){document.documentElement.lang='ar';document.documentElement.dir='rtl';}}catch(e){}})();",
+          }}
+        />
       </head>
       <body className="min-h-screen flex flex-col bg-dark antialiased">
         <LanguageProvider>
@@ -28,7 +36,6 @@ export default function RootLayout({ children }) {
               <Header />
               <main className="flex-1">{children}</main>
               <Footer />
-              <SettingsButton />
             </AuthGate>
           </AuthProvider>
         </LanguageProvider>

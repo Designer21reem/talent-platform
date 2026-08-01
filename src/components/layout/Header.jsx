@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Menu, X, ShieldCheck } from 'lucide-react';
+import { Menu, X, ShieldCheck, Languages, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { Container } from './Container';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/lib/i18n';
+import { useAuth } from '@/lib/auth';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
@@ -21,7 +22,8 @@ const NAV_LINKS = [
 export function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const { t } = useLanguage();
+  const { t, lang, toggle } = useLanguage();
+  const { user, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 bg-dark/95 backdrop-blur-md border-b border-brand/20 shadow-sm">
@@ -54,21 +56,42 @@ export function Header() {
             })}
           </nav>
 
-          <div className="hidden xl:flex items-center gap-4">
-            <span className="flex items-center gap-1.5 text-xs font-medium text-silver whitespace-nowrap">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="hidden xl:flex items-center gap-1.5 text-xs font-medium text-silver whitespace-nowrap">
               {t('Trusted by HR teams across Iraq')}
               <ShieldCheck size={15} className="text-brand shrink-0" />
             </span>
-          </div>
 
-          {/* Mobile toggle */}
-          <button
-            className="xl:hidden p-2 rounded-lg text-warm hover:bg-surface-2"
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+            {/* Language toggle — always visible (desktop and mobile) so
+                switching languages isn't buried behind another menu. */}
+            <button
+              onClick={toggle}
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border border-brand/30 text-xs font-semibold text-brand hover:bg-brand/10 transition-colors"
+              aria-label={t('Language')}
+            >
+              <Languages size={14} />
+              <span className="hidden sm:inline">{lang === 'en' ? 'العربية' : 'English'}</span>
+            </button>
+
+            {user && (
+              <button
+                onClick={signOut}
+                aria-label={t('Sign out')}
+                className="hidden sm:flex p-2 rounded-lg text-silver hover:text-red-400 hover:bg-surface-2 transition-colors"
+              >
+                <LogOut size={16} />
+              </button>
+            )}
+
+            {/* Mobile toggle */}
+            <button
+              className="xl:hidden p-2 rounded-lg text-warm hover:bg-surface-2"
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label="Toggle menu"
+            >
+              {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
       </Container>
 
@@ -100,6 +123,20 @@ export function Header() {
                   </Link>
                 );
               })}
+
+              {user && (
+                <button
+                  onClick={() => {
+                    signOut();
+                    setMenuOpen(false);
+                  }}
+                  className="sm:hidden flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-warm hover:bg-surface-2 hover:text-red-400 transition-colors text-start"
+                >
+                  <LogOut size={15} />
+                  {t('Sign out')}
+                </button>
+              )}
+
               <div className="px-3 pt-2">
                 <span className="flex items-center gap-1.5 text-xs font-medium text-silver">
                   {t('Trusted by HR teams across Iraq')}
