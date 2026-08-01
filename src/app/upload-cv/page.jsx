@@ -32,7 +32,7 @@ export default function UploadCVPage() {
   // Every step is logged so a broken hookup (wrong BACKEND_URL, missing/
   // expired JWT, CORS, S3 policy, …) shows up clearly in the console
   // instead of failing silently.
-  async function uploadToS3(file, onProgress) {
+  async function handleUpload(file, onProgress) {
     if (!token) {
       console.error('[Upload] No JWT available — sign in with Google (not "Skip sign-in") before uploading.');
       throw new Error('You must be signed in with Google to upload a CV.');
@@ -128,7 +128,7 @@ export default function UploadCVPage() {
           {/* Upload */}
           {pageState === 'upload' && (
             <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <FileUploader onFile={handleFile} onUpload={uploadToS3} />
+              <FileUploader onFile={handleFile} onUpload={handleUpload} />
             </motion.div>
           )}
 
