@@ -34,6 +34,8 @@ export const AR_DICT = {
   'a Skill Assessment': 'تقييم المهارات',
   'a CV Upload': 'رفع سيرتك الذاتية',
   'Start Assessment': 'بدء التقييم',
+  'Stand out from the crowd': 'تميّز عن باقي المتقدمين',
+  'Maybe later': 'ربما لاحقاً',
   'Candidates placed': 'مرشح تم توظيفه',
   'Skill categories tracked': 'فئات مهارات متابَعة',
   'Total Candidates': 'إجمالي المرشحين',

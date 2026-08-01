@@ -10,6 +10,7 @@ import { Container } from '@/components/layout/Container';
 import { HeroBackground } from '@/components/layout/HeroBackground';
 import { FileUploader } from '@/components/upload/FileUploader';
 import { ConsentCheckboxes, EMPTY_CONSENT } from '@/components/upload/ConsentCheckboxes';
+import { AssessmentPromptModal } from '@/components/upload/AssessmentPromptModal';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { saveCV } from '@/lib/storage';
@@ -26,6 +27,7 @@ export default function UploadCVPage() {
   const [consent, setConsent] = useState(EMPTY_CONSENT);
   const [submitting, setSubmitting] = useState(false);
   const [s3Key, setS3Key] = useState(null);
+  const [showAssessmentPrompt, setShowAssessmentPrompt] = useState(false);
 
   // Real upload: ask the backend for a presigned S3 URL, then PUT the file
   // straight to S3 as-is — no client-side parsing of the file's contents.
@@ -89,7 +91,8 @@ export default function UploadCVPage() {
       certifications: [],
       projects: [],
     });
-    router.push('/assessment');
+    setSubmitting(false);
+    setShowAssessmentPrompt(true);
   }
 
   function reset() {
@@ -181,6 +184,12 @@ export default function UploadCVPage() {
         </AnimatePresence>
       </Container>
       </div>
+
+      <AssessmentPromptModal
+        open={showAssessmentPrompt}
+        onStart={() => router.push('/assessment')}
+        onDismiss={() => setShowAssessmentPrompt(false)}
+      />
     </div>
   );
 }
