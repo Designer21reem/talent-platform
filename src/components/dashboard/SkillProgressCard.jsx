@@ -24,7 +24,7 @@ export function SkillProgressCard({ skill, delay = 0 }) {
     >
       <div className="flex items-center gap-3 mb-4">
         <span className="text-2xl">{EMOJI_MAP[skill.category] ?? '📊'}</span>
-        <h3 className="font-semibold text-white">{t(skill.category)}</h3>
+        <h3 className="font-semibold text-warm-light">{t(skill.category)}</h3>
       </div>
       <ProgressBar value={skill.score} showValue size="md" animated />
     </motion.div>

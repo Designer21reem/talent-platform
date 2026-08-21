@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useAuth, GOOGLE_CLIENT_ID, ALLOW_SKIP_SIGNIN } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
 import { HeroBackground } from '@/components/layout/HeroBackground';
+import { PhoneSignIn } from '@/components/layout/PhoneSignIn';
 
 // hl=en keeps Google's own button/popup text in English regardless of site
 // language — avoids the Arabic label overflowing the button's fixed width.
@@ -40,6 +41,7 @@ export function AuthGate({ children }) {
   const buttonRef = useRef(null);
   const [signInError, setSignInError] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
+  const [showPhone, setShowPhone] = useState(false);
 
   useEffect(() => {
     if (user || !ready) return;
@@ -87,7 +89,7 @@ export function AuthGate({ children }) {
         <div className="relative z-10 max-w-sm w-full text-center">
           <img src="/Logo (1).png" alt="THE VALUE" className="h-14 w-auto object-contain mx-auto mb-4" />
           <p className="text-brand font-bold text-lg tracking-widest mb-1">THE VALUE</p>
-          <h1 className="text-2xl font-bold text-white mb-2">{t('Welcome — sign in to get started')}</h1>
+          <h1 className="text-2xl font-bold text-warm-light mb-2">{t('Welcome — sign in to get started')}</h1>
           <p className="text-silver text-sm mb-8 leading-relaxed">
             {t('Sign in with Google to use THE VALUE — upload your CV, take assessments, and track your ranking.')}
           </p>
@@ -101,6 +103,23 @@ export function AuthGate({ children }) {
             <p className="mt-4 text-xs text-red-400">
               {t('Sign-in failed — the backend rejected the request. Check the browser console for details.')}
             </p>
+          )}
+
+          <div className="mt-5 flex items-center gap-3">
+            <span className="flex-1 h-px bg-surface-2" />
+            <span className="text-xs text-silver">{t('or')}</span>
+            <span className="flex-1 h-px bg-surface-2" />
+          </div>
+
+          {!showPhone ? (
+            <button
+              onClick={() => setShowPhone(true)}
+              className="mt-4 text-xs text-brand hover:text-brand-light underline underline-offset-2 transition-colors"
+            >
+              {t('Sign in with phone number')}
+            </button>
+          ) : (
+            <PhoneSignIn />
           )}
 
           {(process.env.NODE_ENV !== 'production' || ALLOW_SKIP_SIGNIN) && (

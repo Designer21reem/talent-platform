@@ -21,7 +21,12 @@ export function QuestionCard({ question, answer, questionIndex, total, onChange 
           <span className="inline-block mb-2 text-xs font-semibold text-brand bg-brand/10 px-2.5 py-0.5 rounded-full uppercase tracking-wide">
             {t(question.category)}
           </span>
-          <h3 className="text-lg font-semibold text-white leading-snug">{t(question.question)}</h3>
+          <h3 className="text-lg font-semibold text-warm-light leading-snug">{question.question}</h3>
+          {question.questionAr && (
+            <h3 dir="rtl" className="text-lg font-semibold text-warm-light leading-snug mt-0.5">
+              {question.questionAr}
+            </h3>
+          )}
         </div>
         <span className="shrink-0 text-xs font-medium text-silver bg-surface-2 px-2.5 py-1 rounded-full">
           {questionIndex + 1}/{total}
@@ -43,7 +48,7 @@ export function QuestionCard({ question, answer, questionIndex, total, onChange 
                   'w-full text-start px-4 py-3.5 rounded-xl border-2 text-sm transition-all duration-150',
                   'flex items-center gap-3',
                   selected
-                    ? 'border-brand bg-brand/10 text-white'
+                    ? 'border-brand bg-brand/10 text-warm-light'
                     : 'border-surface-2 bg-surface-2 text-warm hover:border-brand hover:bg-brand/10'
                 )}
               >
@@ -54,11 +59,18 @@ export function QuestionCard({ question, answer, questionIndex, total, onChange 
                   )}
                 >
                   {selected && (
-                    <span className="w-2 h-2 rounded-full bg-white" />
+                    <span className="w-2 h-2 rounded-full bg-ink" />
                   )}
                 </span>
-                <span className="font-medium text-xs text-silver me-1">{option.id.toUpperCase()}.</span>
-                {t(option.label)}
+                <span className="font-medium text-xs text-silver me-1 shrink-0">{option.id.toUpperCase()}.</span>
+                <span className="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                  <span>{option.label}</span>
+                  {option.labelAr && (
+                    <span dir="rtl" className="text-silver">
+                      {option.labelAr}
+                    </span>
+                  )}
+                </span>
               </button>
             );
           })}

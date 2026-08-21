@@ -4,12 +4,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import {
-  ClipboardCheck, Phone, CheckCircle2, AlertTriangle, ChevronLeft, ChevronRight, Send, Zap,
+  ClipboardCheck, CheckCircle2, ChevronLeft, ChevronRight, Send, Zap,
 } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
 import { HeroBackground } from '@/components/layout/HeroBackground';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { QuestionCard } from '@/components/assessment/QuestionCard';
 import { ASSESSMENT_QUESTIONS } from '@/lib/assessmentQuestions';
@@ -24,48 +23,26 @@ export default function AssessmentPage() {
   const { t } = useLanguage();
   const { user, token } = useAuth();
   const [pageState, setPageState] = useState('gate');
-  const [phoneInput, setPhoneInput] = useState('');
-  const [phoneError, setPhoneError] = useState(null);
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState({});
   const [submitError, setSubmitError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [candidateName, setCandidateName] = useState('');
   const [candidateEmail, setCandidateEmail] = useState('');
-  const [resolvedPhone, setResolvedPhone] = useState('');
-  const [cvPhone, setCvPhone] = useState(null);
   const [styleResult, setStyleResult] = useState(null);
 
 
   useEffect(() => {
     const cv = loadCV();
     if (cv) {
-      const phone = cv.personalInfo.phone || '';
       setCandidateName(cv.personalInfo.fullName);
       setCandidateEmail(cv.personalInfo.email || user?.email || '');
-      if (phone) {
-        setCvPhone(phone);
-        setResolvedPhone(phone);
-      }
     } else if (user?.email) {
       setCandidateEmail(user.email);
     }
   }, [user]);
 
   function startAssessment() {
-
-    if (cvPhone) {
-      setPageState('assessment');
-      return;
-    }
-
-    if (!phoneInput.trim()) {
-      setPhoneError(t('Phone number is required to start the assessment.'));
-      return;
-    }
-
-    setResolvedPhone(phoneInput.trim());
-    setPhoneError(null);
     setPageState('assessment');
   }
 
@@ -121,7 +98,6 @@ export default function AssessmentPage() {
       submittedAt: new Date().toISOString(),
       candidateName,
       candidateEmail,
-      candidatePhone: resolvedPhone,
     };
 
     setSubmitting(true);
@@ -175,11 +151,11 @@ export default function AssessmentPage() {
               className="relative z-10 text-center"
             >
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-4">
-                <ClipboardCheck size={26} className="text-white" />
+                <ClipboardCheck size={26} className="text-ink" />
               </div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">{t('Skill Assessment')}</h1>
+              <h1 className="text-3xl sm:text-4xl font-bold text-warm-light mb-2">{t('Discover Your Personality')}</h1>
               <p className="text-silver text-lg">
-                {t('This optional assessment evaluates your key professional skills.')}
+                {t('A short, optional questionnaire to help us understand how you naturally think and work.')}
               </p>
             </motion.div>
           </Container>
@@ -205,34 +181,9 @@ export default function AssessmentPage() {
             transition={{ delay: 0.15 }}
             className="bg-surface rounded-2xl border border-surface-2 shadow-sm p-6 sm:p-8"
           >
-            {cvPhone ? (
-              <div className="flex items-center gap-3 mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
-                <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-emerald-800">{t('Phone number found')}</p>
-                  <p className="text-xs text-emerald-600 mt-0.5">
-                    <span dir="ltr" className="inline-block">{cvPhone}</span> — {t('ready to start!')}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="mb-6">
-                <Input
-                  label={t('Your Phone Number')}
-                  type="tel"
-                  placeholder="+1 555 000 0000"
-                  value={phoneInput}
-                  onChange={(e) => {
-                    setPhoneInput(e.target.value);
-                    setPhoneError(null);
-                  }}
-                  error={phoneError ?? undefined}
-                  leftElement={<Phone size={15} />}
-                  required
-                  hint={t('Required to identify your results in the dashboard.')}
-                />
-              </div>
-            )}
+            <p className="text-sm text-silver leading-relaxed mb-6">
+              {t('Answer honestly — there are no right or wrong answers. Your responses are used only to build your personal style profile and are never shared without your consent.')}
+            </p>
 
             <div className="flex items-center justify-between text-sm text-silver mb-6">
               <span>{ASSESSMENT_QUESTIONS.length} {t('questions')}</span>
@@ -269,7 +220,7 @@ export default function AssessmentPage() {
               <CheckCircle2 size={36} className="text-emerald-500" />
             </motion.div>
 
-            <h2 className="text-3xl font-bold text-white mb-3">{t('Assessment Submitted!')}</h2>
+            <h2 className="text-3xl font-bold text-warm-light mb-3">{t('Assessment Submitted!')}</h2>
             <p className="text-silver text-lg mb-8">
               {t('Thank you')}{candidateName ? `, ${candidateName.split(' ')[0]}` : ''}! {t('Your responses have been saved. Head to your dashboard to see your personalised skills report.')}
             </p>
@@ -279,7 +230,7 @@ export default function AssessmentPage() {
                 <p className="text-xs font-semibold text-brand uppercase tracking-wide mb-1">
                   {t('Your Personal Style')}
                 </p>
-                <h3 className="text-2xl font-bold text-white mb-1">
+                <h3 className="text-2xl font-bold text-warm-light mb-1">
                   {STYLE_INFO[styleResult.predominant].name} — {t(STYLE_INFO[styleResult.predominant].title)}
                 </h3>
                 <p className="text-sm text-silver mb-4">

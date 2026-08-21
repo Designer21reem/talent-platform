@@ -40,7 +40,7 @@ export function CardHeader({ className, children, ...props }) {
 
 export function CardTitle({ className, children, ...props }) {
   return (
-    <h3 className={cn('text-lg font-semibold text-white', className)} {...props}>
+    <h3 className={cn('text-lg font-semibold text-warm-light', className)} {...props}>
       {children}
     </h3>
   );

@@ -131,7 +131,7 @@ export function FileUploader({ onFile, onUpload }) {
                 <UploadCloud size={30} className="text-brand" />
               </div>
               <div>
-                <p className="font-semibold text-white text-lg">
+                <p className="font-semibold text-warm-light text-lg">
                   {t('Drop your CV here or')}{' '}
                   <span className="text-brand underline underline-offset-2">{t('browse')}</span>
                 </p>

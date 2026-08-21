@@ -23,7 +23,7 @@ export default function AboutPage() {
   return (
     <div className="overflow-x-hidden">
       {/* ── Hero ── */}
-      <section className="relative bg-dark text-white py-24 sm:py-32 overflow-hidden">
+      <section className="relative bg-dark text-warm-light py-24 sm:py-32 overflow-hidden">
         <HeroBackground variant="waves" />
         <Container maxWidth="lg">
           <motion.div
@@ -55,7 +55,7 @@ export default function AboutPage() {
               viewport={{ once: true }}
             >
               <span className="text-sm font-semibold text-brand uppercase tracking-widest">{t('Who We Are')}</span>
-              <h2 className="text-3xl font-bold text-white mt-2 mb-6">
+              <h2 className="text-3xl font-bold text-warm-light mt-2 mb-6">
                 THE VALUE
               </h2>
               <p className="text-warm leading-relaxed">
@@ -72,7 +72,7 @@ export default function AboutPage() {
               <div className="bg-surface rounded-2xl border border-surface-2 p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <Target size={20} className="text-brand" />
-                  <h3 className="font-semibold text-white">{t('Mission')}</h3>
+                  <h3 className="font-semibold text-warm-light">{t('Mission')}</h3>
                 </div>
                 <p className="text-warm leading-relaxed">
                   {t('To deliver standardized and customized business solutions to enhance the quality of business results.')}
@@ -82,7 +82,7 @@ export default function AboutPage() {
               <div className="bg-surface rounded-2xl border border-surface-2 p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <Briefcase size={20} className="text-brand" />
-                  <h3 className="font-semibold text-white">{t('Vision')}</h3>
+                  <h3 className="font-semibold text-warm-light">{t('Vision')}</h3>
                 </div>
                 <p className="text-warm leading-relaxed">
                   {t('To add value to our clients through our business solutions.')}
@@ -129,7 +129,7 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-white mb-1">Aws Fawzi Mohamed</h2>
+              <h2 className="text-3xl font-bold text-warm-light mb-1">Aws Fawzi Mohamed</h2>
               <p className="text-brand font-semibold mb-4">{t('Founder of The Value')}</p>
 
               <p className="text-warm leading-relaxed mb-6">
@@ -171,7 +171,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="py-20 bg-linear-to-br from-dark to-surface-2 text-white">
+      <section className="py-20 bg-linear-to-br from-dark to-surface-2 text-warm-light">
         <Container maxWidth="md">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -185,7 +185,7 @@ export default function AboutPage() {
             </p>
             <a
               href="/upload-cv"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand hover:bg-brand-light text-dark font-semibold transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand hover:bg-brand-light text-ink font-semibold transition-colors"
             >
               {t('Get Started')}
             </a>

@@ -39,13 +39,13 @@ const ACTIONS = [
   {
     href: '/assessment',
     icon: ClipboardCheck,
-    title: 'SKILL CHECK',
+    title: 'DISCOVER YOUR PERSONALITY',
     description: 'Test practical skills with short assessments that can help validate your readiness.',
   },
 ];
 
 const SUBTITLE_PREFIX = 'One place to show what you can do. Start with ';
-const SUBTITLE_WORDS = ['our CV Builder', 'a Skill Assessment', 'a CV Upload'];
+const SUBTITLE_WORDS = ['our CV Builder', 'Discover Your Personality', 'a CV Upload'];
 
 // A single, live-updating stat badge sitting above the hero title — counts
 // up on first reveal, then smoothly re-counts whenever the real backend
@@ -71,7 +71,7 @@ function TotalCandidatesBadge({ visible, value }) {
       initial={{ opacity: 0, y: -10, scale: 0.92 }}
       animate={visible ? { opacity: 1, y: 0, scale: 1 } : {}}
       transition={{ duration: 0.6, ease: 'easeOut' }}
-      className="relative inline-flex items-center gap-2.5 mb-7 sm:mb-8 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full border border-brand/40 bg-surface/70 backdrop-blur-sm shadow-[0_0_24px_rgba(201,155,37,0.18)]"
+      className="relative inline-flex items-center gap-2.5 mb-7 sm:mb-8 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full border border-brand/40 bg-surface/70 backdrop-blur-sm shadow-[0_0_24px_rgba(211,185,115,0.18)]"
     >
       <motion.span
         animate={{ opacity: [0.5, 1, 0.5] }}
@@ -79,7 +79,7 @@ function TotalCandidatesBadge({ visible, value }) {
         className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"
       />
       <Users size={15} className="text-brand shrink-0" />
-      <span className="text-sm sm:text-base font-extrabold text-white tabular-nums">
+      <span className="text-sm sm:text-base font-extrabold text-warm-light tabular-nums">
         {display.toLocaleString()}+
       </span>
       <span className="text-xs sm:text-sm text-silver">{t('Total Candidates')}</span>
@@ -167,13 +167,13 @@ function ActionCard({ href, icon: Icon, title, description, featured, delay, vis
           <div
             className={[
               'relative inline-flex items-center justify-center w-14 h-14 rounded-full border-2 transition-transform duration-300 group-hover:scale-110',
-              featured ? 'border-brand text-brand shadow-[0_0_18px_rgba(201,155,37,0.45)]' : 'border-brand/50 text-brand',
+              featured ? 'border-brand text-brand shadow-[0_0_18px_rgba(211,185,115,0.45)]' : 'border-brand/50 text-brand',
             ].join(' ')}
           >
             <Icon size={24} />
           </div>
         </div>
-        <h3 className={['text-lg font-bold tracking-wide mb-2', featured ? 'text-brand' : 'text-white'].join(' ')}>
+        <h3 className={['text-lg font-bold tracking-wide mb-2', featured ? 'text-brand' : 'text-warm-light'].join(' ')}>
           {t(title)}
         </h3>
         <p className="text-sm text-silver leading-relaxed">{t(description)}</p>
@@ -224,7 +224,7 @@ export default function LandingPage() {
 
   return (
     <div className="overflow-x-hidden">
-      <section className="relative bg-dark text-white pt-10 pb-24 sm:pt-14 sm:pb-32 overflow-hidden">
+      <section className="relative bg-dark text-warm-light pt-10 pb-24 sm:pt-14 sm:pb-32 overflow-hidden">
         <HeroBackground variant="waves" />
 
         <Container maxWidth="lg">
@@ -242,7 +242,7 @@ export default function LandingPage() {
               <motion.span
                 animate={{ opacity: [0.3, 1, 0.3], scaleX: [0.7, 1, 0.7] }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                className="hidden sm:block h-px w-14 md:w-24 bg-linear-to-r from-transparent to-brand origin-right"
+                className="hidden sm:block h-px w-14 md:w-24 bg-linear-to-r from-transparent to-brand origin-right shadow-[0_0_8px_rgba(211,185,115,0.7)]"
               />
 
               <div className="relative">
@@ -251,7 +251,7 @@ export default function LandingPage() {
                   transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
                   className="absolute inset-0 -z-10 bg-brand/40 blur-3xl rounded-full"
                 />
-                <h1 className="tv-hero-font text-5xl sm:text-6xl lg:text-7xl font-black tracking-wide text-white drop-shadow-[0_0_30px_rgba(201,155,37,0.45)]">
+                <h1 className="tv-hero-font text-5xl sm:text-6xl lg:text-7xl font-black tracking-wide text-warm-light drop-shadow-[0_0_30px_rgba(211,185,115,0.45)]">
                   GOT TALENT
                 </h1>
               </div>
@@ -259,7 +259,7 @@ export default function LandingPage() {
               <motion.span
                 animate={{ opacity: [0.3, 1, 0.3], scaleX: [0.7, 1, 0.7] }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
-                className="hidden sm:block h-px w-14 md:w-24 bg-linear-to-l from-transparent to-brand origin-left"
+                className="hidden sm:block h-px w-14 md:w-24 bg-linear-to-l from-transparent to-brand origin-left shadow-[0_0_8px_rgba(211,185,115,0.7)]"
               />
             </motion.div>
 

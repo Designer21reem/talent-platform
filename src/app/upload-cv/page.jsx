@@ -115,7 +115,7 @@ export default function UploadCVPage() {
             className="relative z-10 text-center"
           >
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-5">
-              <Upload size={26} className="text-white" />
+              <Upload size={26} className="text-ink" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-warm-light mb-3">{t('Upload Your CV')}</h1>
             <p className="text-silver text-lg max-w-lg mx-auto">

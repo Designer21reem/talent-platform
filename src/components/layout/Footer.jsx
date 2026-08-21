@@ -13,14 +13,14 @@ export function Footer() {
         <div className="py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <img src="/Logo (1).png" alt="THE VALUE" className="h-6 w-auto object-contain" />
-            <span className="font-semibold text-white text-sm">THE VALUE</span>
+            <span className="font-semibold text-warm-light text-sm">THE VALUE</span>
           </div>
 
           <nav className="flex flex-wrap justify-center gap-4 text-sm">
             <Link href="/" className="hover:text-brand transition-colors">{t('Home')}</Link>
             <Link href="/upload-cv" className="hover:text-brand transition-colors">{t('Upload CV')}</Link>
             <Link href="/build-cv" className="hover:text-brand transition-colors">{t('CV Builder')}</Link>
-            <Link href="/assessment" className="hover:text-brand transition-colors">{t('Assessment')}</Link>
+            <Link href="/assessment" className="hover:text-brand transition-colors">{t('Discover Your Personality')}</Link>
             <Link href="/dashboard" className="hover:text-brand transition-colors">{t('Dashboard')}</Link>
             <Link href="/about" className="hover:text-brand transition-colors">{t('About')}</Link>
           </nav>

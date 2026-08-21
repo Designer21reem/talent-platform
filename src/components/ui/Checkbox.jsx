@@ -30,7 +30,7 @@ const Checkbox = forwardRef(({ label, checked, onChange, className, id, ...props
           size={12}
           strokeWidth={3}
           className={cn(
-            'absolute text-dark transition-opacity duration-150',
+            'absolute text-ink transition-opacity duration-150',
             checked ? 'opacity-100' : 'opacity-0'
           )}
         />

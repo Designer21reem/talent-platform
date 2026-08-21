@@ -216,7 +216,7 @@ export default function BuildCVPage() {
           </motion.div>
 
           <div className="flex flex-wrap justify-between items-center gap-3 mb-6">
-            <h2 className="text-2xl font-bold text-white">{t('Your CV Preview')}</h2>
+            <h2 className="text-2xl font-bold text-warm-light">{t('Your CV Preview')}</h2>
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
@@ -253,9 +253,9 @@ export default function BuildCVPage() {
             className="relative z-10 text-center"
           >
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-4">
-              <FileEdit size={26} className="text-white" />
+              <FileEdit size={26} className="text-ink" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">{t('CV Builder')}</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-warm-light mb-2">{t('CV Builder')}</h1>
             <p className="text-silver text-lg">{t("Fill in each section and we'll generate a professional CV.")}</p>
           </motion.div>
         </Container>

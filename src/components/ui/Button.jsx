@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 
 const variantStyles = {
   primary:
-    'bg-brand text-dark hover:bg-brand-light active:bg-brand-dark font-semibold shadow-sm hover:shadow-md',
+    'bg-brand text-ink hover:bg-brand-light active:bg-brand-dark font-semibold shadow-sm hover:shadow-md',
   secondary:
     'bg-surface-2 text-warm border border-surface-2 hover:border-brand/40 hover:text-warm-light active:bg-surface',
   ghost: 'bg-transparent text-warm hover:bg-surface-2 active:bg-surface',

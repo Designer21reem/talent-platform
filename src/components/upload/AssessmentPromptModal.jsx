@@ -32,7 +32,7 @@ export function AssessmentPromptModal({ open, onStart, onDismiss }) {
             <button
               onClick={onDismiss}
               aria-label={t('Close')}
-              className="absolute top-3 end-3 p-1.5 rounded-full text-silver hover:text-white hover:bg-surface-2 transition-colors"
+              className="absolute top-3 end-3 p-1.5 rounded-full text-silver hover:text-warm-light hover:bg-surface-2 transition-colors"
             >
               <X size={16} />
             </button>
@@ -46,7 +46,7 @@ export function AssessmentPromptModal({ open, onStart, onDismiss }) {
               <Sparkles size={28} className="text-brand" />
             </motion.div>
 
-            <h2 className="text-xl font-bold text-white mb-2">
+            <h2 className="text-xl font-bold text-warm-light mb-2">
               {t('Stand out from the crowd')}
             </h2>
             <p className="text-sm text-silver leading-relaxed mb-6">

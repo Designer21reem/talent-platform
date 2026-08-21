@@ -19,51 +19,56 @@
 */
 :root {
   /* ── Backgrounds ─────────────────────────────────────────────────────── */
-  --bg: #030303;
-  --gold: #c99b25;
-  --gold2: #e4b638;
-  --text: #f2eee6;
-  --muted: #b8b3a8;
-  --line: rgba(201, 155, 37, 0.34);
-  --panel: rgba(13, 13, 13, 0.88);
+  --bg: #fafafa;      /* White Cap */
+  --gold: #d3b973;    /* Golden Crown */
+  --gold2: #e2cb96;   /* lighter tint of Golden Crown, for hover states */
+  --text: #272727;    /* Velvet Black */
+  --muted: #737373;   /* Gradient Black */
+  --line: rgba(211, 185, 115, 0.5);
+  --panel: rgba(255, 255, 255, 0.9);
 
   --tv-bg:        var(--bg);
-  --tv-surface:   #111111;
-  --tv-surface-2: #1f1f1f;
+  --tv-surface:   #ffffff;
+  --tv-surface-2: #f0efe9;
 
   /* ── Brand / Gold ─────────────────────────────────────────────────────
      Change --tv-gold to update the accent color across the whole site
   ── */
   --tv-gold:       var(--gold);   /* primary gold — buttons, borders, icons */
   --tv-gold-light: var(--gold2);   /* lighter gold — button hover state */
-  --tv-gold-dark:  #99791b;   /* darker gold — button active/pressed state */
+  --tv-gold-dark:  #b8985a;   /* darker gold — button active/pressed state */
 
   /* ── Typography ───────────────────────────────────────────────────────
-     Text colors from brightest to most faded
+     Text colors from darkest/boldest to most faded
   ── */
   --tv-title:   var(--text);   /* main headings — h1 / h2 / h3 */
-  --tv-body:    #e4dccf;   /* paragraphs and card body text */
+  --tv-body:    #3d3d3d;   /* paragraphs and card body text */
   --tv-muted:   var(--muted);   /* secondary text and labels */
-  --tv-subtle:  #9f9b8f;   /* captions, hints, timestamps */
+  --tv-subtle:  #9a9a9a;   /* captions, hints, timestamps */
+
+  /* Guaranteed-dark ink — for text/icons placed on light or gold surfaces
+     (e.g. button-on-brand text), independent of the page background token
+     so it stays legible no matter how --tv-bg is themed. */
+  --tv-ink: #272727;   /* Velvet Black */
 
   /* ── Form Fields ──────────────────────────────────────────────────────
      Input / Textarea / Select colors for every state
   ── */
-  --tv-field-bg:           #161616;              /* field background */
-  --tv-field-border:       #2e2e2e;              /* field border — normal state */
-  --tv-field-border-hover: #c99b25;              /* field border — hover state */
-  --tv-field-border-focus: #c99b25;              /* field border — focused state */
-  --tv-field-text:         #f2eee6;              /* text typed inside the field */
-  --tv-field-placeholder:  #666666;              /* placeholder text */
-  --tv-field-label:        #e2ddd5;              /* label above the field */
-  --tv-field-ring:         rgba(201,155,37,0.28);/* focus glow ring */
+  --tv-field-bg:           #ffffff;              /* field background */
+  --tv-field-border:       #dcdad3;              /* field border — normal state */
+  --tv-field-border-hover: #d3b973;              /* field border — hover state */
+  --tv-field-border-focus: #d3b973;              /* field border — focused state */
+  --tv-field-text:         #272727;              /* text typed inside the field */
+  --tv-field-placeholder:  #9a9a9a;              /* placeholder text */
+  --tv-field-label:        #3d3d3d;              /* label above the field */
+  --tv-field-ring:         rgba(211,185,115,0.32);/* focus glow ring */
 
   /* ── Step Indicator ───────────────────────────────────────────────────
      Progress bar steps on the CV Builder page
   ── */
-  --tv-step-inactive-bg:   #252525;   /* background of inactive step circle */
-  --tv-step-inactive-text: #888888;   /* number color of inactive step */
-  --tv-step-connector:     #2a2a2a;   /* line between steps */
+  --tv-step-inactive-bg:   #f0efe9;   /* background of inactive step circle */
+  --tv-step-inactive-text: #9a9a9a;   /* number color of inactive step */
+  --tv-step-connector:     #e3e1d9;   /* line between steps */
 }
 
 /*
@@ -82,6 +87,7 @@
   --color-warm:        var(--tv-body);     /* text-warm */
   --color-silver:      var(--tv-muted);    /* text-silver */
   --color-subtle:      var(--tv-subtle);   /* text-subtle */
+  --color-ink:         var(--tv-ink);      /* text-ink — always-dark, for text on brand/light surfaces */
 }
 
 * {
@@ -162,22 +168,6 @@ select:-webkit-autofill:focus {
 /* ── Hero display font (GOT TALENT) ──────────────────────────────────────── */
 .tv-hero-font {
   font-family: 'Playfair Display', 'Montserrat', serif;
-}
-
-/* ── Animated gold grid backdrop (home hero) ─────────────────────────────── */
-@keyframes tv-grid-pan {
-  from { background-position: 0 0; }
-  to { background-position: 48px 48px; }
-}
-.tv-grid-bg {
-  background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 48px 48px;
-  animation: tv-grid-pan 16s linear infinite;
-  opacity: 0.4;
-  -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
-  mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
 }
 
 ::-webkit-scrollbar { width: 6px; }

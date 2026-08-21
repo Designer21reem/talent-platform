@@ -4,31 +4,35 @@
 // 2nd = Expressive, 3rd = Amiable, 4th = Analytic (see STYLE_INVENTORY_INSTRUCTIONS
 // on the source sheet: "Tally Box: 1 Driver / 2 Expressive / 3 Amiable / 4 Analytic").
 // styleAssessment.js tallies these `style` tags to score the assessment.
+//
+// Choices are shown bilingually (English + Arabic) regardless of the site's
+// current language, per the brief — so every word/phrase below carries its
+// own Arabic counterpart rather than going through the general t() switch.
 const RAW_SETS = [
-  ['Competitive', 'Joyful', 'Considerate', 'Harmonious'],
-  ['Tries new ideas', 'Optimistic', 'Wants to please', 'Respectful'],
-  ['Will power', 'Open-minded', 'Cheerful', 'Obliging'],
-  ['Daring', 'Expressive', 'Satisfied', 'Diplomatic'],
-  ['Powerful', 'Good mixer', 'Easy on others', 'Organized'],
-  ['Restless', 'Popular', 'Neighborly', 'Abides by rules'],
-  ['Unconquerable', 'Playful', 'Obedient', 'Fussy'],
-  ['Self-reliant', 'Fun-loving', 'Patient', 'Soft-Spoken'],
-  ['Bold', 'Charming', 'Loyal', 'Easily led'],
-  ['Outspoken', 'Companionable', 'Restrained', 'Accurate'],
-  ['Brave', 'Inspiring', 'Submissive', 'Timid'],
-  ['Nervy', 'Jovial', 'Even-tempered', 'Precise'],
-  ['Stubborn', 'Attractive', 'Sweet', 'Avoids'],
-  ['Decisive', 'Talkative', 'Controlled', 'Conventional'],
-  ['Positive', 'Trusting', 'Contented', 'Peaceful'],
-  ['Takes risks', 'Warm', 'Willing to help', 'Not extreme'],
-  ['Argumentative', 'Light-hearted', 'Nonchalant', 'Adaptable'],
-  ['Original', 'Persuasive', 'Gentle', 'Humble'],
-  ['Determined', 'Convincing', 'Good-natured', 'Cautious'],
-  ['Persistent', 'Lively', 'Generous', 'Well-disciplined'],
-  ['Forceful', 'Admirable', 'Kind', 'Non-resisting'],
-  ['Assertive', 'Confident', 'Sympathetic', 'Tolerant'],
-  ['Aggressive', 'Life-of-the-party', 'Easily fooled', 'Uncertain'],
-  ['Eager', 'High-spirited', 'Willing', 'Agreeable'],
+  [['Competitive', 'تنافسي'], ['Joyful', 'مرح'], ['Considerate', 'متفهّم'], ['Harmonious', 'متناغم']],
+  [['Tries new ideas', 'يجرّب أفكاراً جديدة'], ['Optimistic', 'متفائل'], ['Wants to please', 'يسعى لإرضاء الآخرين'], ['Respectful', 'محترِم']],
+  [['Will power', 'قوة الإرادة'], ['Open-minded', 'منفتح الفكر'], ['Cheerful', 'بشوش'], ['Obliging', 'متعاون']],
+  [['Daring', 'جريء'], ['Expressive', 'معبّر'], ['Satisfied', 'قنوع'], ['Diplomatic', 'دبلوماسي']],
+  [['Powerful', 'قوي التأثير'], ['Good mixer', 'اجتماعي بطبعه'], ['Easy on others', 'متسامح مع الآخرين'], ['Organized', 'منظّم']],
+  [['Restless', 'لا يهدأ'], ['Popular', 'محبوب'], ['Neighborly', 'ودود'], ['Abides by rules', 'ملتزم بالقواعد']],
+  [['Unconquerable', 'لا يُقهر'], ['Playful', 'مرح لعوب'], ['Obedient', 'مطيع'], ['Fussy', 'كثير التدقيق']],
+  [['Self-reliant', 'معتمد على نفسه'], ['Fun-loving', 'محب للمرح'], ['Patient', 'صبور'], ['Soft-Spoken', 'هادئ الحديث']],
+  [['Bold', 'جسور'], ['Charming', 'ساحر'], ['Loyal', 'وفي'], ['Easily led', 'سهل الانقياد']],
+  [['Outspoken', 'صريح'], ['Companionable', 'أنيس'], ['Restrained', 'ضابط لنفسه'], ['Accurate', 'دقيق']],
+  [['Brave', 'شجاع'], ['Inspiring', 'ملهِم'], ['Submissive', 'خاضع'], ['Timid', 'خجول']],
+  [['Nervy', 'جريء بلا تردد'], ['Jovial', 'مرح اجتماعي'], ['Even-tempered', 'متزن المزاج'], ['Precise', 'دقيق']],
+  [['Stubborn', 'عنيد'], ['Attractive', 'جذاب'], ['Sweet', 'لطيف'], ['Avoids', 'يتجنب المواجهة']],
+  [['Decisive', 'حاسم'], ['Talkative', 'كثير الكلام'], ['Controlled', 'ضابط لتصرفاته'], ['Conventional', 'تقليدي']],
+  [['Positive', 'إيجابي'], ['Trusting', 'واثق بالآخرين'], ['Contented', 'راضٍ'], ['Peaceful', 'مسالم']],
+  [['Takes risks', 'يخوض المخاطر'], ['Warm', 'دافئ المشاعر'], ['Willing to help', 'يحب المساعدة'], ['Not extreme', 'معتدل']],
+  [['Argumentative', 'جدلي'], ['Light-hearted', 'خفيف الظل'], ['Nonchalant', 'غير مبالٍ'], ['Adaptable', 'متكيّف']],
+  [['Original', 'مبتكر'], ['Persuasive', 'مقنِع'], ['Gentle', 'رقيق'], ['Humble', 'متواضع']],
+  [['Determined', 'مصمّم'], ['Convincing', 'مقنِع'], ['Good-natured', 'طيب الطبع'], ['Cautious', 'حذر']],
+  [['Persistent', 'مثابر'], ['Lively', 'نشيط'], ['Generous', 'كريم'], ['Well-disciplined', 'منضبط']],
+  [['Forceful', 'قوي الحزم'], ['Admirable', 'جدير بالإعجاب'], ['Kind', 'طيب'], ['Non-resisting', 'غير معارض']],
+  [['Assertive', 'حازم'], ['Confident', 'واثق من نفسه'], ['Sympathetic', 'متعاطف'], ['Tolerant', 'متسامح']],
+  [['Aggressive', 'عدواني'], ['Life-of-the-party', 'روح الحفلة'], ['Easily fooled', 'سهل الخداع'], ['Uncertain', 'متردد']],
+  [['Eager', 'متحمّس'], ['High-spirited', 'عالي الحماس'], ['Willing', 'راغب بالمساعدة'], ['Agreeable', 'متوافق وودود']],
 ];
 
 const STYLE_ORDER = ['driver', 'expressive', 'amiable', 'analytic'];
@@ -39,9 +43,11 @@ export const ASSESSMENT_QUESTIONS = RAW_SETS.map((words, index) => ({
   category: 'Personal Style',
   type: 'style-choice',
   question: 'Check the word or phrase in this set that is most like you.',
-  options: words.map((label, i) => ({
+  questionAr: 'اختر الكلمة أو العبارة الأقرب لشخصيتك من هذه المجموعة.',
+  options: words.map(([label, labelAr], i) => ({
     id: OPTION_IDS[i],
     label,
+    labelAr,
     style: STYLE_ORDER[i],
   })),
 }));

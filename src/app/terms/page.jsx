@@ -40,7 +40,7 @@ export default function TermsPage() {
           className="text-center mb-12"
         >
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand mb-4">
-            <FileText size={26} className="text-dark" />
+            <FileText size={26} className="text-ink" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-warm-light mb-2">{t('Terms & Conditions')}</h1>
           <p className="text-silver">{t('Please read these terms before submitting your information.')}</p>

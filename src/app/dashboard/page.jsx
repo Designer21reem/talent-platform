@@ -151,7 +151,7 @@ export default function DashboardPage() {
                   <BarChart3 size={22} className="text-brand" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-white">{t('Skills Dashboard')}</h1>
+                  <h1 className="text-2xl font-bold text-warm-light">{t('Skills Dashboard')}</h1>
                   <p className="text-silver text-sm">{t('Your personal skill assessment results')}</p>
                 </div>
               </div>
@@ -175,11 +175,13 @@ export default function DashboardPage() {
               <User size={24} className="text-brand" />
             </div>
             <div className="min-w-0">
-              <p className="font-bold text-white text-lg truncate">{dashboard.candidateName || t('Candidate')}</p>
-              <p className="flex items-center gap-1.5 text-sm text-silver mt-0.5">
-                <Phone size={13} className="shrink-0" />
-                <span dir="ltr">{dashboard.phoneNumber}</span>
-              </p>
+              <p className="font-bold text-warm-light text-lg truncate">{dashboard.candidateName || t('Candidate')}</p>
+              {dashboard.phoneNumber && (
+                <p className="flex items-center gap-1.5 text-sm text-silver mt-0.5">
+                  <Phone size={13} className="shrink-0" />
+                  <span dir="ltr">{dashboard.phoneNumber}</span>
+                </p>
+              )}
               {dashboard.candidateEmail && (
                 <p className="flex items-center gap-1.5 text-sm text-silver mt-0.5 truncate">
                   <Mail size={13} className="shrink-0" />
@@ -192,7 +194,7 @@ export default function DashboardPage() {
           {/* Overall score */}
           <Card padding="md" className="lg:col-span-2">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-white">{t('Overall Score')}</h2>
+              <h2 className="font-semibold text-warm-light">{t('Overall Score')}</h2>
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -213,7 +215,7 @@ export default function DashboardPage() {
 
         {/* Skills grid */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-white mb-4">{t('Skill Breakdown')}</h2>
+          <h2 className="text-lg font-semibold text-warm-light mb-4">{t('Skill Breakdown')}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {dashboard.skills.map((skill, i) => (
               <SkillProgressCard key={skill.category} skill={skill} delay={i * 0.07} />
@@ -227,7 +229,7 @@ export default function DashboardPage() {
           <Card padding="md">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp size={18} className="text-emerald-500" />
-              <h2 className="font-semibold text-white">{t('Your Strengths')}</h2>
+              <h2 className="font-semibold text-warm-light">{t('Your Strengths')}</h2>
             </div>
             {dashboard.strengths.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -247,7 +249,7 @@ export default function DashboardPage() {
           <Card padding="md">
             <div className="flex items-center gap-2 mb-4">
               <TrendingDown size={18} className="text-amber-500" />
-              <h2 className="font-semibold text-white">{t('Areas for Improvement')}</h2>
+              <h2 className="font-semibold text-warm-light">{t('Areas for Improvement')}</h2>
             </div>
             {dashboard.areasForImprovement.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -265,7 +267,7 @@ export default function DashboardPage() {
         <Card padding="md" className="mb-8">
           <div className="flex items-center gap-2 mb-5">
             <ClipboardCheck size={18} className="text-brand" />
-            <h2 className="font-semibold text-white">{t('Top Performing Skills')}</h2>
+            <h2 className="font-semibold text-warm-light">{t('Top Performing Skills')}</h2>
           </div>
           <div className="space-y-4">
             {topSkills.map((skill, i) => (
@@ -286,7 +288,7 @@ export default function DashboardPage() {
           transition={{ delay: 0.5 }}
         >
           <Card padding="lg" className="bg-linear-to-br from-brand/10 to-brand/5 border-brand/20">
-            <h2 className="font-semibold text-white mb-3 flex items-center gap-2">
+            <h2 className="font-semibold text-warm-light mb-3 flex items-center gap-2">
               <BarChart3 size={18} className="text-brand" />
               {t('Overall Assessment Summary')}
             </h2>

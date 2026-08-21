@@ -43,7 +43,7 @@ export function ProgressBar({
         <div className="flex justify-between items-center mb-1.5">
           {label && <span className="text-sm font-medium text-warm">{label}</span>}
           {showValue && (
-            <span className="text-sm font-semibold text-white">{Math.round(percentage)}%</span>
+            <span className="text-sm font-semibold text-warm-light">{Math.round(percentage)}%</span>
           )}
         </div>
       )}

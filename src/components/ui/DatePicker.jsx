@@ -100,7 +100,7 @@ export function DatePicker({ label, value, onChange, placeholder, required, minY
                     onClick={() => selectMonth(i)}
                     className={cn(
                       'text-xs rounded-lg py-2 transition-colors',
-                      isSelected ? 'bg-brand text-dark font-semibold' : 'text-warm hover:bg-surface-2'
+                      isSelected ? 'bg-brand text-ink font-semibold' : 'text-warm hover:bg-surface-2'
                     )}
                   >
                     {m}

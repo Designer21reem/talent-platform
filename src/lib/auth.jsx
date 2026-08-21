@@ -135,17 +135,21 @@ export function AuthProvider({ children }) {
       return false;
     }
 
+    await applyAuthSession(data);
+    return true;
+  }, []);
+
+  // Shared by every auth method (Google, phone/OTP, …) once a backend
+  // response with { access_token, user } is in hand — stores the session
+  // and resolves the numeric user_id used by user-scoped endpoints.
+  const applyAuthSession = useCallback(async (data) => {
     const nextUser = {
       name: data?.user?.full_name ?? null,
       email: data?.user?.email ?? null,
+      phone: data?.user?.phone ?? null,
       picture: data?.user?.picture ?? null,
     };
 
-    // The numeric user_id used by user-scoped endpoints (e.g.
-    // /get_assessment/{user_id}) isn't consistently documented on every
-    // response, so check the /auth/google user object first, then fall back
-    // to decoding it out of the backend's own access_token (JWTs
-    // conventionally carry the subject's id in `sub`).
     const accessTokenPayload = decodeJwtPayload(data.access_token);
     const nextUserId =
       data?.user?.id ??
@@ -166,7 +170,7 @@ export function AuthProvider({ children }) {
     } else {
       localStorage.removeItem(USER_ID_STORAGE_KEY);
     }
-    console.log('[Auth] Signed in successfully as', nextUser.email, '— JWT stored for API calls.');
+    console.log('[Auth] Signed in successfully as', nextUser.email ?? nextUser.phone, '— JWT stored for API calls.');
 
     // Sanity-check the JWT immediately against /auth/me — if this fails,
     // the token itself is bad even though sign-in "succeeded". Also doubles
@@ -189,9 +193,65 @@ export function AuthProvider({ children }) {
     } catch (err) {
       console.error('[Auth] /auth/me verification call failed:', err);
     }
-
-    return true;
   }, []);
+
+  // ── Phone sign-in ────────────────────────────────────────────────────────
+  // Frontend half of phone-number sign-in. The backend endpoints below
+  // (/auth/phone/request-otp, /auth/phone/verify) don't exist yet — this
+  // calls them anyway so the UI is ready the moment the backend adds them,
+  // and logs a clear diagnosis if they 404/fail in the meantime.
+  const requestPhoneOtp = useCallback(async (phone) => {
+    console.log('[Auth] Requesting a phone OTP for', phone);
+    try {
+      const res = await fetch(`${BACKEND_URL}/auth/phone/request-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      const data = await res.json().catch(() => null);
+      console.log('[Auth] /auth/phone/request-otp responded with status:', res.status, 'body:', data);
+      if (!res.ok) {
+        if (res.status === 404) {
+          console.error(
+            '[Auth] VERDICT: /auth/phone/request-otp does not exist on the backend yet. ' +
+            'This is not fixable from the frontend repo — the phone sign-in endpoints need to be added backend-side.'
+          );
+        }
+        return { ok: false, message: data?.detail || 'Could not send a verification code.' };
+      }
+      return { ok: true };
+    } catch (err) {
+      console.error('[Auth] Network error requesting phone OTP:', err);
+      return { ok: false, message: 'Could not reach the backend.' };
+    }
+  }, []);
+
+  const verifyPhoneOtp = useCallback(async (phone, code) => {
+    console.log('[Auth] Verifying phone OTP for', phone);
+    try {
+      const res = await fetch(`${BACKEND_URL}/auth/phone/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, code }),
+      });
+      const data = await res.json().catch(() => null);
+      console.log('[Auth] /auth/phone/verify responded with status:', res.status, 'body:', data);
+      if (!res.ok) {
+        if (res.status === 404) {
+          console.error(
+            '[Auth] VERDICT: /auth/phone/verify does not exist on the backend yet. ' +
+            'This is not fixable from the frontend repo — the phone sign-in endpoints need to be added backend-side.'
+          );
+        }
+        return { ok: false, message: data?.detail || 'Invalid or expired code.' };
+      }
+      await applyAuthSession(data);
+      return { ok: true };
+    } catch (err) {
+      console.error('[Auth] Network error verifying phone OTP:', err);
+      return { ok: false, message: 'Could not reach the backend.' };
+    }
+  }, [applyAuthSession]);
 
   const signOut = useCallback(() => {
     console.log('[Auth] Signing out.');
@@ -218,7 +278,9 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, userId, ready, signIn, signOut, devBypass }}>
+    <AuthContext.Provider
+      value={{ user, token, userId, ready, signIn, signOut, devBypass, requestPhoneOtp, verifyPhoneOtp }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -14,7 +14,7 @@ const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/upload-cv', label: 'Upload CV' },
   { href: '/build-cv', label: 'CV Builder' },
-  { href: '/assessment', label: 'Assessment' },
+  { href: '/assessment', label: 'Discover Your Personality' },
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/about', label: 'About' },
 ];
@@ -32,7 +32,7 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
             <img src="/Logo (1).png" alt="THE VALUE" className="h-8 w-auto object-contain" />
-            <span className="font-bold text-white text-lg tracking-tight">THE VALUE</span>
+            <span className="font-bold text-warm-light text-lg tracking-tight">THE VALUE</span>
           </Link>
 
           {/* Desktop Nav */}
@@ -47,7 +47,7 @@ export function Header() {
                     'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                     isActive
                       ? 'bg-brand/15 text-brand'
-                      : 'text-warm hover:bg-surface-2 hover:text-white'
+                      : 'text-warm hover:bg-surface-2 hover:text-warm-light'
                   )}
                 >
                   {t(link.label)}
@@ -116,7 +116,7 @@ export function Header() {
                       'px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                       isActive
                         ? 'bg-brand/15 text-brand'
-                        : 'text-warm hover:bg-surface-2 hover:text-white'
+                        : 'text-warm hover:bg-surface-2 hover:text-warm-light'
                     )}
                   >
                     {t(link.label)}

@@ -2,6 +2,7 @@ import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { AuthGate } from '@/components/layout/AuthGate';
+import { ReviewPopup } from '@/components/feedback/ReviewPopup';
 import { LanguageProvider } from '@/lib/i18n';
 import { AuthProvider } from '@/lib/auth';
 
@@ -13,7 +14,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full" suppressHydrationWarning>
       <head>
         <link rel="icon" type="image/png" href="/icon.png" />
         {/* Warms the connection ahead of time so the Google Sign-In widget
@@ -36,6 +37,7 @@ export default function RootLayout({ children }) {
               <Header />
               <main className="flex-1">{children}</main>
               <Footer />
+              <ReviewPopup />
             </AuthGate>
           </AuthProvider>
         </LanguageProvider>

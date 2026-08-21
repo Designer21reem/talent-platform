@@ -19,9 +19,9 @@ export function StepIndicator({ steps, currentStep }) {
                   className={cn(
                     'w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold transition-all duration-200 shrink-0',
                     done
-                      ? 'bg-brand text-dark'
+                      ? 'bg-brand text-ink'
                       : active
-                      ? 'bg-brand text-dark ring-4 ring-brand/20'
+                      ? 'bg-brand text-ink ring-4 ring-brand/20'
                       : 'bg-(--tv-step-inactive-bg) text-(--tv-step-inactive-text)'
                   )}
                 >

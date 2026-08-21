@@ -120,7 +120,7 @@ function ScanlineSweep() {
   return (
     <motion.div
       className="absolute inset-y-0 w-32 -skew-x-12 pointer-events-none"
-      style={{ background: 'linear-gradient(90deg, transparent, rgba(201,155,37,0.16), transparent)' }}
+      style={{ background: 'linear-gradient(90deg, transparent, rgba(211,185,115,0.16), transparent)' }}
       animate={{ left: ['-15%', '115%'] }}
       transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', repeatDelay: 4 }}
     />
@@ -146,7 +146,7 @@ function LuxuryRibbons() {
           style={{
             left: `${r.left}%`,
             width: `${r.width}%`,
-            background: `linear-gradient(180deg, transparent, rgba(228,182,56,${r.opacity}), rgba(201,155,37,${r.opacity}), transparent)`,
+            background: `linear-gradient(180deg, transparent, rgba(226,203,150,${r.opacity}), rgba(211,185,115,${r.opacity}), transparent)`,
           }}
         >
           <motion.div
@@ -216,14 +216,14 @@ function FlowingWaves() {
     >
       <defs>
         <linearGradient id="tv-wave-grad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#c99b25" stopOpacity="0" />
-          <stop offset="50%" stopColor="#e4b638" stopOpacity="1" />
-          <stop offset="100%" stopColor="#c99b25" stopOpacity="0" />
+          <stop offset="0%" stopColor="#d3b973" stopOpacity="0" />
+          <stop offset="50%" stopColor="#e2cb96" stopOpacity="1" />
+          <stop offset="100%" stopColor="#d3b973" stopOpacity="0" />
         </linearGradient>
       </defs>
       {WAVE_PATHS.map((d, i) => (
         <g key={i}>
-          <path d={d} stroke="rgba(201,155,37,0.16)" strokeWidth="1.5" />
+          <path d={d} stroke="rgba(211,185,115,0.16)" strokeWidth="1.5" />
           <motion.path
             d={d}
             stroke="url(#tv-wave-grad)"
@@ -277,7 +277,6 @@ export function HeroBackground({ variant = 'default' }) {
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <div className="absolute inset-0 tv-grid-bg" />
       <motion.div
         animate={{
           x: [0, 40, -10, 0],
