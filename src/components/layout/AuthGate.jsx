@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { Phone } from 'lucide-react';
 import { useAuth, GOOGLE_CLIENT_ID, ALLOW_SKIP_SIGNIN } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
 import { HeroBackground } from '@/components/layout/HeroBackground';
 import { PhoneSignIn } from '@/components/layout/PhoneSignIn';
+import { Button } from '@/components/ui/Button';
 
 // hl=en keeps Google's own button/popup text in English regardless of site
 // language — avoids the Arabic label overflowing the button's fixed width.
@@ -112,12 +114,17 @@ export function AuthGate({ children }) {
           </div>
 
           {!showPhone ? (
-            <button
-              onClick={() => setShowPhone(true)}
-              className="mt-4 text-xs text-brand hover:text-brand-light underline underline-offset-2 transition-colors"
-            >
-              {t('Sign in with phone number')}
-            </button>
+            <div className="flex justify-center">
+              <Button
+                variant="outline"
+                size="lg"
+                leftIcon={<Phone size={16} />}
+                onClick={() => setShowPhone(true)}
+                className="rounded-full w-full max-w-75"
+              >
+                {t('Sign in with phone number')}
+              </Button>
+            </div>
           ) : (
             <PhoneSignIn />
           )}

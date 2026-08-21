@@ -205,9 +205,14 @@ export default function LandingPage() {
     async function fetchTotalCandidates() {
       try {
         const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+        console.log('[Landing] Requesting /get_total_candidate…');
         const res = await fetch(`${BACKEND_URL}/get_total_candidate`, { headers });
-        if (!res.ok) return;
+        if (!res.ok) {
+          console.warn('[Landing] /get_total_candidate status:', res.status, '— keeping the placeholder total.');
+          return;
+        }
         const data = await res.json().catch(() => null);
+        console.log('[Landing] /get_total_candidate response body:', data);
         const count = extractTotalCandidates(data);
         // Keep the placeholder up until the backend actually has real
         // candidates counted — swapping in a live "0" would look broken.
