@@ -5,9 +5,8 @@
 // on the source sheet: "Tally Box: 1 Driver / 2 Expressive / 3 Amiable / 4 Analytic").
 // styleAssessment.js tallies these `style` tags to score the assessment.
 //
-// Choices are shown bilingually (English + Arabic) regardless of the site's
-// current language, per the brief — so every word/phrase below carries its
-// own Arabic counterpart rather than going through the general t() switch.
+// Every word/phrase carries its own Arabic counterpart; QuestionCard shows
+// only the one matching the site's current language.
 const RAW_SETS = [
   [['Competitive', 'تنافسي'], ['Joyful', 'مرح'], ['Considerate', 'متفهّم'], ['Harmonious', 'متناغم']],
   [['Tries new ideas', 'يجرّب أفكاراً جديدة'], ['Optimistic', 'متفائل'], ['Wants to please', 'يسعى لإرضاء الآخرين'], ['Respectful', 'محترِم']],

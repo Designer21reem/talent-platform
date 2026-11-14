@@ -6,7 +6,8 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/lib/i18n';
 
 export function QuestionCard({ question, answer, questionIndex, total, onChange }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const isAr = lang === 'ar';
 
   return (
     <motion.div
@@ -21,12 +22,9 @@ export function QuestionCard({ question, answer, questionIndex, total, onChange 
           <span className="inline-block mb-2 text-xs font-semibold text-brand bg-brand/10 px-2.5 py-0.5 rounded-full uppercase tracking-wide">
             {t(question.category)}
           </span>
-          <h3 className="text-lg font-semibold text-warm-light leading-snug">{question.question}</h3>
-          {question.questionAr && (
-            <h3 dir="rtl" className="text-lg font-semibold text-warm-light leading-snug mt-0.5">
-              {question.questionAr}
-            </h3>
-          )}
+          <h3 className="text-lg font-semibold text-warm-light leading-snug">
+            {isAr && question.questionAr ? question.questionAr : question.question}
+          </h3>
         </div>
         <span className="shrink-0 text-xs font-medium text-silver bg-surface-2 px-2.5 py-1 rounded-full">
           {questionIndex + 1}/{total}
@@ -63,13 +61,8 @@ export function QuestionCard({ question, answer, questionIndex, total, onChange 
                   )}
                 </span>
                 <span className="font-medium text-xs text-silver me-1 shrink-0">{option.id.toUpperCase()}.</span>
-                <span className="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                  <span>{option.label}</span>
-                  {option.labelAr && (
-                    <span dir="rtl" className="text-silver">
-                      {option.labelAr}
-                    </span>
-                  )}
+                <span className="flex-1 min-w-0">
+                  {isAr && option.labelAr ? option.labelAr : option.label}
                 </span>
               </button>
             );
