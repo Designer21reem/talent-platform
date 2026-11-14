@@ -57,7 +57,7 @@ export function FileUploader({ onFile, onUpload }) {
       setState((prev) => ({ ...prev, status: 'success', progress: 100 }));
       if (onFile) onFile(file);
     } catch (err) {
-      console.error('[FileUploader] Upload failed:', err);
+      // [debug-log] console.error('[FileUploader] Upload failed:', err);
       setState({
         status: 'error',
         fileName: file.name,

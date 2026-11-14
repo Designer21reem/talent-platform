@@ -56,7 +56,7 @@ export function ReviewPopup() {
     } catch {
       // Storage unavailable (private mode etc.) — still thank the user.
     }
-    console.log('[Review] Saved website review locally:', review);
+    // [debug-log] console.log('[Review] Saved website review locally:', review);
     setSubmitted(true);
   }
 

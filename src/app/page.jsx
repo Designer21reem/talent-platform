@@ -137,20 +137,20 @@ function ActionCard({ href, icon: Icon, title, description, featured, delay, vis
   return (
     <motion.div
       initial={{ opacity: 0, y: 24, scale: 0.95 }}
-      animate={visible ? { opacity: 1, y: 0, scale: featured ? 1.04 : 1 } : {}}
+      animate={visible ? { opacity: 1, y: 0, scale: 1 } : {}}
       transition={{ delay, duration: 0.55, ease: 'easeOut' }}
-      whileHover={{ y: -6, scale: featured ? 1.06 : 1.02 }}
+      whileHover={{ y: -6, scale: 1.02 }}
       className={[
         // Clear glass: an almost fully transparent fill with only a hint of
         // blur, so the home hero's waves and glow show straight through.
-        'group relative rounded-2xl border p-6 sm:p-7 text-start backdrop-blur-[1px] transition-colors',
+        'group relative h-full rounded-2xl border p-6 sm:p-7 text-start backdrop-blur-[1px] transition-colors',
         'shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]',
         featured
           ? 'border-brand/50 bg-linear-to-b from-brand/8 to-transparent z-10'
           : 'border-brand/25 bg-white/5 hover:bg-white/10 hover:border-brand/40',
       ].join(' ')}
     >
-      <Link href={href} className="block">
+      <Link href={href} className="flex flex-col h-full">
         <div className="relative inline-flex items-center justify-center w-14 h-14 mb-5">
           <motion.div
             animate={{ rotate: 360 }}
@@ -199,20 +199,20 @@ export default function LandingPage() {
     async function fetchTotalCandidates() {
       try {
         const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
-        console.log('[Landing] Requesting /get_total_candidate…');
+        // [debug-log] console.log('[Landing] Requesting /get_total_candidate…');
         const res = await fetch(`${BACKEND_URL}/get_total_candidate`, { headers });
         if (!res.ok) {
-          console.warn('[Landing] /get_total_candidate status:', res.status, '— keeping the placeholder total.');
+          // [debug-log] console.warn('[Landing] /get_total_candidate status:', res.status, '— keeping the placeholder total.');
           return;
         }
         const data = await res.json().catch(() => null);
-        console.log('[Landing] /get_total_candidate response body:', data);
+        // [debug-log] console.log('[Landing] /get_total_candidate response body:', data);
         const count = extractTotalCandidates(data);
         // Keep the placeholder up until the backend actually has real
         // candidates counted — swapping in a live "0" would look broken.
         if (!cancelled && count != null && count > 0) setTotalCandidates(count);
       } catch (err) {
-        console.error('[Landing] Failed to fetch total candidates:', err);
+        // [debug-log] console.error('[Landing] Failed to fetch total candidates:', err);
       }
     }
     fetchTotalCandidates();
@@ -274,7 +274,8 @@ export default function LandingPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6 max-w-4xl mx-auto items-center">
+            {/* items-stretch + h-full on each card: all three share one height. */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6 max-w-4xl mx-auto items-stretch">
               {ACTIONS.map((action, i) => (
                 <ActionCard key={action.href} {...action} delay={i * 0.12} visible={stage >= 3} />
               ))}

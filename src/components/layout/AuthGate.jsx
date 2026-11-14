@@ -54,20 +54,20 @@ export function AuthGate({ children }) {
     if (user || !ready) return;
     let cancelled = false;
 
-    console.log('[AuthGate] Loading Google Identity Services script…');
+    // [debug-log] console.log('[AuthGate] Loading Google Identity Services script…');
     loadGoogleScript().then(() => {
       if (cancelled || !window.google?.accounts?.id || !buttonRef.current) return;
-      console.log('[AuthGate] Google script ready, rendering sign-in button. client_id =', GOOGLE_CLIENT_ID);
+      // [debug-log] console.log('[AuthGate] Google script ready, rendering sign-in button. client_id =', GOOGLE_CLIENT_ID);
       window.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: async (response) => {
-          console.log('[AuthGate] Google button callback fired — got an ID token.');
+          // [debug-log] console.log('[AuthGate] Google button callback fired — got an ID token.');
           setSigningIn(true);
           setSignInError(false);
           const ok = await signIn(response.credential);
           setSigningIn(false);
           if (!ok) {
-            console.error('[AuthGate] signIn() failed — see the [Auth] logs above for the backend response.');
+            // [debug-log] console.error('[AuthGate] signIn() failed — see the [Auth] logs above for the backend response.');
             setSignInError(true);
           }
         },

@@ -3,7 +3,15 @@ export const OTHER_VALUE = '__other__';
 // phoneLength = digits expected after the dial code (national mobile number,
 // no leading trunk 0), e.g. Iraq: +964 770 123 4567 -> 10 digits.
 export const COUNTRIES = [
-  { code: 'IQ', name: 'Iraq', dial: '+964', phoneLength: 10, cities: ['Baghdad', 'Basra', 'Erbil'] },
+  {
+    code: 'IQ', name: 'Iraq', dial: '+964', phoneLength: 10,
+    // All 18 governorates.
+    cities: [
+      'Baghdad', 'Basra', 'Nineveh', 'Erbil', 'Sulaymaniyah', 'Duhok',
+      'Kirkuk', 'Anbar', 'Babylon', 'Karbala', 'Najaf', 'Diyala',
+      'Saladin', 'Wasit', 'Maysan', 'Dhi Qar', 'Al-Muthanna', 'Al-Qadisiyyah',
+    ],
+  },
   { code: 'SA', name: 'Saudi Arabia', dial: '+966', phoneLength: 9, cities: ['Riyadh', 'Jeddah', 'Dammam'] },
   { code: 'AE', name: 'United Arab Emirates', dial: '+971', phoneLength: 9, cities: ['Dubai', 'Abu Dhabi', 'Sharjah'] },
   { code: 'JO', name: 'Jordan', dial: '+962', phoneLength: 9, cities: ['Amman', 'Zarqa', 'Irbid'] },

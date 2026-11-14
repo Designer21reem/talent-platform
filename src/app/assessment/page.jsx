@@ -107,7 +107,7 @@ export default function AssessmentPage() {
       setStyleResult(result);
       setPageState('submitted');
     } catch (err) {
-      console.warn('[Assessment] Submission failed:', err);
+      // [debug-log] console.warn('[Assessment] Submission failed:', err);
       setSubmitError(t(err.message || 'Something went wrong submitting your assessment. Please try again.'));
     } finally {
       setSubmitting(false);

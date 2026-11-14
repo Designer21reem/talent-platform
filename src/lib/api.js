@@ -71,8 +71,8 @@ export async function submitAssessmentResult(token, result) {
   });
 
   const data = await res.json().catch(() => null);
-  console.log('[Assessment] POST /assessment-result sent body:\n' + JSON.stringify({ assessment_json: result }, null, 2));
-  console.log('[Assessment] POST /assessment-result status:', res.status, 'body:', data);
+  // [debug-log] console.log('[Assessment] POST /assessment-result sent body:\n' + JSON.stringify({ assessment_json: result }, null, 2));
+  // [debug-log] console.log('[Assessment] POST /assessment-result status:', res.status, 'body:', data);
   if (!res.ok) {
     throw new Error(readableDetail(data, 'Something went wrong submitting your assessment. Please try again.'));
   }
@@ -87,8 +87,8 @@ export async function fetchAssessmentResult(token, userId) {
   });
 
   const data = await res.json().catch(() => null);
-  console.log('[Dashboard] GET /assessment-result status:', res.status, 'body:', data);
-  console.log('[Dashboard] GET /assessment-result raw JSON:\n' + JSON.stringify(data, null, 2));
+  // [debug-log] console.log('[Dashboard] GET /assessment-result status:', res.status, 'body:', data);
+  // [debug-log] console.log('[Dashboard] GET /assessment-result raw JSON:\n' + JSON.stringify(data, null, 2));
   if (res.status === 404) return null;
   if (!res.ok) {
     throw new Error(readableDetail(data, `Fetching the assessment result failed with status ${res.status}.`));

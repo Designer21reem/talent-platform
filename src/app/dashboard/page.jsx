@@ -25,17 +25,17 @@ async function loadStyleResult(token, userId) {
   if (token && userId != null) {
     try {
       const remote = extractStyleResult(await fetchAssessmentResult(token, userId));
-      console.log('[Dashboard] Style extracted from backend response:', remote);
+      // [debug-log] console.log('[Dashboard] Style extracted from backend response:', remote);
       if (remote) return remote;
-      console.warn('[Dashboard] No style found in the backend response — check the raw JSON above; falling back to the local copy.');
+      // [debug-log] console.warn('[Dashboard] No style found in the backend response — check the raw JSON above; falling back to the local copy.');
     } catch (err) {
-      console.warn('[Dashboard] Could not load the result from the backend — using the local copy.', err);
+      // [debug-log] console.warn('[Dashboard] Could not load the result from the backend — using the local copy.', err);
     }
   } else {
-    console.log('[Dashboard] No JWT/user_id — skipping GET /assessment-result.', { hasToken: !!token, userId });
+    // [debug-log] console.log('[Dashboard] No JWT/user_id — skipping GET /assessment-result.', { hasToken: !!token, userId });
   }
   const local = extractStyleResult(loadAssessment());
-  console.log('[Dashboard] Style extracted from local copy:', local);
+  // [debug-log] console.log('[Dashboard] Style extracted from local copy:', local);
   return local;
 }
 

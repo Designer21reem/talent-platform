@@ -36,11 +36,11 @@ export default function UploadCVPage() {
   // instead of failing silently.
   async function handleUpload(file, onProgress) {
     if (!token) {
-      console.error('[Upload] No JWT available — sign in with Google (not "Skip sign-in") before uploading.');
+      // [debug-log] console.error('[Upload] No JWT available — sign in with Google (not "Skip sign-in") before uploading.');
       throw new Error('You must be signed in with Google to upload a CV.');
     }
 
-    console.log('[Upload] Requesting a presigned URL for', file.name, file.type, file.size, 'bytes');
+    // [debug-log] console.log('[Upload] Requesting a presigned URL for', file.name, file.type, file.size, 'bytes');
     let urlData;
     try {
       urlData = await requestUploadUrl(token, {
@@ -50,24 +50,24 @@ export default function UploadCVPage() {
         frontendSelection: 'cv_upload_file',
       });
     } catch (err) {
-      console.error('[Upload] /generate-upload-url failed:', err);
+      // [debug-log] console.error('[Upload] /generate-upload-url failed:', err);
       throw err;
     }
-    console.log('[Upload] /generate-upload-url response body:', urlData);
+    // [debug-log] console.log('[Upload] /generate-upload-url response body:', urlData);
 
     onProgress?.(35);
-    console.log('[Upload] Uploading directly to S3:', urlData.upload_url);
+    // [debug-log] console.log('[Upload] Uploading directly to S3:', urlData.upload_url);
 
     try {
       await uploadToS3(urlData.upload_url, file, file.type, urlData);
     } catch (err) {
-      console.error('[Upload] S3 PUT failed:', err);
+      // [debug-log] console.error('[Upload] S3 PUT failed:', err);
       throw new Error('Uploading the file to storage failed.');
     }
 
     onProgress?.(100);
     setS3Key(urlData.s3_key);
-    console.log('[Upload] Upload complete. S3 key:', urlData.s3_key);
+    // [debug-log] console.log('[Upload] Upload complete. S3 key:', urlData.s3_key);
   }
 
   function handleFile() {
@@ -80,7 +80,7 @@ export default function UploadCVPage() {
     // Once there's an endpoint to trigger/receive CV extraction for that
     // key (and to receive consent), POST this payload there instead of
     // only saving locally.
-    console.log('[Upload] Submission payload (not yet sent — endpoint pending):', { s3Key, consent });
+    // [debug-log] console.log('[Upload] Submission payload (not yet sent — endpoint pending):', { s3Key, consent });
     saveCV({
       personalInfo: { fullName: '', email: '', phone: '', location: '' },
       consent,

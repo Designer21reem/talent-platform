@@ -100,7 +100,7 @@ const subscribeNothing = () => () => {};
 // call, e.g. the S3 upload flow) plus the user profile it returns.
 // Logs every step so a failed hookup is easy to diagnose from devtools.
 async function signIn(credential) {
-  console.log('[Auth] Step 1/5 — Google sign-in: ID token received from Google.');
+  // [debug-log] console.log('[Auth] Step 1/5 — Google sign-in: ID token received from Google.');
 
   // Inspect the token client-side (no signature check — that's the
   // backend's job) so a rejection can be diagnosed without leaving the
@@ -112,26 +112,26 @@ async function signIn(credential) {
     audMatches = payload.aud === GOOGLE_CLIENT_ID;
     const expiresAt = payload.exp ? new Date(payload.exp * 1000) : null;
     const isExpired = expiresAt ? expiresAt.getTime() < Date.now() : null;
-    console.log('[Auth] Step 2/5 — Decoded ID token payload:', {
-      aud: payload.aud,
-      iss: payload.iss,
-      email: payload.email,
-      exp: expiresAt?.toISOString() ?? null,
-      expired: isExpired,
-    });
-    console.log(
-      audMatches
-        ? '[Auth] Step 3/5 — ✅ token audience (aud) matches our GOOGLE_CLIENT_ID.'
-        : `[Auth] Step 3/5 — ❌ token audience (aud) MISMATCH.\n    token.aud        = ${payload.aud}\n    our GOOGLE_CLIENT_ID = ${GOOGLE_CLIENT_ID}`
-    );
+    // [debug-log] console.log('[Auth] Step 2/5 — Decoded ID token payload:', {
+      // [debug-log] aud: payload.aud,
+      // [debug-log] iss: payload.iss,
+      // [debug-log] email: payload.email,
+      // [debug-log] exp: expiresAt?.toISOString() ?? null,
+      // [debug-log] expired: isExpired,
+    // [debug-log] });
+    // [debug-log] console.log(
+      // [debug-log] audMatches
+        // [debug-log] ? '[Auth] Step 3/5 — ✅ token audience (aud) matches our GOOGLE_CLIENT_ID.'
+        // [debug-log] : `[Auth] Step 3/5 — ❌ token audience (aud) MISMATCH.\n    token.aud        = ${payload.aud}\n    our GOOGLE_CLIENT_ID = ${GOOGLE_CLIENT_ID}`
+    // [debug-log] );
     if (isExpired) {
-      console.warn('[Auth] Step 3/5 — ⚠️ the ID token is already expired — sign in again and retry immediately.');
+      // [debug-log] console.warn('[Auth] Step 3/5 — ⚠️ the ID token is already expired — sign in again and retry immediately.');
     }
   } else {
-    console.warn('[Auth] Step 2/5 — Could not decode the ID token payload (unexpected token format).');
+    // [debug-log] console.warn('[Auth] Step 2/5 — Could not decode the ID token payload (unexpected token format).');
   }
 
-  console.log('[Auth] Step 4/5 — contacting backend…', `${BACKEND_URL}/auth/google`);
+  // [debug-log] console.log('[Auth] Step 4/5 — contacting backend…', `${BACKEND_URL}/auth/google`);
 
   let res;
   try {
@@ -141,35 +141,35 @@ async function signIn(credential) {
       body: JSON.stringify({ token: credential }),
     });
   } catch (err) {
-    console.error('[Auth] Network error reaching the backend (is it running / reachable?):', err);
+    // [debug-log] console.error('[Auth] Network error reaching the backend (is it running / reachable?):', err);
     return false;
   }
 
-  console.log('[Auth] Step 5/5 — /auth/google responded with status:', res.status);
+  // [debug-log] console.log('[Auth] Step 5/5 — /auth/google responded with status:', res.status);
 
   let data = null;
   try {
     data = await res.json();
   } catch (err) {
-    console.error('[Auth] Response was not valid JSON:', err);
+    // [debug-log] console.error('[Auth] Response was not valid JSON:', err);
   }
-  console.log('[Auth] /auth/google response body:', data);
+  // [debug-log] console.log('[Auth] /auth/google response body:', data);
 
   if (!res.ok) {
-    console.error('[Auth] Backend rejected the Google sign-in:', data);
+    // [debug-log] console.error('[Auth] Backend rejected the Google sign-in:', data);
     if (audMatches === true) {
-      console.error(
-        '[Auth] VERDICT: the token audience MATCHED our client_id, yet the backend still rejected it.\n' +
-        '  → The bug is on the BACKEND side (env var not actually applied on that server, wrong client secret, ' +
-        'broken/outdated verification code, or the backend is secretly pointed at a different Google Cloud project). ' +
-        'This is not fixable from this frontend repo — check the backend logs for the real exception.'
-      );
+      // [debug-log] console.error(
+        // [debug-log] '[Auth] VERDICT: the token audience MATCHED our client_id, yet the backend still rejected it.\n' +
+        // [debug-log] '  → The bug is on the BACKEND side (env var not actually applied on that server, wrong client secret, ' +
+        // [debug-log] 'broken/outdated verification code, or the backend is secretly pointed at a different Google Cloud project). ' +
+        // [debug-log] 'This is not fixable from this frontend repo — check the backend logs for the real exception.'
+      // [debug-log] );
     } else if (audMatches === false) {
-      console.error(
-        '[Auth] VERDICT: the token audience did NOT match our client_id.\n' +
-        '  → Frontend and backend are configured with two different Google OAuth Client IDs. Align NEXT_PUBLIC_GOOGLE_CLIENT_ID ' +
-        '(frontend) with whatever the backend actually validates against.'
-      );
+      // [debug-log] console.error(
+        // [debug-log] '[Auth] VERDICT: the token audience did NOT match our client_id.\n' +
+        // [debug-log] '  → Frontend and backend are configured with two different Google OAuth Client IDs. Align NEXT_PUBLIC_GOOGLE_CLIENT_ID ' +
+        // [debug-log] '(frontend) with whatever the backend actually validates against.'
+      // [debug-log] );
     }
     return false;
   }
@@ -197,10 +197,10 @@ async function applyAuthSession(data) {
     accessTokenPayload?.sub ??
     accessTokenPayload?.id ??
     null;
-  console.log('[Auth] Resolved user_id for user-scoped API calls:', nextUserId, '(decoded access_token payload:', accessTokenPayload, ')');
+  // [debug-log] console.log('[Auth] Resolved user_id for user-scoped API calls:', nextUserId, '(decoded access_token payload:', accessTokenPayload, ')');
 
   writeSession({ user: nextUser, token: data.access_token, userId: nextUserId });
-  console.log('[Auth] Signed in successfully as', nextUser.email ?? nextUser.phone, '— JWT stored for API calls.');
+  // [debug-log] console.log('[Auth] Signed in successfully as', nextUser.email ?? nextUser.phone, '— JWT stored for API calls.');
 
   // Sanity-check the JWT immediately against /auth/me — if this fails,
   // the token itself is bad even though sign-in "succeeded". Also doubles
@@ -210,17 +210,17 @@ async function applyAuthSession(data) {
       headers: { Authorization: `Bearer ${data.access_token}` },
     });
     const meData = await meRes.json().catch(() => null);
-    console.log('[Auth] /auth/me verification — status:', meRes.status, 'body:', meData);
+    // [debug-log] console.log('[Auth] /auth/me verification — status:', meRes.status, 'body:', meData);
 
     if (nextUserId == null && meRes.ok) {
       const meUserId = meData?.id ?? meData?.user_id ?? meData?.user?.id ?? null;
       if (meUserId != null) {
-        console.log('[Auth] Resolved user_id from /auth/me instead:', meUserId);
+        // [debug-log] console.log('[Auth] Resolved user_id from /auth/me instead:', meUserId);
         writeSession({ ...readSession(), userId: meUserId });
       }
     }
   } catch (err) {
-    console.error('[Auth] /auth/me verification call failed:', err);
+    // [debug-log] console.error('[Auth] /auth/me verification call failed:', err);
   }
 }
 
@@ -230,7 +230,7 @@ async function applyAuthSession(data) {
 // calls them anyway so the UI is ready the moment the backend adds them,
 // and logs a clear diagnosis if they 404/fail in the meantime.
 async function requestPhoneOtp(phone) {
-  console.log('[Auth] Requesting a phone OTP for', phone);
+  // [debug-log] console.log('[Auth] Requesting a phone OTP for', phone);
   try {
     const res = await fetch(`${BACKEND_URL}/auth/phone/request-otp`, {
       method: 'POST',
@@ -238,25 +238,25 @@ async function requestPhoneOtp(phone) {
       body: JSON.stringify({ phone }),
     });
     const data = await res.json().catch(() => null);
-    console.log('[Auth] /auth/phone/request-otp responded with status:', res.status, 'body:', data);
+    // [debug-log] console.log('[Auth] /auth/phone/request-otp responded with status:', res.status, 'body:', data);
     if (!res.ok) {
       if (res.status === 404) {
-        console.error(
-          '[Auth] VERDICT: /auth/phone/request-otp does not exist on the backend yet. ' +
-          'This is not fixable from the frontend repo — the phone sign-in endpoints need to be added backend-side.'
-        );
+        // [debug-log] console.error(
+          // [debug-log] '[Auth] VERDICT: /auth/phone/request-otp does not exist on the backend yet. ' +
+          // [debug-log] 'This is not fixable from the frontend repo — the phone sign-in endpoints need to be added backend-side.'
+        // [debug-log] );
       }
       return { ok: false, message: data?.detail || 'Could not send a verification code.' };
     }
     return { ok: true };
   } catch (err) {
-    console.error('[Auth] Network error requesting phone OTP:', err);
+    // [debug-log] console.error('[Auth] Network error requesting phone OTP:', err);
     return { ok: false, message: 'Could not reach the backend.' };
   }
 }
 
 async function verifyPhoneOtp(phone, code) {
-  console.log('[Auth] Verifying phone OTP for', phone);
+  // [debug-log] console.log('[Auth] Verifying phone OTP for', phone);
   try {
     const res = await fetch(`${BACKEND_URL}/auth/phone/verify`, {
       method: 'POST',
@@ -264,26 +264,26 @@ async function verifyPhoneOtp(phone, code) {
       body: JSON.stringify({ phone, code }),
     });
     const data = await res.json().catch(() => null);
-    console.log('[Auth] /auth/phone/verify responded with status:', res.status, 'body:', data);
+    // [debug-log] console.log('[Auth] /auth/phone/verify responded with status:', res.status, 'body:', data);
     if (!res.ok) {
       if (res.status === 404) {
-        console.error(
-          '[Auth] VERDICT: /auth/phone/verify does not exist on the backend yet. ' +
-          'This is not fixable from the frontend repo — the phone sign-in endpoints need to be added backend-side.'
-        );
+        // [debug-log] console.error(
+          // [debug-log] '[Auth] VERDICT: /auth/phone/verify does not exist on the backend yet. ' +
+          // [debug-log] 'This is not fixable from the frontend repo — the phone sign-in endpoints need to be added backend-side.'
+        // [debug-log] );
       }
       return { ok: false, message: data?.detail || 'Invalid or expired code.' };
     }
     await applyAuthSession(data);
     return { ok: true };
   } catch (err) {
-    console.error('[Auth] Network error verifying phone OTP:', err);
+    // [debug-log] console.error('[Auth] Network error verifying phone OTP:', err);
     return { ok: false, message: 'Could not reach the backend.' };
   }
 }
 
 function signOut() {
-  console.log('[Auth] Signing out.');
+  // [debug-log] console.log('[Auth] Signing out.');
   writeSession(EMPTY_SESSION);
 }
 
@@ -294,7 +294,7 @@ function signOut() {
 // auth (like the S3 upload) will fail until a real sign-in occurs.
 function devBypass() {
   if (process.env.NODE_ENV !== 'production' || ALLOW_SKIP_SIGNIN) {
-    console.warn('[Auth] Dev bypass used — signed in locally only, no backend JWT was issued.');
+    // [debug-log] console.warn('[Auth] Dev bypass used — signed in locally only, no backend JWT was issued.');
     const nextUser = { name: 'Local Preview', email: 'dev@localhost', picture: null };
     writeSession({ ...readSession(), user: nextUser });
   }
