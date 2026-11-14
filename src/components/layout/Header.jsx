@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Menu, X, ShieldCheck, Languages, LogOut } from 'lucide-react';
+import { Menu, X, Languages, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { Container } from './Container';
 import { cn } from '@/lib/utils';
@@ -57,11 +57,6 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="hidden xl:flex items-center gap-1.5 text-xs font-medium text-silver whitespace-nowrap">
-              {t('Trusted by HR teams across Iraq')}
-              <ShieldCheck size={15} className="text-brand shrink-0" />
-            </span>
-
             {/* Language toggle — always visible (desktop and mobile) so
                 switching languages isn't buried behind another menu. */}
             <button
@@ -136,13 +131,6 @@ export function Header() {
                   {t('Sign out')}
                 </button>
               )}
-
-              <div className="px-3 pt-2">
-                <span className="flex items-center gap-1.5 text-xs font-medium text-silver">
-                  {t('Trusted by HR teams across Iraq')}
-                  <ShieldCheck size={15} className="text-brand shrink-0" />
-                </span>
-              </div>
             </nav>
           </Container>
         </motion.div>

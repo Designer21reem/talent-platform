@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import {
@@ -12,35 +12,23 @@ import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { QuestionCard } from '@/components/assessment/QuestionCard';
 import { ASSESSMENT_QUESTIONS } from '@/lib/assessmentQuestions';
-import { computeStyleResult, STYLE_INFO } from '@/lib/styleAssessment';
+import { computeStyleResult, STYLE_INFO, PROFILE_TEXT, pick } from '@/lib/styleAssessment';
 import { saveAssessment, loadCV } from '@/lib/storage';
 import { useLanguage } from '@/lib/i18n';
 import { useAuth } from '@/lib/auth';
-import { requestUploadUrl, uploadToS3 } from '@/lib/api';
+import { submitAssessmentResult } from '@/lib/api';
 
 export default function AssessmentPage() {
   const router = useRouter();
-  const { t } = useLanguage();
-  const { user, token } = useAuth();
+  const { t, lang } = useLanguage();
+  const { user, token, userId } = useAuth();
   const [pageState, setPageState] = useState('gate');
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState({});
   const [submitError, setSubmitError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [candidateName, setCandidateName] = useState('');
-  const [candidateEmail, setCandidateEmail] = useState('');
+  const [submittedName, setSubmittedName] = useState('');
   const [styleResult, setStyleResult] = useState(null);
-
-
-  useEffect(() => {
-    const cv = loadCV();
-    if (cv) {
-      setCandidateName(cv.personalInfo.fullName);
-      setCandidateEmail(cv.personalInfo.email || user?.email || '');
-    } else if (user?.email) {
-      setCandidateEmail(user.email);
-    }
-  }, [user]);
 
   function startAssessment() {
     setPageState('assessment');
@@ -84,52 +72,43 @@ export default function AssessmentPage() {
       return;
     }
 
-    const assessmentAnswers = ASSESSMENT_QUESTIONS.map((q) => ({
-      questionId: q.id,
-      answer: answers[q.id],
-      category: q.category,
-    }));
-
     const result = computeStyleResult(answers);
 
-    const data = {
-      answers: assessmentAnswers,
-      styleResult: result,
-      submittedAt: new Date().toISOString(),
-      candidateName,
-      candidateEmail,
+    // Name/email come from the CV the candidate saved here (if any), falling
+    // back to their signed-in profile.
+    const cv = loadCV();
+    const candidateName = cv?.personalInfo?.fullName || user?.name || '';
+    const candidateEmail = cv?.personalInfo?.email || user?.email || '';
+
+    // Body for POST /assessment-result — the dashboard reads
+    // `predominant_style` back via GET /assessment-result/{user_id}.
+    const payload = {
+      user_id: userId ?? null,
+      email: user?.email ?? null,
+      candidate_name: candidateName,
+      candidate_email: candidateEmail,
+      assessment_type: 'personal_style',
+      predominant_style: result.predominant,
+      backup_style: result.backup,
+      style_counts: result.counts,
+      ranked_styles: result.ranked,
+      total_answers: result.total,
+      answers: ASSESSMENT_QUESTIONS.map((q) => ({ question_id: q.id, option_id: answers[q.id] })),
+      submitted_at: new Date().toISOString(),
     };
 
     setSubmitting(true);
     setSubmitError(null);
 
     try {
-      const fileName = 'assessment.json';
-      const jsonBody = JSON.stringify(data);
-
-      console.log('[Assessment] Requesting a presigned URL for', fileName, 'application/json', jsonBody.length, 'bytes');
-      const urlData = await requestUploadUrl(token, {
-        fileName,
-        fileType: 'application/json',
-        fileSize: new Blob([jsonBody]).size,
-        frontendSelection: 'assessment_json',
-      });
-      console.log('[Assessment] /generate-upload-url response body:', urlData);
-
-      // Every JSON upload must carry the user_id/email the backend resolved
-      // for this presigned URL, so the assessment record can be matched to
-      // the candidate once it's picked up from the S3 data lake.
-      const payload = { ...data, user_id: urlData.user_id, email: urlData.user_email };
-      console.log('[Assessment] Uploading directly to S3:', urlData.upload_url);
-      await uploadToS3(urlData.upload_url, JSON.stringify(payload), 'application/json', urlData);
-      console.log('[Assessment] Upload complete. S3 key:', urlData.s3_key);
-
-      saveAssessment(data);
+      await submitAssessmentResult(token, payload);
+      saveAssessment(payload);
+      setSubmittedName(candidateName);
       setStyleResult(result);
       setPageState('submitted');
     } catch (err) {
-      console.error('[Assessment] Submission failed:', err);
-      setSubmitError(err.message || t('Something went wrong submitting your assessment. Please try again.'));
+      console.warn('[Assessment] Submission failed:', err);
+      setSubmitError(t(err.message || 'Something went wrong submitting your assessment. Please try again.'));
     } finally {
       setSubmitting(false);
     }
@@ -222,24 +201,24 @@ export default function AssessmentPage() {
 
             <h2 className="text-3xl font-bold text-warm-light mb-3">{t('Assessment Submitted!')}</h2>
             <p className="text-silver text-lg mb-8">
-              {t('Thank you')}{candidateName ? `, ${candidateName.split(' ')[0]}` : ''}! {t('Your responses have been saved. Head to your dashboard to see your personalised skills report.')}
+              {t('Thank you')}{submittedName ? `, ${submittedName.split(' ')[0]}` : ''}! {t('Your responses have been saved. Head to your dashboard to see your full personal style profile.')}
             </p>
 
             {styleResult && (
               <div className="bg-surface rounded-2xl border border-surface-2 shadow-sm p-6 sm:p-8 mb-8 text-start">
                 <p className="text-xs font-semibold text-brand uppercase tracking-wide mb-1">
-                  {t('Your Personal Style')}
+                  {pick(PROFILE_TEXT.socialStyle, lang)}
                 </p>
                 <h3 className="text-2xl font-bold text-warm-light mb-1">
-                  {STYLE_INFO[styleResult.predominant].name} — {t(STYLE_INFO[styleResult.predominant].title)}
+                  {pick(STYLE_INFO[styleResult.predominant].name, lang)} — {pick(STYLE_INFO[styleResult.predominant].title, lang)}
                 </h3>
                 <p className="text-sm text-silver mb-4">
-                  {t('Backup style')}: {STYLE_INFO[styleResult.backup].name} — {t(STYLE_INFO[styleResult.backup].title)}
+                  {pick(PROFILE_TEXT.backupStyle, lang)}: {pick(STYLE_INFO[styleResult.backup].name, lang)} — {pick(STYLE_INFO[styleResult.backup].title, lang)}
                 </p>
                 <div className="space-y-2 mb-4">
                   {styleResult.ranked.map((key) => (
                     <div key={key} className="flex items-center gap-3">
-                      <span className="w-20 shrink-0 text-xs font-medium text-warm">{STYLE_INFO[key].name}</span>
+                      <span className="w-20 shrink-0 text-xs font-medium text-warm">{pick(STYLE_INFO[key].name, lang)}</span>
                       <div className="flex-1 h-2 rounded-full bg-surface-2 overflow-hidden">
                         <div
                           className="h-full bg-brand rounded-full"
@@ -251,7 +230,7 @@ export default function AssessmentPage() {
                   ))}
                 </div>
                 <p className="text-sm text-silver leading-relaxed">
-                  {STYLE_INFO[styleResult.predominant].traits.slice(0, 6).join(', ')}
+                  {pick(STYLE_INFO[styleResult.predominant].keyTraits, lang)}
                 </p>
               </div>
             )}

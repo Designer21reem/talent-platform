@@ -6,27 +6,22 @@ import { Star, ThumbsUp, ThumbsDown, X, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/lib/auth';
 import { useLanguage } from '@/lib/i18n';
-import { BACKEND_URL } from '@/lib/api';
 
 const DISMISSED_KEY = 'tv_review_dismissed';
+const REVIEW_KEY = 'tv_website_review';
 const AUTO_SHOW_DELAY_MS = 25000;
 
 // Site-wide feedback popup (spec item 6): a 1–5 star rating plus a yes/no
 // recommend question. Shows once per browser after a short delay, then
-// remembers not to show again (whether the user submitted or just closed
-// it). Storage is backend-owned — /website_review doesn't exist yet, so
-// this posts anyway and logs a clear diagnosis if it 404s, same pattern
-// as the rest of this app's not-yet-built backend calls.
+// remembers not to show again (whether the user submitted or just closed it).
 export function ReviewPopup() {
   const { t } = useLanguage();
-  const { user, token, userId } = useAuth();
+  const { user, userId } = useAuth();
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [recommend, setRecommend] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!user) return undefined;
@@ -42,49 +37,27 @@ export function ReviewPopup() {
     setOpen(false);
   }
 
-  async function handleSubmit() {
-    if (!rating || !recommend || submitting) return;
-    setSubmitting(true);
-    setError(null);
+  // No review endpoint on the backend yet, so the review is kept in
+  // localStorage for now — swap this for a POST once one exists.
+  function handleSubmit() {
+    if (!rating || !recommend) return;
 
-    const payload = {
+    const review = {
       rating,
       would_recommend: recommend === 'yes',
       user_id: userId ?? null,
       email: user?.email ?? null,
+      submitted_at: new Date().toISOString(),
     };
 
-    console.log('[Review] Submitting website review:', payload);
     try {
-      const res = await fetch(`${BACKEND_URL}/website_review`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json().catch(() => null);
-      console.log('[Review] /website_review responded with status:', res.status, 'body:', data);
-
-      if (!res.ok) {
-        if (res.status === 404) {
-          console.error(
-            '[Review] VERDICT: /website_review does not exist on the backend yet. ' +
-            'This is not fixable from the frontend repo — a review-storage endpoint needs to be added backend-side.'
-          );
-        }
-        setError(t("Couldn't submit your review right now, but thanks for the feedback."));
-      } else {
-        setSubmitted(true);
-      }
-    } catch (err) {
-      console.error('[Review] Network error submitting review:', err);
-      setError(t("Couldn't submit your review right now, but thanks for the feedback."));
-    } finally {
-      setSubmitting(false);
+      localStorage.setItem(REVIEW_KEY, JSON.stringify(review));
       localStorage.setItem(DISMISSED_KEY, '1');
+    } catch {
+      // Storage unavailable (private mode etc.) — still thank the user.
     }
+    console.log('[Review] Saved website review locally:', review);
+    setSubmitted(true);
   }
 
   return (
@@ -179,12 +152,9 @@ export function ReviewPopup() {
                   </button>
                 </div>
 
-                {error && <p className="text-xs text-red-500 mb-3 text-center">{error}</p>}
-
                 <Button
                   fullWidth
                   onClick={handleSubmit}
-                  loading={submitting}
                   disabled={!rating || !recommend}
                 >
                   {t('Submit Review')}

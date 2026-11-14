@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { ShieldCheck } from 'lucide-react';
 import { Container } from './Container';
 import { useLanguage } from '@/lib/i18n';
 
@@ -25,9 +26,15 @@ export function Footer() {
             <Link href="/about" className="hover:text-brand transition-colors">{t('About')}</Link>
           </nav>
 
-          <p className="text-xs text-silver">
-            &copy; {new Date().getFullYear()} THE VALUE. {t('All rights reserved.')}
-          </p>
+          <div className="flex flex-col items-center sm:items-end gap-1.5">
+            <span className="flex items-center gap-1.5 text-xs font-medium text-silver">
+              {t('Trusted by HR teams across Iraq')}
+              <ShieldCheck size={15} className="text-brand shrink-0" />
+            </span>
+            <p className="text-xs text-silver">
+              &copy; {new Date().getFullYear()} THE VALUE. {t('All rights reserved.')}
+            </p>
+          </div>
         </div>
       </Container>
     </footer>

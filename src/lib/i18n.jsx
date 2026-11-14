@@ -1,6 +1,7 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useSyncExternalStore } from 'react';
+import { ACADEMIC_AR } from '@/lib/academicData';
 
 const STORAGE_KEY = 'tv_lang';
 
@@ -9,6 +10,10 @@ const STORAGE_KEY = 'tv_lang';
 // itself when a key is missing, so coverage can be extended incrementally
 // without ever breaking the UI.
 export const AR_DICT = {
+  // Iraqi universities + academic specializations (see academicData.js).
+  // Spread first so any hand-written entry below takes precedence.
+  ...ACADEMIC_AR,
+
   // ── Nav / Footer ──────────────────────────────────────────────
   'Trusted by HR teams across Iraq': 'موثوق من قبل فرق الموارد البشرية بالعراق',
   'Settings': 'الإعدادات',
@@ -496,65 +501,116 @@ export const AR_DICT = {
   'HR Specialist': 'أخصائي موارد بشرية',
   'Business Analyst': 'محلل أعمال',
 
-  // ── Assessment questions ──────────────────────────────────────
-  'How do you prefer to communicate complex ideas to a non-technical audience?':
-    'كيف تفضّل توصيل الأفكار المعقّدة لجمهور غير تقني؟',
-  'Use analogies and simple language': 'استخدام تشبيهات ولغة بسيطة',
-  'Provide detailed technical documentation': 'تقديم توثيق تقني مفصّل',
-  'Use visual aids and diagrams': 'استخدام وسائل بصرية ومخططات',
-  'Avoid technical topics with non-technical people': 'تجنّب المواضيع التقنية مع غير المختصين',
+  // ── Personality dashboard ─────────────────────────────────────
+  'Personality Dashboard': 'لوحة الشخصية',
+  'Your personal style assessment results': 'نتائج تقييم نمطك الشخصي',
+  'No assessment result yet': 'لا توجد نتيجة تقييم بعد',
+  'Take the Discover Your Personality assessment to see your full personal style profile here.':
+    'أكمل تقييم "اكتشف شخصيتك" لمشاهدة ملف نمطك الشخصي كاملاً هنا.',
+  'Your responses have been saved. Head to your dashboard to see your full personal style profile.':
+    'تم حفظ إجاباتك. توجّه إلى لوحة التحكم لمشاهدة ملف نمطك الشخصي كاملاً.',
+  'Sign in with Google to load your saved assessment result.': 'سجّل الدخول عبر Google لعرض نتيجة تقييمك المحفوظة.',
 
-  'When faced with a difficult problem you have never encountered before, what is your first step?':
-    'عند مواجهة مشكلة صعبة لم تواجهها من قبل، ما هي أول خطوة تقوم بها؟',
-  'Research and gather information about the problem': 'البحث وجمع المعلومات حول المشكلة',
-  'Immediately try different solutions until one works': 'تجربة حلول مختلفة فوراً حتى ينجح أحدها',
-  'Ask a colleague for help right away': 'طلب المساعدة من زميل فوراً',
-  'Escalate it to management': 'تصعيد الأمر إلى الإدارة',
+  // ── Submission errors ─────────────────────────────────────────
+  'You must be signed in with Google to submit the assessment.': 'يجب تسجيل الدخول عبر Google لإرسال التقييم.',
+  'Something went wrong submitting your assessment. Please try again.': 'حدث خطأ أثناء إرسال التقييم. يرجى المحاولة مرة أخرى.',
+  'You must be signed in with Google to save your CV.': 'يجب تسجيل الدخول عبر Google لحفظ سيرتك الذاتية.',
+  'Something went wrong saving your CV. Please try again.': 'حدث خطأ أثناء حفظ سيرتك الذاتية. يرجى المحاولة مرة أخرى.',
+  'You must be signed in with Google to upload a CV.': 'يجب تسجيل الدخول عبر Google لرفع السيرة الذاتية.',
+  'Uploading the file to storage failed.': 'فشل رفع الملف إلى التخزين.',
+  'The server refused to generate an upload URL.': 'رفض الخادم إنشاء رابط الرفع.',
+  'Upload failed. Please try again.': 'فشل الرفع. يرجى المحاولة مرة أخرى.',
 
-  'Which statement best describes your approach to learning new technologies?':
-    'أي عبارة تصف بشكل أفضل أسلوبك في تعلّم التقنيات الجديدة؟',
-  'I proactively learn new tools and frameworks': 'أتعلّم الأدوات والأطر الجديدة بشكل استباقي',
-  'I learn only what is required for my current role': 'أتعلّم فقط ما يتطلبه دوري الحالي',
-  'I prefer to stick with technologies I already know': 'أفضّل الاستمرار بالتقنيات التي أعرفها',
-  'I rely on my team to introduce new technologies': 'أعتمد على فريقي لتقديم التقنيات الجديدة',
+  // ── Education (searchable lists) ──────────────────────────────
+  'Type to search specializations…': 'اكتب للبحث عن التخصص…',
+  'in': 'في',
 
-  'When a team member is struggling with their work, what do you typically do?':
-    'عندما يواجه أحد زملاء الفريق صعوبة في عمله، ماذا تفعل عادة؟',
-  'Offer help while ensuring my own tasks are completed': 'تقديم المساعدة مع ضمان إنجاز مهامي',
-  'Focus on my own work to meet my deadlines': 'التركيز على عملي لإنجاز مواعيدي النهائية',
-  'Report to the manager immediately': 'إبلاغ المدير فوراً',
-  'Take over their work to fix it faster': 'تولّي عملهم لإنجازه بشكل أسرع',
+  // ── Languages list ────────────────────────────────────────────
+  'Arabic': 'العربية',
+  'English': 'الإنجليزية',
+  'Kurdish': 'الكردية',
+  'French': 'الفرنسية',
+  'Turkish': 'التركية',
+  'German': 'الألمانية',
+  'Spanish': 'الإسبانية',
+  'Persian': 'الفارسية',
+  'Urdu': 'الأردية',
+  'Chinese': 'الصينية',
 
-  'How do you handle situations where you disagree with a team decision?':
-    'كيف تتعامل مع المواقف التي تختلف فيها مع قرار الفريق؟',
-  'Voice my opinion respectfully, then commit to the team decision': 'إبداء رأيي باحترام، ثم الالتزام بقرار الفريق',
-  'Stay silent and go along with whatever is decided': 'الصمت والموافقة على ما يتقرر',
-  'Refuse to participate until my view is heard': 'رفض المشاركة حتى يُسمع رأيي',
-  'Work on my own approach in parallel': 'العمل على أسلوبي الخاص بشكل موازٍ',
+  // ── Skills list ───────────────────────────────────────────────
+  'UI/UX Design': 'تصميم واجهات وتجربة المستخدم',
+  'Data Analysis': 'تحليل البيانات',
+  'DevOps': 'DevOps',
+  'Agile': 'منهجية Agile',
+  'Scrum': 'منهجية Scrum',
+  'SEO': 'تحسين محركات البحث (SEO)',
+  'Content Writing': 'كتابة المحتوى',
+  'Sales': 'المبيعات',
+  'Customer Service': 'خدمة العملاء',
 
-  'Please write a brief paragraph (3–5 sentences) describing your greatest professional achievement and what you learned from it.':
-    'يرجى كتابة فقرة موجزة (3-5 جمل) تصف أعظم إنجاز مهني حققته وما تعلمته منه.',
+  // ── Iraqi companies ───────────────────────────────────────────
+  'Al-Rafidain Bank': 'مصرف الرافدين',
+  'Al-Rasheed Bank': 'مصرف الرشيد',
+  'National Bank of Iraq': 'المصرف الأهلي العراقي',
+  'Trade Bank of Iraq (TBI)': 'المصرف العراقي للتجارة (TBI)',
+  'Bank of Baghdad': 'مصرف بغداد',
+  'Ashur International Bank': 'مصرف آشور الدولي',
+  'Cihan Bank': 'مصرف جيهان',
+  'International Islamic Bank of Iraq': 'المصرف الدولي الإسلامي',
+  'Iraq National Bank': 'المصرف الوطني العراقي',
+  'Zain Iraq': 'زين العراق',
+  'Asiacell': 'آسياسيل',
+  'Korek Telecom': 'كورك تيليكوم',
+  'Earthlink Telecommunication': 'إيرثلنك للاتصالات',
+  'Iraqi Airways': 'الخطوط الجوية العراقية',
+  'Emaar Iraq': 'إعمار العراق',
+  'Al-Kifah Holding': 'الكفاح القابضة',
+  'Hutchison Ports Iraq': 'موانئ هتشيسون العراق',
+  'Iraq Telecom': 'اتصالات العراق',
+  'Ibis Baghdad': 'إيبيس بغداد',
+  'Al-Mansour Group': 'مجموعة المنصور',
 };
 
 const LanguageContext = createContext(null);
 
+// The chosen language lives in localStorage (an external store), read via
+// useSyncExternalStore: the server/hydration snapshot is always 'en', then
+// React re-renders with the saved value — no hydration mismatch, and other
+// tabs pick up a language switch through the `storage` event.
+const LANG_EVENT = 'tv-lang-change';
+
+function readLang() {
+  try {
+    return localStorage.getItem(STORAGE_KEY) === 'ar' ? 'ar' : 'en';
+  } catch {
+    return 'en';
+  }
+}
+
+function subscribeLang(callback) {
+  window.addEventListener(LANG_EVENT, callback);
+  window.addEventListener('storage', callback);
+  return () => {
+    window.removeEventListener(LANG_EVENT, callback);
+    window.removeEventListener('storage', callback);
+  };
+}
+
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState('en');
+  const lang = useSyncExternalStore(subscribeLang, readLang, () => 'en');
 
   useEffect(() => {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
-    if (saved === 'ar' || saved === 'en') setLang(saved);
-  }, []);
-
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-    document.documentElement.lang = lang === 'ar' ? 'ar' : 'en';
+    document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    localStorage.setItem(STORAGE_KEY, lang);
   }, [lang]);
 
   function toggle() {
-    setLang((l) => (l === 'en' ? 'ar' : 'en'));
+    try {
+      localStorage.setItem(STORAGE_KEY, lang === 'en' ? 'ar' : 'en');
+    } catch {
+      // Storage blocked — nothing to persist the choice to.
+    }
+    window.dispatchEvent(new Event(LANG_EVENT));
   }
 
   function t(text) {

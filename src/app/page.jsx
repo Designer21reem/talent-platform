@@ -91,22 +91,12 @@ function TotalCandidatesBadge({ visible, value }) {
 // (typing it in, holding, deleting it, moving to the next) — the sentence
 // itself never re-types.
 function PrefixRotatingTypewriter({ prefix, words, active, className }) {
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   const fullPrefix = t(prefix);
   const [prefixTyped, setPrefixTyped] = useState('');
   const [wordIndex, setWordIndex] = useState(0);
   const [word, setWord] = useState('');
   const [deleting, setDeleting] = useState(false);
-
-  // Restart the whole line (prefix included) whenever the language changes —
-  // otherwise the already-typed prefix stays in the old language while only
-  // the rotating word picks up the new one.
-  useEffect(() => {
-    setPrefixTyped('');
-    setWord('');
-    setDeleting(false);
-    setWordIndex(0);
-  }, [lang]);
 
   useEffect(() => {
     if (!active) return undefined;
@@ -151,10 +141,13 @@ function ActionCard({ href, icon: Icon, title, description, featured, delay, vis
       transition={{ delay, duration: 0.55, ease: 'easeOut' }}
       whileHover={{ y: -6, scale: featured ? 1.06 : 1.02 }}
       className={[
-        'group relative rounded-2xl border p-6 sm:p-7 text-start backdrop-blur-sm transition-colors',
+        // Clear glass: an almost fully transparent fill with only a hint of
+        // blur, so the home hero's waves and glow show straight through.
+        'group relative rounded-2xl border p-6 sm:p-7 text-start backdrop-blur-[1px] transition-colors',
+        'shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]',
         featured
-          ? 'border-brand/60 bg-linear-to-b from-brand/10 to-surface/60 shadow-xl shadow-black/30 z-10'
-          : 'border-brand/20 bg-surface/50 hover:border-brand/40',
+          ? 'border-brand/50 bg-linear-to-b from-brand/8 to-transparent z-10'
+          : 'border-brand/25 bg-white/5 hover:bg-white/10 hover:border-brand/40',
       ].join(' ')}
     >
       <Link href={href} className="block">
@@ -186,6 +179,7 @@ export default function LandingPage() {
   const [stage, setStage] = useState(0);
   const [totalCandidates, setTotalCandidates] = useState(DEFAULT_TOTAL_CANDIDATES);
   const { token } = useAuth();
+  const { lang } = useLanguage();
 
   useEffect(() => {
     const t1 = setTimeout(() => setStage(1), 300);
@@ -269,7 +263,10 @@ export default function LandingPage() {
             </motion.div>
 
             <div className="mb-12 sm:mb-16 min-h-7">
+              {/* Keyed by language so a language switch remounts it and
+                  re-types the whole line (prefix included) in the new language. */}
               <PrefixRotatingTypewriter
+                key={lang}
                 prefix={SUBTITLE_PREFIX}
                 words={SUBTITLE_WORDS}
                 active={stage >= 2}

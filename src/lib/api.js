@@ -50,3 +50,48 @@ export async function uploadToS3(uploadUrl, body, contentType, urlData) {
     throw new Error(`Upload to storage failed with status ${res.status}.`);
   }
 }
+
+// FastAPI returns `detail` as a string for HTTPException but as a list of
+// validation errors for a 422 — only surface it when it's readable text.
+function readableDetail(data, fallback) {
+  return typeof data?.detail === 'string' ? data.detail : fallback;
+}
+
+// Stores the candidate's Personal Style result. The backend's
+// AssessmentResultRequest expects it wrapped as { assessment_json: {...} }
+// (saved as PostgreSQL JSONB).
+export async function submitAssessmentResult(token, result) {
+  const res = await fetch(`${BACKEND_URL}/assessment-result`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ assessment_json: result }),
+  });
+
+  const data = await res.json().catch(() => null);
+  console.log('[Assessment] POST /assessment-result sent body:\n' + JSON.stringify({ assessment_json: result }, null, 2));
+  console.log('[Assessment] POST /assessment-result status:', res.status, 'body:', data);
+  if (!res.ok) {
+    throw new Error(readableDetail(data, 'Something went wrong submitting your assessment. Please try again.'));
+  }
+  return data;
+}
+
+// Fetches the candidate's saved Personal Style result. Resolves to null when
+// the candidate has no result yet (404) so callers can show an empty state.
+export async function fetchAssessmentResult(token, userId) {
+  const res = await fetch(`${BACKEND_URL}/assessment-result/${encodeURIComponent(userId)}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const data = await res.json().catch(() => null);
+  console.log('[Dashboard] GET /assessment-result status:', res.status, 'body:', data);
+  console.log('[Dashboard] GET /assessment-result raw JSON:\n' + JSON.stringify(data, null, 2));
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    throw new Error(readableDetail(data, `Fetching the assessment result failed with status ${res.status}.`));
+  }
+  return data;
+}

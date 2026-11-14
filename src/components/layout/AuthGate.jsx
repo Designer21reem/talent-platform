@@ -13,6 +13,11 @@ import { Button } from '@/components/ui/Button';
 const SCRIPT_SRC = 'https://accounts.google.com/gsi/client?hl=en';
 let scriptLoadPromise = null;
 
+// Hidden for now — flip to true to bring them back. Phone sign-in waits on
+// the backend OTP endpoints; Skip sign-in is a dev-only escape hatch.
+const SHOW_PHONE_SIGNIN = false;
+const SHOW_SKIP_SIGNIN = false;
+
 export function loadGoogleScript() {
   if (typeof window === 'undefined') return Promise.resolve();
   if (window.google?.accounts?.id) return Promise.resolve();
@@ -107,29 +112,33 @@ export function AuthGate({ children }) {
             </p>
           )}
 
-          <div className="mt-5 flex items-center gap-3">
-            <span className="flex-1 h-px bg-surface-2" />
-            <span className="text-xs text-silver">{t('or')}</span>
-            <span className="flex-1 h-px bg-surface-2" />
-          </div>
+          {SHOW_PHONE_SIGNIN && (
+            <>
+              <div className="mt-5 flex items-center gap-3">
+                <span className="flex-1 h-px bg-surface-2" />
+                <span className="text-xs text-silver">{t('or')}</span>
+                <span className="flex-1 h-px bg-surface-2" />
+              </div>
 
-          {!showPhone ? (
-            <div className="flex justify-center">
-              <Button
-                variant="outline"
-                size="lg"
-                leftIcon={<Phone size={16} />}
-                onClick={() => setShowPhone(true)}
-                className="rounded-full w-full max-w-75"
-              >
-                {t('Sign in with phone number')}
-              </Button>
-            </div>
-          ) : (
-            <PhoneSignIn />
+              {!showPhone ? (
+                <div className="flex justify-center">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    leftIcon={<Phone size={16} />}
+                    onClick={() => setShowPhone(true)}
+                    className="rounded-full w-full max-w-75"
+                  >
+                    {t('Sign in with phone number')}
+                  </Button>
+                </div>
+              ) : (
+                <PhoneSignIn />
+              )}
+            </>
           )}
 
-          {(process.env.NODE_ENV !== 'production' || ALLOW_SKIP_SIGNIN) && (
+          {SHOW_SKIP_SIGNIN && (process.env.NODE_ENV !== 'production' || ALLOW_SKIP_SIGNIN) && (
             <button
               onClick={devBypass}
               className="mt-6 text-xs text-silver hover:text-warm underline underline-offset-2 transition-colors"

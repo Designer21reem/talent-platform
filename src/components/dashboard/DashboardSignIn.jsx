@@ -63,7 +63,7 @@ export function DashboardSignIn() {
         <div>
           <p className="text-sm font-semibold text-warm-light">{t('Sign in to see your real results')}</p>
           <p className="text-xs text-silver mt-0.5">
-            {t("You're viewing sample data. Sign in with Google to load your saved assessment.")}
+            {t('Sign in with Google to load your saved assessment result.')}
           </p>
         </div>
       </div>

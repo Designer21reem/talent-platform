@@ -4,111 +4,127 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import {
-  BarChart3, User, Phone, Mail, TrendingUp, TrendingDown, Star,
-  ClipboardCheck, ArrowRight, Info,
+  BarChart3, User, Mail, Info, ArrowRight, ClipboardCheck, Fingerprint, Heart, Eye,
+  Sprout, Flame, MessageSquare, Hand, Search, Sparkles, Briefcase, Target,
 } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
 import { HeroBackground } from '@/components/layout/HeroBackground';
 import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { ProgressBar } from '@/components/ui/ProgressBar';
-import { SkillProgressCard } from '@/components/dashboard/SkillProgressCard';
 import { DashboardSignIn } from '@/components/dashboard/DashboardSignIn';
 import { loadAssessment } from '@/lib/storage';
-import { buildDashboard, MOCK_DASHBOARD } from '@/lib/mockDashboard';
+import { STYLE_INFO, STYLE_KEYS, PROFILE_TEXT, pick, extractStyleResult } from '@/lib/styleAssessment';
 import { useLanguage } from '@/lib/i18n';
 import { useAuth } from '@/lib/auth';
-import { BACKEND_URL } from '@/lib/api';
+import { fetchAssessmentResult } from '@/lib/api';
 
-// /get_assessment/{user_id} returns whatever was uploaded as assessment_json
-// (candidate_assessment_raw is a straight dump of that upload), so the
-// record shape should match what assessment/page.jsx sends: an object (or
-// an array of them, most recent last) with { answers, candidateName,
-// candidateEmail, candidatePhone, ... }. Defensive here since the backend
-// doesn't publish a typed response model for this endpoint.
-function extractAssessmentRecord(data) {
-  if (!data) return null;
-  const record = Array.isArray(data) ? data[data.length - 1] : data;
-  if (!record || !Array.isArray(record.answers)) return null;
-  return record;
+// Loads the candidate's style result: the backend first
+// (GET /assessment-result/{user_id}), then the copy saved locally when the
+// assessment was submitted on this device.
+async function loadStyleResult(token, userId) {
+  if (token && userId != null) {
+    try {
+      const remote = extractStyleResult(await fetchAssessmentResult(token, userId));
+      console.log('[Dashboard] Style extracted from backend response:', remote);
+      if (remote) return remote;
+      console.warn('[Dashboard] No style found in the backend response — check the raw JSON above; falling back to the local copy.');
+    } catch (err) {
+      console.warn('[Dashboard] Could not load the result from the backend — using the local copy.', err);
+    }
+  } else {
+    console.log('[Dashboard] No JWT/user_id — skipping GET /assessment-result.', { hasToken: !!token, userId });
+  }
+  const local = extractStyleResult(loadAssessment());
+  console.log('[Dashboard] Style extracted from local copy:', local);
+  return local;
+}
+
+function SectionCard({ icon: Icon, title, children, className, delay = 0 }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.35 }}
+      className={className}
+    >
+      <Card padding="md" className="h-full">
+        <div className="flex items-center gap-2 mb-4">
+          <Icon size={18} className="text-brand shrink-0" />
+          <h2 className="font-semibold text-warm-light">{title}</h2>
+        </div>
+        {children}
+      </Card>
+    </motion.div>
+  );
+}
+
+function Chips({ items, lang }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {items.map((item) => (
+        <span
+          key={item[0]}
+          className="px-3 py-1 rounded-full bg-brand/10 border border-brand/20 text-warm text-xs sm:text-sm font-medium"
+        >
+          {pick(item, lang)}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function Bullets({ items, lang, columns = 1 }) {
+  return (
+    <ul className={columns === 2 ? 'grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5' : 'space-y-2.5'}>
+      {items.map((item) => (
+        <li key={item[0]} className="flex items-start gap-2.5 text-sm text-warm leading-snug">
+          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-brand shrink-0" />
+          {pick(item, lang)}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function EmptyState({ t }) {
+  return (
+    <Card padding="lg" className="max-w-xl mx-auto text-center">
+      <div className="w-16 h-16 rounded-2xl bg-brand/15 flex items-center justify-center mx-auto mb-5">
+        <ClipboardCheck size={28} className="text-brand" />
+      </div>
+      <h2 className="text-xl font-bold text-warm-light mb-2">{t('No assessment result yet')}</h2>
+      <p className="text-sm text-silver leading-relaxed mb-6">
+        {t('Take the Discover Your Personality assessment to see your full personal style profile here.')}
+      </p>
+      <Link href="/assessment">
+        <Button rightIcon={<ArrowRight size={16} className="rtl:-scale-x-100" />}>{t('Take Assessment')}</Button>
+      </Link>
+    </Card>
+  );
 }
 
 export default function DashboardPage() {
   const { t, lang } = useLanguage();
-  const { token, userId } = useAuth();
-  const [dashboard, setDashboard] = useState(null);
-  const [usingMock, setUsingMock] = useState(false);
+  const { token, userId, user } = useAuth();
+  // `undefined` while loading, `null` when there's no result yet.
+  const [result, setResult] = useState(undefined);
 
   useEffect(() => {
     let cancelled = false;
-
-    function loadFallback() {
-      const assessment = loadAssessment();
-      if (cancelled) return;
-      if (assessment) {
-        setDashboard(buildDashboard(
-          assessment.answers,
-          assessment.candidateName,
-          assessment.candidatePhone,
-          assessment.candidateEmail
-        ));
-        setUsingMock(false);
-      } else {
-        setDashboard(MOCK_DASHBOARD);
-        setUsingMock(true);
-      }
-    }
-
-    async function loadDashboardData() {
-      if (token && userId) {
-        try {
-          const res = await fetch(`${BACKEND_URL}/get_assessment/${userId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (res.ok) {
-            const data = await res.json().catch(() => null);
-            console.log('[Dashboard] /get_assessment response:', data);
-            const record = extractAssessmentRecord(data);
-            if (record && !cancelled) {
-              setDashboard(buildDashboard(
-                record.answers,
-                record.candidateName,
-                record.candidatePhone,
-                record.candidateEmail
-              ));
-              setUsingMock(false);
-              return;
-            }
-          } else {
-            console.log('[Dashboard] /get_assessment status:', res.status, '— falling back to local data.');
-          }
-        } catch (err) {
-          console.error('[Dashboard] Failed to fetch assessment from backend:', err);
-        }
-      }
-      loadFallback();
-    }
-
-    loadDashboardData();
+    loadStyleResult(token, userId).then((found) => {
+      if (!cancelled) setResult(found);
+    });
     return () => {
       cancelled = true;
     };
   }, [token, userId]);
 
-  if (!dashboard) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <div className="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-silver text-sm">{t('Loading your dashboard…')}</p>
-        </div>
-      </div>
-    );
-  }
-
-  const topSkills = [...dashboard.skills].sort((a, b) => b.score - a.score).slice(0, 3);
-
+  const local = result ? loadAssessment() : null;
+  const candidateName = user?.name || local?.candidate_name || '';
+  const candidateEmail = user?.email || local?.candidate_email || '';
+  const profile = result ? STYLE_INFO[result.predominant] : null;
+  const backup = result?.backup ? STYLE_INFO[result.backup] : null;
+  const countsTotal = result?.counts ? STYLE_KEYS.reduce((sum, k) => sum + result.counts[k], 0) : 0;
 
   return (
     <div className="overflow-x-hidden">
@@ -118,29 +134,6 @@ export default function DashboardPage() {
           <div className="relative z-10">
             <DashboardSignIn />
 
-            {/* Mock data banner */}
-            {usingMock && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-6 flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4"
-              >
-                <Info size={18} className="text-amber-500 shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-amber-800">{t('Showing sample dashboard')}</p>
-                  <p className="text-xs text-amber-600 mt-0.5">
-                    {t('Complete the assessment to see your personalised skill results.')}
-                  </p>
-                </div>
-                <Link href="/assessment">
-                  <Button size="sm" variant="outline" className="border-amber-400 text-amber-700 hover:bg-amber-50 shrink-0">
-                    {t('Take Assessment')}
-                  </Button>
-                </Link>
-              </motion.div>
-            )}
-
-            {/* Page header */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -151,153 +144,162 @@ export default function DashboardPage() {
                   <BarChart3 size={22} className="text-brand" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-warm-light">{t('Skills Dashboard')}</h1>
-                  <p className="text-silver text-sm">{t('Your personal skill assessment results')}</p>
+                  <h1 className="text-2xl font-bold text-warm-light">{t('Personality Dashboard')}</h1>
+                  <p className="text-silver text-sm">{t('Your personal style assessment results')}</p>
                 </div>
               </div>
-              <Link href="/assessment">
-                <Button variant="secondary" size="sm" rightIcon={<ArrowRight size={14} className="rtl:-scale-x-100" />}>
-                  {t('Retake Assessment')}
-                </Button>
-              </Link>
+              {result && (
+                <Link href="/assessment">
+                  <Button variant="secondary" size="sm" rightIcon={<ArrowRight size={14} className="rtl:-scale-x-100" />}>
+                    {t('Retake Assessment')}
+                  </Button>
+                </Link>
+              )}
             </motion.div>
           </div>
         </Container>
       </section>
 
       <div className="py-8 sm:py-10">
-      <Container maxWidth="xl">
-        {/* Candidate info + Overall score */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Candidate card */}
-          <Card padding="md" className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-brand/20 flex items-center justify-center shrink-0">
-              <User size={24} className="text-brand" />
+        <Container maxWidth="xl">
+          {result === undefined && (
+            <div className="flex items-center justify-center min-h-[40vh]">
+              <div className="text-center">
+                <div className="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-silver text-sm">{t('Loading your dashboard…')}</p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="font-bold text-warm-light text-lg truncate">{dashboard.candidateName || t('Candidate')}</p>
-              {dashboard.phoneNumber && (
-                <p className="flex items-center gap-1.5 text-sm text-silver mt-0.5">
-                  <Phone size={13} className="shrink-0" />
-                  <span dir="ltr">{dashboard.phoneNumber}</span>
-                </p>
-              )}
-              {dashboard.candidateEmail && (
-                <p className="flex items-center gap-1.5 text-sm text-silver mt-0.5 truncate">
-                  <Mail size={13} className="shrink-0" />
-                  <span dir="ltr" className="truncate">{dashboard.candidateEmail}</span>
-                </p>
-              )}
-            </div>
-          </Card>
+          )}
 
-          {/* Overall score */}
-          <Card padding="md" className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-warm-light">{t('Overall Score')}</h2>
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 200, delay: 0.3 }}
-                className="text-3xl font-extrabold text-brand"
+          {result === null && <EmptyState t={t} />}
+
+          {profile && (
+            <div className="space-y-6">
+              {/* Disclaimer */}
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-start gap-3 rounded-xl border border-brand/30 bg-brand/10 p-4"
               >
-                {dashboard.overallScore}%
-              </motion.span>
-            </div>
-            <ProgressBar value={dashboard.overallScore} showValue={false} size="lg" animated />
-            <div className="flex justify-between text-xs text-silver mt-1.5">
-              <span>{t('Developing')}</span>
-              <span>{t('Proficient')}</span>
-              <span>{t('Expert')}</span>
-            </div>
-          </Card>
-        </div>
-
-        {/* Skills grid */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold text-warm-light mb-4">{t('Skill Breakdown')}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {dashboard.skills.map((skill, i) => (
-              <SkillProgressCard key={skill.category} skill={skill} delay={i * 0.07} />
-            ))}
-          </div>
-        </div>
-
-        {/* Strengths & Improvements */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Strengths */}
-          <Card padding="md">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp size={18} className="text-emerald-500" />
-              <h2 className="font-semibold text-warm-light">{t('Your Strengths')}</h2>
-            </div>
-            {dashboard.strengths.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {dashboard.strengths.map((s) => (
-                  <Badge key={s} variant="green" className="flex items-center gap-1.5 py-1 px-3">
-                    <Star size={11} />
-                    {t(s)}
-                  </Badge>
-                ))}
-              </div>
-            ) : (
-              <p className="text-silver text-sm">{t('Complete the assessment to see your strengths.')}</p>
-            )}
-          </Card>
-
-          {/* Areas for improvement */}
-          <Card padding="md">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingDown size={18} className="text-amber-500" />
-              <h2 className="font-semibold text-warm-light">{t('Areas for Improvement')}</h2>
-            </div>
-            {dashboard.areasForImprovement.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {dashboard.areasForImprovement.map((s) => (
-                  <Badge key={s} variant="amber">{t(s)}</Badge>
-                ))}
-              </div>
-            ) : (
-              <p className="text-silver text-sm italic">{t('All skill areas are strong — great work!')}</p>
-            )}
-          </Card>
-        </div>
-
-        {/* Top skills */}
-        <Card padding="md" className="mb-8">
-          <div className="flex items-center gap-2 mb-5">
-            <ClipboardCheck size={18} className="text-brand" />
-            <h2 className="font-semibold text-warm-light">{t('Top Performing Skills')}</h2>
-          </div>
-          <div className="space-y-4">
-            {topSkills.map((skill, i) => (
-              <div key={skill.category} className="flex items-center gap-4">
-                <span className="text-sm font-semibold text-silver w-4">#{i + 1}</span>
-                <div className="flex-1">
-                  <ProgressBar label={t(skill.category)} value={skill.score} size="sm" animated />
+                <Info size={18} className="text-brand shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-semibold text-warm-light">{pick(PROFILE_TEXT.disclaimerTitle, lang)}</p>
+                  {PROFILE_TEXT.disclaimerLines.map((line) => (
+                    <p key={line[0]} className="text-xs sm:text-sm text-warm mt-1">{pick(line, lang)}</p>
+                  ))}
                 </div>
-              </div>
-            ))}
-          </div>
-        </Card>
+              </motion.div>
 
-        {/* Overall summary */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <Card padding="lg" className="bg-linear-to-br from-brand/10 to-brand/5 border-brand/20">
-            <h2 className="font-semibold text-warm-light mb-3 flex items-center gap-2">
-              <BarChart3 size={18} className="text-brand" />
-              {t('Overall Assessment Summary')}
-            </h2>
-            <p className="text-warm leading-relaxed text-sm sm:text-base">
-              {lang === 'ar' && dashboard.overallSummaryAr ? dashboard.overallSummaryAr : dashboard.overallSummary}
-            </p>
-          </Card>
-        </motion.div>
-      </Container>
+              {/* Candidate + social style */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Card padding="md" className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-brand/20 flex items-center justify-center shrink-0">
+                    <User size={24} className="text-brand" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-warm-light text-lg truncate">{candidateName || t('Candidate')}</p>
+                    {candidateEmail && (
+                      <p className="flex items-center gap-1.5 text-sm text-silver mt-0.5">
+                        <Mail size={13} className="shrink-0" />
+                        <span dir="ltr" className="truncate">{candidateEmail}</span>
+                      </p>
+                    )}
+                  </div>
+                </Card>
+
+                <Card padding="md" className="lg:col-span-2 bg-linear-to-br from-brand/15 to-brand/5 border-brand/30">
+                  <p className="text-xs font-semibold text-brand uppercase tracking-wide mb-1">
+                    {pick(PROFILE_TEXT.socialStyle, lang)}
+                  </p>
+                  <motion.h2
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 200, delay: 0.15 }}
+                    className="text-3xl sm:text-4xl font-extrabold text-warm-light"
+                  >
+                    {pick(profile.name, lang)}
+                  </motion.h2>
+                  <p className="text-brand-dark font-semibold mt-1">
+                    {pick(profile.title, lang)} · {pick(profile.nickname, lang)}
+                  </p>
+                  {backup && (
+                    <p className="text-sm text-silver mt-2">
+                      {pick(PROFILE_TEXT.backupStyle, lang)}: {pick(backup.name, lang)} — {pick(backup.title, lang)}
+                    </p>
+                  )}
+
+                  {countsTotal > 0 && (
+                    <div className="space-y-2 mt-5">
+                      {[...STYLE_KEYS].sort((a, b) => result.counts[b] - result.counts[a]).map((key) => (
+                        <div key={key} className="flex items-center gap-3">
+                          <span className="w-20 shrink-0 text-xs font-medium text-warm">{pick(STYLE_INFO[key].name, lang)}</span>
+                          <div className="flex-1 h-2 rounded-full bg-surface-2 overflow-hidden">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${(result.counts[key] / countsTotal) * 100}%` }}
+                              transition={{ duration: 0.9, ease: 'easeOut', delay: 0.2 }}
+                              className="h-full bg-brand rounded-full"
+                            />
+                          </div>
+                          <span className="w-6 shrink-0 text-xs text-silver text-end">{result.counts[key]}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </Card>
+              </div>
+
+              {/* Key traits + ideal roles */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <SectionCard icon={Sparkles} title={pick(PROFILE_TEXT.keyTraits, lang)} delay={0.05}>
+                  <p className="text-warm leading-relaxed">{pick(profile.keyTraits, lang)}</p>
+                </SectionCard>
+                <SectionCard icon={Target} title={pick(PROFILE_TEXT.idealRoles, lang)} delay={0.1}>
+                  <p className="text-warm leading-relaxed">{pick(profile.idealRoles, lang)}</p>
+                </SectionCard>
+              </div>
+
+              <SectionCard icon={Fingerprint} title={pick(PROFILE_TEXT.description, lang)} delay={0.1}>
+                <Chips items={profile.description} lang={lang} />
+              </SectionCard>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <SectionCard icon={Heart} title={pick(PROFILE_TEXT.highWants, lang)} delay={0.15}>
+                  <Bullets items={profile.highWants} lang={lang} />
+                </SectionCard>
+                <SectionCard icon={Eye} title={pick(PROFILE_TEXT.perceivedAs, lang)} delay={0.15}>
+                  <Bullets items={profile.perceivedAs} lang={lang} />
+                </SectionCard>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <SectionCard icon={Sprout} title={pick(PROFILE_TEXT.growthAction, lang)} delay={0.2}>
+                  <p className="text-2xl font-bold text-emerald-600">{pick(profile.growthAction, lang)}</p>
+                </SectionCard>
+                <SectionCard icon={Flame} title={pick(PROFILE_TEXT.stressReaction, lang)} delay={0.2}>
+                  <p className="text-2xl font-bold text-amber-600">{pick(profile.stressReaction, lang)}</p>
+                </SectionCard>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <SectionCard icon={MessageSquare} title={pick(PROFILE_TEXT.verbal, lang)} delay={0.25}>
+                  <Bullets items={profile.verbal} lang={lang} />
+                </SectionCard>
+                <SectionCard icon={Hand} title={pick(PROFILE_TEXT.nonVerbal, lang)} delay={0.25}>
+                  <Bullets items={profile.nonVerbal} lang={lang} />
+                </SectionCard>
+              </div>
+
+              <SectionCard icon={Search} title={pick(PROFILE_TEXT.recognizedBy, lang)} delay={0.3}>
+                <Bullets items={profile.recognizedBy} lang={lang} columns={2} />
+              </SectionCard>
+
+              <SectionCard icon={Briefcase} title={pick(PROFILE_TEXT.bestFitJobs, lang)} delay={0.35}>
+                <Bullets items={profile.bestFitJobs} lang={lang} columns={2} />
+              </SectionCard>
+            </div>
+          )}
+        </Container>
       </div>
     </div>
   );

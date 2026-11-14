@@ -99,7 +99,7 @@ export function CVPreview({ data, id }) {
             {education.map((e) => (
               <div key={e.id}>
                 <div className="flex justify-between items-baseline gap-4">
-                  <p className="font-bold text-[13.5px]">{e.institution}</p>
+                  <p className="font-bold text-[13.5px]">{t(e.institution)}</p>
                   {(e.startYear || e.endYear) && (
                     <p className="font-bold text-[13px] shrink-0">
                       {yearOf(e.startYear)} {e.endYear && `– ${yearOf(e.endYear)}`}
@@ -108,7 +108,7 @@ export function CVPreview({ data, id }) {
                 </div>
                 {(e.degree || e.field) && (
                   <p className="italic text-[13px]">
-                    {e.degree}{e.field && ` in ${e.field}`}
+                    {t(e.degree)}{e.field && ` ${t('in')} ${t(e.field)}`}
                   </p>
                 )}
               </div>

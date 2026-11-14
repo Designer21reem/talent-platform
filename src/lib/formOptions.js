@@ -26,20 +26,6 @@ export function isValidPhoneForCountry(phone) {
   return digits.length === country.phoneLength;
 }
 
-export const UNIVERSITIES = [
-  'University of Baghdad',
-  'University of Jordan',
-  'American University of Beirut',
-  'Cairo University',
-  'King Saud University',
-  'Istanbul University',
-  'Harvard University',
-  'Massachusetts Institute of Technology',
-  'Stanford University',
-  'University of Oxford',
-  'University of Cambridge',
-];
-
 export const DEGREES = [
   'High School Diploma',
   'Associate Degree',
@@ -49,21 +35,6 @@ export const DEGREES = [
   'PhD / Doctorate',
   'Professional Certificate',
 ];
-
-export const FIELDS_OF_STUDY = [
-  'Computer Science',
-  'Information Technology',
-  'Business Administration',
-  'Engineering',
-  'Medicine',
-  'Law',
-  'Economics',
-  'Marketing',
-  'Graphic Design',
-  'Data Science',
-];
-
-export const STUDY_CATEGORIES = ['Technical', 'Business', 'Creative', 'Health', 'Other'];
 
 export const COMPANIES = [
   // ── Global ──

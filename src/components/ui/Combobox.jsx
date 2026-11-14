@@ -3,20 +3,34 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/lib/i18n';
+
+const MAX_MATCHES = 50;
 
 // A free-text input that shows a filtered, type-ahead list of matches below
 // it as the user types — the value is never locked to the list, so a
 // candidate can always keep whatever they typed even if nothing matches.
+//
+// `options` are bilingual { en, ar } entries. Picking one stores its English
+// name (the canonical value); the field displays it in the current language,
+// and typing searches both the Arabic and English names.
 export function Combobox({ label, value, onChange, options, placeholder, required }) {
+  const { lang } = useLanguage();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
   const inputId = label?.toLowerCase().replace(/\s+/g, '-');
 
+  const labelOf = (opt) => (lang === 'ar' ? opt.ar : opt.en);
+  const selected = options.find((opt) => opt.en === value);
+  const display = selected ? labelOf(selected) : value || '';
+
   const matches = useMemo(() => {
-    const q = (value || '').trim().toLowerCase();
-    if (!q) return options.slice(0, 8);
-    return options.filter((opt) => opt.toLowerCase().includes(q)).slice(0, 8);
-  }, [value, options]);
+    const q = display.trim().toLowerCase();
+    if (!q) return options.slice(0, MAX_MATCHES);
+    return options
+      .filter((opt) => opt.en.toLowerCase().includes(q) || opt.ar.includes(q))
+      .slice(0, MAX_MATCHES);
+  }, [display, options]);
 
   useEffect(() => {
     function onDocClick(e) {
@@ -40,7 +54,7 @@ export function Combobox({ label, value, onChange, options, placeholder, require
           'tv-field w-full rounded-lg border px-4 py-2.5 text-sm transition-all duration-150'
         )}
         placeholder={placeholder}
-        value={value}
+        value={display}
         autoComplete="off"
         onFocus={() => setOpen(true)}
         onChange={(e) => {
@@ -58,17 +72,17 @@ export function Combobox({ label, value, onChange, options, placeholder, require
             className="absolute z-30 top-full mt-1.5 w-full max-h-56 overflow-y-auto rounded-lg border border-surface-2 bg-surface shadow-xl py-1"
           >
             {matches.map((opt) => (
-              <li key={opt}>
+              <li key={opt.en}>
                 <button
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
-                    onChange(opt);
+                    onChange(opt.en);
                     setOpen(false);
                   }}
-                  className="w-full text-left px-4 py-2 text-sm text-warm hover:bg-brand/10 hover:text-brand transition-colors"
+                  className="w-full text-start px-4 py-2 text-sm text-warm hover:bg-brand/10 hover:text-brand transition-colors"
                 >
-                  {opt}
+                  {labelOf(opt)}
                 </button>
               </li>
             ))}

@@ -7,7 +7,8 @@ import { SelectWithOther } from '@/components/ui/SelectWithOther';
 import { DatePicker } from '@/components/ui/DatePicker';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { UNIVERSITIES, DEGREES, FIELDS_OF_STUDY, OTHER_VALUE } from '@/lib/formOptions';
+import { DEGREES, OTHER_VALUE } from '@/lib/formOptions';
+import { UNIVERSITY_OPTIONS, SPECIALIZATION_OPTIONS } from '@/lib/academicData';
 import { useLanguage } from '@/lib/i18n';
 
 function newEntry() {
@@ -17,7 +18,6 @@ function newEntry() {
     degree: '',
     degreeOther: false,
     field: '',
-    fieldOther: false,
     startYear: '',
     endYear: '',
   };
@@ -80,7 +80,7 @@ export function EducationStep({ data, onChange }) {
                   placeholder={t('Type to search institutions…')}
                   value={entry.institution}
                   onChange={(v) => updateEntry(entry.id, 'institution', v)}
-                  options={UNIVERSITIES}
+                  options={UNIVERSITY_OPTIONS}
                 />
                 <SelectWithOther
                   t={t}
@@ -93,16 +93,12 @@ export function EducationStep({ data, onChange }) {
                   onSelect={(v) => selectField(entry.id, 'degree', 'degreeOther', v)}
                   onCustomChange={(v) => updateEntry(entry.id, 'degree', v)}
                 />
-                <SelectWithOther
-                  t={t}
+                <Combobox
                   label={t('Field of Study')}
-                  placeholder={t('Select field of study…')}
-                  otherPlaceholder={t('Type your field of study')}
-                  list={FIELDS_OF_STUDY}
-                  otherFlag={entry.fieldOther}
+                  placeholder={t('Type to search specializations…')}
                   value={entry.field}
-                  onSelect={(v) => selectField(entry.id, 'field', 'fieldOther', v)}
-                  onCustomChange={(v) => updateEntry(entry.id, 'field', v)}
+                  onChange={(v) => updateEntry(entry.id, 'field', v)}
+                  options={SPECIALIZATION_OPTIONS}
                 />
                 <div className="grid grid-cols-2 gap-3">
                   <DatePicker

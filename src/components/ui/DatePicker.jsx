@@ -24,10 +24,11 @@ export function DatePicker({ label, value, onChange, placeholder, required, minY
   const [viewYear, setViewYear] = useState(parsed?.year ?? maxYear - 1);
   const rootRef = useRef(null);
 
-  useEffect(() => {
-    if (parsed) setViewYear(parsed.year);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+  // Jump the calendar to the selected year each time it opens.
+  function toggleOpen() {
+    if (!open && parsed) setViewYear(parsed.year);
+    setOpen(!open);
+  }
 
   useEffect(() => {
     function onDocClick(e) {
@@ -55,8 +56,8 @@ export function DatePicker({ label, value, onChange, placeholder, required, minY
       )}
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="tv-field w-full flex items-center justify-between gap-2 rounded-lg border px-4 py-2.5 text-sm text-left"
+        onClick={toggleOpen}
+        className="tv-field w-full flex items-center justify-between gap-2 rounded-lg border px-4 py-2.5 text-sm text-start"
       >
         <span className={display ? '' : 'text-[color:var(--tv-field-placeholder)]'}>
           {display || placeholder}

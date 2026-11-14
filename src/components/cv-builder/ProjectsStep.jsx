@@ -8,7 +8,6 @@ import { Select } from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { TECHNOLOGIES, OTHER_VALUE } from '@/lib/formOptions';
 import { useLanguage } from '@/lib/i18n';
 
